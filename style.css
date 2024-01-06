@@ -3,3 +3,22 @@
 {
     font-family: 'Montserrat', sans-serif;
 }
+
+.navbar-nav{
+    width: 100%;
+}
+
+#stronaglowna
+{
+    flex: 1;
+}
+
+.navbar{
+    padding: 0 150px;
+}
+
+@media (max-width: 638px) {
+    .navbar{
+        padding: 0;
+    }
+}
