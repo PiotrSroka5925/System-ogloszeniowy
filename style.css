@@ -17,8 +17,88 @@
     padding: 0 150px;
 }
 
+.szczegolowe-wysz
+{
+    width: 75%;
+}
+
+
+.pierwszy-div
+{
+    margin-right: 30px;
+}
+
 @media (max-width: 638px) {
     .navbar{
         padding: 0;
     }
 }
+
+
+@media (max-width : 768px)
+{
+    .marginChange
+    {
+        text-align: center;
+    }              
+}
+
+@media (min-width: 630px){
+    .szczegolowe-wysz
+    {
+        text-align: center;
+    }      
+        
+}
+
+.ogloszenie
+{
+    border: cyan solid 2px;
+    background-color: #222222;  
+}
+
+
+.logoOgloszenia
+{
+    width: 95px;
+    height: 70px;
+    margin-top: 5px;
+}
+
+.logoSzczegolyOgloszenia
+{
+    width: 100px;
+    height: 75px;
+    margin-top: 20px;    
+}
+
+.SzczegolyIcon
+{
+    border: cyan 2px solid;
+    background-color: white;
+    padding: 2px;
+    width: 50px;
+    height: 50px;
+}
+
+.ObowiazekIcon
+{
+    width: 25px;
+    height: 25px;
+}
+
+.Profilowe
+{
+    border-radius: 99px;
+    background-color: white;
+    border: cyan 2px solid;
+    height: 15vh;
+    width: 15vh;        
+}
+
+.EditBtnProf
+{   
+    width: 100px;    
+    height: 35px;
+}
+
