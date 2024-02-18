@@ -34,16 +34,6 @@
     }
 }
 
-
-@media (max-width : 768px)
-{
-    .marginChange
-    {
-        text-align: center;
-    }              
-}
-
-
 @media (min-width: 300px){
     .szczegolowe-wysz
     {
@@ -54,7 +44,7 @@
     {      
         padding-top: 20px;
         padding-bottom: 20px;
-    }       
+    }               
 }
 
 
@@ -64,8 +54,21 @@
         margin-left: 10px;
         margin-right: 10px
     }       
+
+    .marginChange
+    {
+        text-align: center;
+    }          
+       
 }
 
+@media (max-width: 425px){ 
+.LogowanieMainDiv
+    {
+        width: 90% !important;
+        margin: 0 auto;
+    }
+}
 @media (max-width: 375px){              
     .pierwszySzczegol
     {
@@ -124,3 +127,22 @@
     height: 35px;
 }
 
+.UlubionyKolor
+{
+    background-color: #222222;
+}
+
+
+.LogowanieMainDiv
+{
+    box-shadow: 0 21px 21px 0 rgba(0, 0, 0, 0.2), 0 25px 40px 0 rgba(0, 0, 0, 0.19);
+    height: 425px;    
+    padding: 20px;
+    width: 400px;
+}
+
+.LogowanieInput
+{
+    height: 35px;
+    text-indent: 10px;
+}
