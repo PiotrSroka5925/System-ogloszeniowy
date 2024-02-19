@@ -63,11 +63,18 @@
 }
 
 @media (max-width: 425px){ 
-.LogowanieMainDiv
+    .LogowanieMainDiv
     {
         width: 90% !important;
         margin: 0 auto;
     }
+
+    .RejestracjaMainDiv
+    {
+        width: 90% !important;
+        margin: 0 auto;
+    }
+
 }
 @media (max-width: 375px){              
     .pierwszySzczegol
@@ -78,10 +85,14 @@
 
 .ogloszenie
 {
-    border: cyan solid 2px;
+    border:  solid 2px;
     background-color: #222222;  
 }
 
+.g-recaptcha
+{
+    
+}
 
 .logoOgloszenia
 {
@@ -99,7 +110,7 @@
 
 .SzczegolyIcon
 {
-    border: cyan 2px solid;
+    border:  2px solid;
     background-color: white;
     padding: 2px;
     width: 50px;
@@ -116,7 +127,7 @@
 {
     border-radius: 99px;
     background-color: white;
-    border: cyan 2px solid;
+    border:  2px solid;
     height: 15vh;
     width: 15vh;        
 }
@@ -132,6 +143,10 @@
     background-color: #222222;
 }
 
+.LogowanieTlo
+{
+    background-image: url(Images/forest.jpg);
+}
 
 .LogowanieMainDiv
 {
@@ -141,8 +156,18 @@
     width: 400px;
 }
 
+.RejestracjaMainDiv
+{
+    box-shadow: 0 21px 21px 0 rgba(0, 0, 0, 0.2), 0 25px 40px 0 rgba(0, 0, 0, 0.19);
+    height: 525px;    
+    padding: 20px;
+    width: 400px;
+}
+
 .LogowanieInput
 {
     height: 35px;
     text-indent: 10px;
 }
+
+
