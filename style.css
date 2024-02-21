@@ -94,17 +94,12 @@
     background-color: #222222;  
 }
 
-.g-recaptcha
-{
-    
-}
+
 
 .logNapis
 {
     height: 50px;
 }
-
-
 
 .logoOgloszenia
 {
@@ -162,16 +157,14 @@
 
 .LogowanieMainDiv
 {
-    box-shadow: 0 21px 21px 0 rgba(0, 0, 0, 0.2), 0 25px 40px 0 rgba(0, 0, 0, 0.19);
-    height: 425px;    
+    box-shadow: 0 21px 21px 0 rgba(0, 0, 0, 0.2), 0 25px 40px 0 rgba(0, 0, 0, 0.19);   
     padding: 20px;
     width: 400px;
 }
 
 .RejestracjaMainDiv
 {
-    box-shadow: 0 21px 21px 0 rgba(0, 0, 0, 0.2), 0 25px 40px 0 rgba(0, 0, 0, 0.19);
-    height: 525px;    
+    box-shadow: 0 21px 21px 0 rgba(0, 0, 0, 0.2), 0 25px 40px 0 rgba(0, 0, 0, 0.19);    
     padding: 20px;
     width: 400px;
 }
@@ -180,6 +173,12 @@
 {
     height: 35px;
     text-indent: 10px;
+}
+
+.error
+{
+    color: red;    
+    margin-bottom: 0px;
 }
 
 

@@ -1,4 +1,13 @@
-<!doctype html>
+<?php
+ session_start();
+ 
+ require_once "../PHPScripts/connect.php";
+
+ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
+
+
+?>
+<!Doctype html>
 <html lang="pl">
   <head>
     <meta charset="utf-8">
@@ -20,16 +29,31 @@
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item" id="stronaglowna">
               <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
-            </li>                          
-            <li class="nav-item dropdown border-white border border-1 rounded-3">
-              <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Konto
-              </a>
-              <form class="dropdown-menu UlubionyKolor p-4 row">
-                <a href="Profil.html" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
-                <a href="Logowanie.php" class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Zaloguj</a>           
-              </form>
-            </li>            
+            </li>                                                  
+            <?php
+               if(isset($_SESSION['zalogowany']))
+               {
+                
+                echo ' 
+                <li class="nav-item dropdown border-white border border-1 rounded-3"> 
+                  <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  '.$_SESSION['user'].'
+                  </a>
+                  <form class="dropdown-menu UlubionyKolor p-4 row">
+                    <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                    <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
+                  </form>
+                </li> ';
+                
+               }           
+               else
+               {
+                echo '
+                <li class="nav-item" >
+                  <a class="nav-link active mt-1 fs-5  marginChange" aria-current="page" href="Logowanie.php">Zaloguj się</a>
+                </li>';
+               }         
+               ?>                                      
           </ul>            
         </div>      
     </nav>
