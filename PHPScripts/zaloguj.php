@@ -48,7 +48,7 @@ else
             {
 
                 $_SESSION['zalogowany']=true;
-                $_SESSION['uzytkownik_id'] = $wiersz['id'];
+                $_SESSION['uzytkownik_id'] = $wiersz['uzytkownik_id'];
            
                 $adm = $wiersz['administrator'];
 

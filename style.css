@@ -8,10 +8,11 @@
     width: 100%;
 }
 
-#stronaglowna
+.lewyNav
 {
     flex: 1;
 }
+
 
 .navbar{
     padding: 0 150px;
