@@ -58,7 +58,12 @@
     .marginChange
     {
         text-align: center;
-    }          
+    }        
+    
+    .logNapisFont
+    {
+        font-size: 4vh;
+    }
        
 }
 
@@ -93,6 +98,13 @@
 {
     
 }
+
+.logNapis
+{
+    height: 50px;
+}
+
+
 
 .logoOgloszenia
 {

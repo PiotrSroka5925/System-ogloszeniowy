@@ -12,10 +12,12 @@
 </head>
 <body class="d-flex align-items-center justify-content-center flex-column vh-100 LogowanieTlo">
 
-    <div class="d-inline-flex me-5 mb-0">
-        <img src="../Images/logo.png" class="mb-4" alt="logo">
-        <h2 class="mt-4 text-dark fw-bold">MoonWork</h2>        
-    </div>    
+   <!-- <div class="d-inline-flex UlubionyKolor mb-2 rounded-5">
+        <img src="../Images/logo.png" class="" alt="logo">
+        <div class="mt-4 d-flex justify-content-center align-items-center UlubionyKolor mb-3 px-2 rounded-5 logNapis">
+            <h2 class="text-center text-light fw-bold logNapisFont">MoonWork</h2>   
+        </div>                
+    </div> -->
     <div  class="UlubionyKolor rounded-4 RejestracjaMainDiv">
         <h2 class="text-center mb-4 text-light">Rejestracja</h2>
         <form method="post" class="d-flex flex-column text-light px-1">
@@ -39,7 +41,7 @@
           <!--<div class="g-recaptcha mt-3"  data-sitekey="6Lfr3ekkAAAAADzxweqZoBErhOHJzVxqcDnEXecm"></div> -->
                                                           
             <button type="button" class="btn UlubionyKolor btn-secondary text-light rounded-5 mt-3 sm-ms-5 my-2"><input type="submit" class="w-100 bg-transparent border-0 text-light" value="Zarejestruj się" /></button>
-            <a href="Logowanie.html" class="text-decoration-none text-light text-center mt-2">Zaloguj się</a>
+            <a href="Logowanie.php" class="text-decoration-none text-light text-center mt-2">Zaloguj się</a>
             
         </form>
         </div>

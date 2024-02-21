@@ -27,7 +27,7 @@
               </a>
               <form class="dropdown-menu UlubionyKolor p-4 row">
                 <a href="Profil.html" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
-                <a href="Logowanie.html" class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Zaloguj</a>           
+                <a href="Logowanie.php" class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Zaloguj</a>           
               </form>
             </li>            
           </ul>            
@@ -141,7 +141,7 @@
         </section>
 
         <section class="row my-5">                      
-          <a href="SzczegolyOglo.html" class="col-12 col-xl-4 ogloszenie border-0 rounded-4 shadow-lg text-decoration-none">
+          <a href="SzczegolyOglo.php" class="col-12 col-xl-4 ogloszenie border-0 rounded-4 shadow-lg text-decoration-none">
           
               <h5 class="text-light mt-3">Sprzedawca na stanowisku mięsnym</h5>
               <p class="text-light">4500 - 5000 zł/mies</p>

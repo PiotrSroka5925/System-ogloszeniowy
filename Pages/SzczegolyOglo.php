@@ -11,23 +11,23 @@
   </head>
   <body class="d-flex flex-column min-vh-100">    
       <nav class="navbar navbar-expand-lg UlubionyKolor shadow-lg" data-bs-theme="dark">    
-        <a href="StronGlowna.html" class="border border-dark"><img src="../Images/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
-        <a class="navbar-brand fs-3 fw-bold" href="StronGlowna.html">MoonWork</a>
+        <a href="StronGlowna.php" class="border border-dark"><img src="../Images/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
+        <a class="navbar-brand fs-3 fw-bold" href="StronGlowna.php">MoonWork</a>
         <button class="navbar-toggler mx-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item" id="stronaglowna">
-              <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="StronGlowna.html">Strona główna</a>
+              <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="StronGlowna.php">Strona główna</a>
             </li>                          
             <li class="nav-item dropdown border-white border border-1 rounded-3">
                 <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Konto
                 </a>
                 <form class="dropdown-menu UlubionyKolor p-4 row">
-                  <a href="Profil.html" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
-                  <a href="Logowanie.html" class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Zaloguj</a>  
+                  <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                  <a href="Logowanie.php" class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Zaloguj</a>  
                 </form>
               </li>        
           </ul>            
