@@ -1,4 +1,14 @@
-<!doctype html>
+<?php
+
+session_start();
+
+require_once "../PHPScripts/connect.php";
+
+$polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
+
+
+?>
+<!Doctype html>
 <html lang="pl">
   <head>
     <meta charset="utf-8">
@@ -6,31 +16,64 @@
     <title>Profil</title>    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="../style.css">
-    <link rel="icon" href="../Images/logo.png" type="image/icon type">
+    <link rel="icon" href="../Images/Other/logo.png" type="image/icon type">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"/>
   </head>
   <body class="d-flex flex-column min-vh-100">    
       <nav class="navbar navbar-expand-lg UlubionyKolor shadow-lg" data-bs-theme="dark">    
-        <a href="StronaGlowna.php" class="border border-dark"><img src="../Images/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
+        <a href="StronaGlowna.php" class="border border-dark"><img src="../Images/Other/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
         <a class="navbar-brand fs-3 fw-bold" href="StronaGlowna.php">MoonWork</a>
         <button class="navbar-toggler mx-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item" id="stronaglowna">
-              <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
-            </li>                          
-            <li class="nav-item dropdown border-white border border-1 rounded-3">
-                <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Konto
-                </a>
-                <form class="dropdown-menu UlubionyKolor p-4 row">                  
-                  <button type="submit" class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12">Wyloguj</button>
-                </form>
-              </li>        
-          </ul>            
-        </div>      
+        <?php
+               if(isset($_SESSION['zalogowany']))
+               {
+                if($_SESSION['administrator']==1)
+                {
+                 
+                  echo '
+                  <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
+                    <li class="nav-item">
+                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                    </li> 
+                    <li class="nav-item lewyNav">
+                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="#">Panel admina</a>
+                    </li>
+                    <li class="nav-item dropdown border-white border border-1 rounded-3"> 
+                      <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      '.$_SESSION['user'].'
+                      </a>
+                      <form class="dropdown-menu UlubionyKolor p-4 row">                        
+                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
+                      </form>
+                    </li>
+                  </ul>';
+                                  
+                }  
+                else
+                {
+                 
+                  echo '
+                  <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
+                    <li class="nav-item lewyNav">
+                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                    </li>                   
+                    <li class="nav-item dropdown border-white border border-1 rounded-3"> 
+                      <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      '.$_SESSION['user'].'
+                      </a>
+                      <form class="dropdown-menu UlubionyKolor p-4 row">                        
+                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
+                      </form>
+                    </li>
+                  </ul>';
+                    
+                }                 
+               }                                               
+               ?>            
+        </div>
     </nav>
 
     <section class="container my-2">
@@ -38,13 +81,13 @@
         <section class="ogloszenie mt-2 rounded-3">
             <div class="p-3">                          
                 <div class="d-flex">                     
-                    <img src="../Images/mineTheWorld.png" class="Profilowe ms-1 mt-1" alt="">                    
+                    <img src="../Images/Profile/mineTheWorld.png" class="Profilowe ms-1 mt-1" alt="">                    
                     <p class="text-light ms-1 mt-4 fs-2 w-100">Piotr Sroka</p>                                                                                                                                                                                                                                                                                       
                 </div>
                 <div class="mt-3">
                     <p class="text-light">Programista - Web developer</p>
                     <div class="d-flex">
-                        <img src="../Images/localization.png" class="ObowiazekIcon" alt="">
+                        <img src="../Images/Icons/localization.png" class="ObowiazekIcon" alt="">
                         <p class="text-light">Słopnice</p>
                     </div>
                 </div>                

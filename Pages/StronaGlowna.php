@@ -5,6 +5,21 @@
 
  $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
+  $ogloszeniaNaStrone = 15;
+  $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
+  $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
+
+  
+  $zapytanie = "SELECT COUNT(*) AS ile FROM ogloszenia";
+  $wynik = $polaczenie->query($zapytanie);
+  $r = $wynik->fetch_assoc();
+  $wszystkieOgloszenia = $r['ile'];
+  $strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
+
+
+  $zapytanie = "SELECT * FROM ogloszenia LIMIT $start, $ogloszeniaNaStrone";
+  $wynik = $polaczenie->query($zapytanie);
+
 
 ?>
 <!Doctype html>
@@ -15,12 +30,12 @@
     <title>Strona główna</title>    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="../style.css">
-    <link rel="icon" href="../Images/logo.png" type="image/icon type">
+    <link rel="icon" href="../Images/Other/logo.png" type="image/icon type">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"/>
   </head>
   <body class="d-flex flex-column min-vh-100">    
       <nav class="navbar navbar-expand-lg UlubionyKolor shadow-lg" data-bs-theme="dark">    
-        <a href="#" class="border border-dark"><img src="../Images/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
+        <a href="#" class="border border-dark"><img src="../Images/Other/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
         <a class="navbar-brand fs-3 fw-bold" href="#">MoonWork</a>
         <button class="navbar-toggler mx-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -34,43 +49,41 @@
                  
                   echo '
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
-                  <li class="nav-item">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
-                  </li> 
-                  <li class="nav-item lewyNav">
-                    <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="#">Panel admina</a>
-                  </li>
-                  <li class="nav-item dropdown border-white border border-1 rounded-3"> 
-                  <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  '.$_SESSION['user'].'
-                  </a>
-                  <form class="dropdown-menu UlubionyKolor p-4 row">
-                    <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
-                    <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
-                  </form>
-                  </li>
+                    <li class="nav-item">
+                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                    </li> 
+                    <li class="nav-item lewyNav">
+                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="#">Panel admina</a>
+                    </li>
+                    <li class="nav-item dropdown border-white border border-1 rounded-3"> 
+                      <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      '.$_SESSION['user'].'
+                      </a>
+                      <form class="dropdown-menu UlubionyKolor p-4 row">
+                        <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
+                      </form>
+                    </li>
                   </ul>';
-                  
-
-                
+                                  
                 }  
                 else
                 {
                  
                   echo '
                   <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
-                  <li class="nav-item lewyNav">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
-                  </li>                   
-                  <li class="nav-item dropdown border-white border border-1 rounded-3"> 
-                  <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  '.$_SESSION['user'].'
-                  </a>
-                  <form class="dropdown-menu UlubionyKolor p-4 row">
-                    <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
-                    <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
-                  </form>
-                  </li>
+                    <li class="nav-item lewyNav">
+                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                    </li>                   
+                    <li class="nav-item dropdown border-white border border-1 rounded-3"> 
+                      <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      '.$_SESSION['user'].'
+                      </a>
+                      <form class="dropdown-menu UlubionyKolor p-4 row">
+                        <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
+                      </form>
+                    </li>
                   </ul>';
                     
                 }                 
@@ -79,12 +92,12 @@
                {
                   echo '
                     <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
-                    <li class="nav-item lewyNav">
-                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
-                    </li>                     
-                    <li class="nav-item" >
-                      <a class="nav-link active mt-1 fs-5  marginChange" aria-current="page" href="Logowanie.php">Zaloguj się</a>
-                    </li>
+                      <li class="nav-item lewyNav">
+                        <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                      </li>                     
+                      <li class="nav-item" >
+                        <a class="nav-link active mt-1 fs-5  marginChange" aria-current="page" href="Logowanie.php">Zaloguj się</a>
+                      </li>
                     </ul>';
                }                                    
                ?>            
@@ -198,18 +211,40 @@
         </section>
 
         <section class="row my-5">                      
-          <a href="SzczegolyOglo.php" class="col-12 col-xl-4 ogloszenie border-0 rounded-4 shadow-lg text-decoration-none">
-          
-              <h5 class="text-light mt-3">Sprzedawca na stanowisku mięsnym</h5>
-              <p class="text-light">4500 - 5000 zł/mies</p>
-              <div class="d-flex">
-                <img src="../Images/stokrotka.png" alt="" class="logoOgloszenia">
-                <p class="fs-5 text-light mt-4 ms-2">Stokrotka</p>
-              </div>              
-              <p class="text-light mt-3">07.01.2024</p>                  
-          </a>          
+        <?php
+            while($ogloszenie = $wynik->fetch_assoc()) {
+                echo '
+                <a href="SzczegolyOglo.php" class="col-12 col-xl-4 ogloszenie border-0 rounded-4 shadow-lg text-decoration-none">
+                    <h5 class="text-light mt-3">'.$ogloszenie['tytul'].'</h5>
+                    <p class="text-light">'.$ogloszenie['cena'].' zł/mies</p>
+                    <div class="d-flex">
+                        <img src="../Images/'.$ogloszenie['obrazek'].'" alt="" class="logoOgloszenia">
+                        <p class="fs-5 text-light mt-4 ms-2">'.$ogloszenie['firma'].'</p>
+                    </div>
+                    <p class="text-light mt-3">'.$ogloszenie['data'].'</p>
+                </a>';
+            }
+        ?>         
         </section>
-        
+        <div class="paginacja">
+          <?php
+          
+          if ($aktualnaStrona > 1)
+          {
+            echo '<a href="?strona='.($aktualnaStrona - 1).'">« Poprzednia</a> ';
+          }
+         
+          for ($i = 1; $i <= $strony; $i++)
+          {
+            echo '<a href="?strona='.$i.'">'.$i.'</a> ';
+          }
+          
+          if ($aktualnaStrona < $strony)
+          {
+            echo '<a href="?strona='.($aktualnaStrona + 1).'">Następna »</a>';
+          }
+          ?>
+        </div>
     </section>
 
   
