@@ -18,7 +18,15 @@
     <link rel="icon" href="../Images/Other/logo.png" type="image/icon type">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"/>
 </head>
-<body class="d-flex align-items-center justify-content-center flex-column vh-100 LogowanieTlo">               
+<body class="d-flex align-items-center justify-content-center flex-column vh-100 LogowanieTlo"> 
+        <div class="d-inline-flex UlubionyKolor mb-2 rounded-5">
+            <a href="StronaGlowna.php" class="d-flex justify-content text-decoration-none logoLogowanie">
+                <img src="../Images/Other/logo.png" class="" alt="logo">
+                <div class="mt-4 d-flex justify-content-center align-items-center UlubionyKolor mb-3 px-2 rounded-5 logNapis">
+                    <h2 class="text-center text-light fw-bold logNapisFont">MoonWork</h2>   
+                </div>  
+            </a>              
+        </div>              
         <div class="UlubionyKolor rounded-4 LogowanieMainDiv">
             <h2 class="text-center mb-5 text-light">Logowanie</h2>
             <form action="../PHPScripts/zaloguj.php" class="d-flex flex-column text-light px-1" method="post">   

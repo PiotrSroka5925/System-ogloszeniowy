@@ -210,7 +210,7 @@
           <h1>Najnowsze oferty</h1>                                                  
         </section>
 
-        <section class="row my-5 d-flex justify-content-center ">                      
+        <section class="row">                      
         <?php
            while($zapytanie = $wynik->fetch_assoc()) {
             $dataZBazy = $zapytanie['data_utworzenia']; 
@@ -218,19 +218,32 @@
             $formattedDate = $data->format('d.m.Y');
       
             echo '
-            <a href="SzczegolyOglo.php" class="col-12 col-xl-4 ogloszenie border-0 rounded-4 m-2 shadow-lg text-decoration-none">
-                <h5 class="text-light mt-3">'.$zapytanie['nazwa_ogloszenia'].'</h5>
-                <p class="text-light">'.str_replace(".", ",", $zapytanie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $zapytanie['najw_wynagrodzenie']).' zł/mies</p>
-                <div class="d-flex">
-                    <img src="'.$zapytanie['zdjecie'].'" alt="" class="logoOgloszenia">
-                    <p class="fs-5 text-light mt-4 ms-2">'.$zapytanie['nazwa_firmy'].'</p>
-                </div>
-                <p class="text-light mt-3">'.$formattedDate.'</p>
-            </a>';
+            <div class="col-12 col-xl-4 d-flex justify-content-center">
+
+            <a href="SzczegolyOglo.php" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">
+              <div class="row maxPierwszywOglo">
+                <h5 class="text-light mt-3 text-break">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
+              </div>
+
+              <div class="row mt-5">
+              <p class="text-light">'.str_replace(".", ",", $zapytanie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $zapytanie['najw_wynagrodzenie']).' zł/mies</p>
+              </div>
+
+
+                
+              <div class="row">
+                  <img src="'.$zapytanie['zdjecie'].'" alt="" class="logoOgloszenia col-6">
+                  <p class="fs-5 text-light mt-4 ms-2 col-6">'.$zapytanie['nazwa_firmy'].'</p>
+              </div>
+              <div class="row">
+              <p class="text-light mt-3">'.$formattedDate.'</p>
+              </div>                
+            </a>
+            </div>';
         }
         ?>         
         </section>
-        <div class="paginacja">
+       <div class="paginacja">
           <?php
           
           if ($aktualnaStrona > 1)
@@ -248,7 +261,7 @@
             echo '<a href="?strona='.($aktualnaStrona + 1).'">Następna »</a>';
           }
           ?>
-        </div>
+        </div> 
     </section>
 
   

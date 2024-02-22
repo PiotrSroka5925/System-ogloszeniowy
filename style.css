@@ -68,6 +68,12 @@
        
 }
 
+.maxPierwszywOglo
+{
+    max-height: 20px;
+    margin-bottom: 60px;
+}
+
 @media (max-width: 425px){ 
     .LogowanieMainDiv
     {
@@ -79,6 +85,20 @@
     {
         width: 90% !important;
         margin: 0 auto;
+    }
+
+    .ogloszenieMain
+    {
+        border:  solid 2px;
+        background-color: #222222;  
+        height: 90%;
+        
+    }
+
+    .maxPierwszywOglo
+    {
+        margin-bottom: 100px;
+        max-height: 20px;
     }
 
 }
@@ -95,7 +115,12 @@
     background-color: #222222;  
 }
 
-
+.ogloszenieMain
+{
+    border:  solid 2px;
+    background-color: #222222;  
+    width: 100%;
+}
 
 .logNapis
 {
@@ -182,4 +207,14 @@
     margin-bottom: 0px;
 }
 
+.ogloszeniaSekcja
+{
+    width: 80%;
+}
 
+.logoLogowanie :hover
+{
+    text-decoration-line: underline;
+    text-decoration-color: white;
+    text-decoration-thickness: 2px;
+}

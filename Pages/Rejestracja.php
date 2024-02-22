@@ -157,12 +157,14 @@
 </head>
 <body class="d-flex align-items-center justify-content-center flex-column vh-100 LogowanieTlo">
 
-   <!-- <div class="d-inline-flex UlubionyKolor mb-2 rounded-5">
-        <img src="../Images/logo.png" class="" alt="logo">
-        <div class="mt-4 d-flex justify-content-center align-items-center UlubionyKolor mb-3 px-2 rounded-5 logNapis">
-            <h2 class="text-center text-light fw-bold logNapisFont">MoonWork</h2>   
-        </div>                
-    </div> -->
+	<div class="d-inline-flex UlubionyKolor mb-2 rounded-5">
+		<a href="StronaGlowna.php" class="d-flex justify-content text-decoration-none logoLogowanie">
+			<img src="../Images/Other/logo.png" class="" alt="logo">
+			<div class="mt-4 d-flex justify-content-center align-items-center UlubionyKolor mb-3 px-2 rounded-5 logNapis">
+				<h2 class="text-center text-light fw-bold logNapisFont">MoonWork</h2>   
+			</div>  
+		</a>              
+    </div>
     <div  class="UlubionyKolor rounded-4 RejestracjaMainDiv">
         <h2 class="text-center mb-4 text-light">Rejestracja</h2>
         <form method="post" class="d-flex flex-column text-light px-1">
