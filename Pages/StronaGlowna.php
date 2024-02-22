@@ -15,11 +15,11 @@
   $r = $wynik->fetch_assoc();
   $wszystkieOgloszenia = $r['ile'];
   $strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
-
-
-  $zapytanie = "SELECT * FROM ogloszenia LIMIT $start, $ogloszeniaNaStrone";
+  
+  $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
+  JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
+  LIMIT $start, $ogloszeniaNaStrone";
   $wynik = $polaczenie->query($zapytanie);
-
 
 ?>
 <!Doctype html>
@@ -210,20 +210,24 @@
           <h1>Najnowsze oferty</h1>                                                  
         </section>
 
-        <section class="row my-5">                      
+        <section class="row my-5 d-flex justify-content-center ">                      
         <?php
-            while($ogloszenie = $wynik->fetch_assoc()) {
-                echo '
-                <a href="SzczegolyOglo.php" class="col-12 col-xl-4 ogloszenie border-0 rounded-4 shadow-lg text-decoration-none">
-                    <h5 class="text-light mt-3">'.$ogloszenie['tytul'].'</h5>
-                    <p class="text-light">'.$ogloszenie['cena'].' zł/mies</p>
-                    <div class="d-flex">
-                        <img src="../Images/'.$ogloszenie['obrazek'].'" alt="" class="logoOgloszenia">
-                        <p class="fs-5 text-light mt-4 ms-2">'.$ogloszenie['firma'].'</p>
-                    </div>
-                    <p class="text-light mt-3">'.$ogloszenie['data'].'</p>
-                </a>';
-            }
+           while($zapytanie = $wynik->fetch_assoc()) {
+            $dataZBazy = $zapytanie['data_utworzenia']; 
+            $data = new DateTime($dataZBazy);
+            $formattedDate = $data->format('d.m.Y');
+      
+            echo '
+            <a href="SzczegolyOglo.php" class="col-12 col-xl-4 ogloszenie border-0 rounded-4 m-2 shadow-lg text-decoration-none">
+                <h5 class="text-light mt-3">'.$zapytanie['nazwa_ogloszenia'].'</h5>
+                <p class="text-light">'.str_replace(".", ",", $zapytanie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $zapytanie['najw_wynagrodzenie']).' zł/mies</p>
+                <div class="d-flex">
+                    <img src="'.$zapytanie['zdjecie'].'" alt="" class="logoOgloszenia">
+                    <p class="fs-5 text-light mt-4 ms-2">'.$zapytanie['nazwa_firmy'].'</p>
+                </div>
+                <p class="text-light mt-3">'.$formattedDate.'</p>
+            </a>';
+        }
         ?>         
         </section>
         <div class="paginacja">
