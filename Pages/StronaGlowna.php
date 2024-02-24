@@ -220,7 +220,7 @@
             echo '
             <div class="col-12 col-xl-4 d-flex justify-content-center">
 
-            <a href="SzczegolyOglo.php" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">
+            <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">
               <div class="row maxPierwszywOglo">
                 <h5 class="text-light mt-3 text-break">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
               </div>

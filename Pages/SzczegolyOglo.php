@@ -6,6 +6,19 @@ require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
+$zapytanieOglo = "SELECT ogloszenia.*, ogloszenie_stanowisko.nazwa_stanowiska, ogloszenie_stanowisko.poziom_stanowiska 
+FROM ogloszenia JOIN ogloszenie_stanowisko USING(stanowisko_id) WHERE ogloszenie_id='{$_GET['id']}';";
+$wynikOglo = $polaczenie->query($zapytanieOglo);
+
+$zapytanieObo = "SELECT * FROM ogloszenie_obowiazki WHERE ogloszenie_id='{$_GET['id']}';";
+$wynikObo = $polaczenie->query($zapytanieObo);
+
+$zapytanieBenef = "SELECT * FROM ogloszenie_benefity WHERE ogloszenie_id='{$_GET['id']}';";
+$wynikBenef = $polaczenie->query($zapytanieBenef);
+
+$zapytanieWymag = "SELECT * FROM ogloszenie_wymagania WHERE ogloszenie_id='{$_GET['id']}';";
+$wynikWymag = $polaczenie->query($zapytanieWymag);
+
 
 ?>
 
@@ -37,7 +50,7 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
                   echo '
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
                     <li class="nav-item">
-                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
                     </li> 
                     <li class="nav-item lewyNav">
                       <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="#">Panel admina</a>
@@ -60,7 +73,7 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
                   echo '
                   <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
                     <li class="nav-item lewyNav">
-                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
                     </li>                   
                     <li class="nav-item dropdown border-white border border-1 rounded-3"> 
                       <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -80,7 +93,7 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
                   echo '
                     <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
                       <li class="nav-item lewyNav">
-                        <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                        <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
                       </li>                     
                       <li class="nav-item" >
                         <a class="nav-link active mt-1 fs-5  marginChange" aria-current="page" href="Logowanie.php">Zaloguj się</a>
@@ -91,143 +104,166 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
         </div>     
     </nav>
 
+
     <section class="container my-2">
-                
-        <section class="ogloszenie mt-2 rounded-3">
-            <div class="p-3">
-                <p class="text-light ms-3 fs-3">Sprzedawca na stanowisku mięsnym</p>                    
-                <div class="d-flex">                     
-                    <img src="../Images/Companies/stokrotka.png" class="logoSzczegolyOgloszenia ms-3 mt-1" alt="">
-                    <p class="text-light ms-3 mt-4 fs-4">Stokrotka</p>
-                </div>
-            </div>            
-        </section>
+      <?php
+            if($wynikOglo->num_rows > 0)
+            {
+              while ($rowOglo = $wynikOglo->fetch_assoc())
+              {     
+                $dataZBazy = $rowOglo['data_utworzenia']; 
+                $data = new DateTime($dataZBazy);
+                $formattedDate = $data->format('d.m.Y');
+                echo '
+                <section class="ogloszenie mt-2 rounded-3">
+                    <div class="p-3">
+                        <p class="text-light ms-3 fs-3">'.$rowOglo['nazwa_ogloszenia'].'</p>                    
+                        <div class="d-flex">                     
+                            <img src="'.$rowOglo['zdjecie'].'" class="logoSzczegolyOgloszenia ms-3 mt-1" alt="">
+                            <p class="text-light ms-3 mt-4 fs-4">Stokrotka</p>
+                        </div>
+                    </div>            
+                </section>
 
-        <section class="ogloszenie mt-2 rounded-3">
-            <div class="p-3">
-                <div class="row">
-                    <div class="col-12 col-xl-4 my-2 d-flex">
-                        <img src="../Images/Icons/waznosc.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                        <p class="text-light mt-3 ms-2">ważne do 21.01.2024</p>                        
-                    </div>
+                <section class="ogloszenie mt-2 rounded-3">
+                    <div class="p-3">                               
+                        <div class="row">                    
+                            <div class="my-2 d-flex col-12 col-xl-4">
+                                <img src="../Images/Icons/ADlocalization.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['lokalizacja'].'</p>                        
+                            </div> 
+                            
+                            <div class="col-12 col-xl-4 my-2 d-flex">
+                                <img src="../Images/Icons/waznosc.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">Ważne do '.$formattedDate.'</p>                        
+                            </div>
 
-                    <div class="col-12 col-xl-4 my-2 d-flex">
-                        <img src="../Images/Icons/money.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                        <p class="text-light mt-3 ms-2">4500 - 5000 zł/mies</p>                        
-                    </div>  
-                </div>
-                                    
-                <div class="row">
-                    <div class="col-12 col-xl-4 my-2 d-flex">
-                        <img src="../Images/Icons/umowa.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                        <p class="text-light mt-3 ms-2">umowa o prace</p>                        
-                    </div>  
+                            <div class="col-12 col-xl-4 my-2 d-flex">
+                                <img src="../Images/Icons/money.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.str_replace(".", ",", $rowOglo['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $rowOglo['najw_wynagrodzenie']).' zł/mies</p>                        
+                            </div>  
+                        </div>
+                                            
+                        <div class="row">
+                            <div class="col-12 col-xl-4 my-2 d-flex">
+                                <img src="../Images/Icons/umowa.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['rodzaj_umowy'].'</p>                        
+                            </div>  
 
-                    <div class="col-12 col-xl-4 my-2 d-flex">
-                        <img src="../Images/Icons/czasPracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                        <p class="text-light mt-3 ms-2">pełny etat</p>                        
-                    </div> 
-                </div>    
-                
-                <div class="row">
-                    <div class="col-12 col-xl-4 my-2 d-flex">
-                        <img src="../Images/Icons/stanowisko.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                        <p class="text-light mt-3 ms-2">pracownik fizyczny</p>                        
-                    </div>  
+                            <div class="col-12 col-xl-4 my-2 d-flex">
+                                <img src="../Images/Icons/czasPracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['wymiar_zatrudnienia'].'</p>                        
+                            </div> 
+                        </div>';    
+                        
+                        if($rowOglo['poziom_stanowiska'] != null)
+                        {
+                          echo '
+                          <div class="row">
+                            <div class="col-12 col-xl-4 my-2 d-flex">
+                                <img src="../Images/Icons/stanowisko.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light mt-3 ms-2">'.$rowOglo['nazwa_stanowiska'].' - '.$rowOglo['poziom_stanowiska'].'</p>                        
+                            </div>  
 
-                    <div class="col-12 col-xl-4 my-2 d-flex">
-                        <img src="../Images/Icons/miejscePracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                        <p class="text-light mt-3 ms-2">praca stacjonarna</p>                        
-                    </div> 
-                </div>    
-            </div>            
-        </section>
+                            <div class="col-12 col-xl-4 my-2 d-flex">
+                                <img src="../Images/Icons/miejscePracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light mt-3 ms-2">'.$rowOglo['rodzaj_pracy'].'</p>                        
+                            </div> 
+                          </div>';
+                        }
+                        else
+                        {
+                            echo '
+                            <div class="row">
+                              <div class="col-12 col-xl-4 my-2 d-flex">
+                                  <img src="../Images/Icons/stanowisko.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                  <p class="text-light mt-3 ms-2">'.$rowOglo['nazwa_stanowiska'].'</p>                        
+                              </div>  
 
-        <section class="ogloszenie mt-2 rounded-3">
+                              <div class="col-12 col-xl-4 my-2 d-flex">
+                                  <img src="../Images/Icons/miejscePracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                  <p class="text-light mt-3 ms-2">'.$rowOglo['rodzaj_pracy'].'</p>                        
+                              </div> 
+                            </div>   
+                            ';
+                        }
 
-            <h3 class="text-light mx-3 my-4">Twój zakres obowiązków</h3>
+                         echo '
+                    </div>            
+                </section>
+                                
+                <section class="ogloszenie mt-2 rounded-3">
 
-            <div class="row m-2">
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Profesjonalna obsługa klientów na stoisku</p>
-                </div>
+                      <h3 class="text-light mx-3 my-4">Twój zakres obowiązków</h3>
 
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Prawidłowa ekspozycja i zatowarowanie lady serwisowej</p>
-                </div>  
+                      <div class="row m-2">
+                      ';
+                      if($wynikObo->num_rows > 0)
+                      {
+                        while ($rowObo = $wynikObo->fetch_assoc())
+                        {
+                          echo '
+                          <div class="col-12 d-flex">
+                              <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
+                              <p class="text-light ms-2">'.$rowObo['obowiazekText'].'</p>
+                          </div>                          
+                        ';    
+                        }   
+                      }   
 
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Dbałość o jakość towaru, prawidłowe oznaczenia i terminy ważności</p>
-                </div>
+                echo '
+                  </div>
+                </section>
 
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Utrzymanie standardów czystości</p>
-                </div>
-            </div>            
-        </section>
+                <section class="ogloszenie mt-2 rounded-3">
 
-        <section class="ogloszenie mt-2 rounded-3">
+                    <h3 class="text-light mx-3 my-4">Nasze wymagania</h3>
 
-            <h3 class="text-light mx-3 my-4">Nasze wymagania</h3>
+                    <div class="row m-2">';
+                    if($wynikWymag->num_rows > 0)
+                    {
+                      while ($rowWymag = $wynikWymag->fetch_assoc())
+                      {
+                        echo '
+                        <div class="col-12 d-flex">
+                            <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
+                            <p class="text-light ms-2">'.$rowWymag['obowiazekText'].'</p>
+                        </div> ';                      
+                      }
+                    }
+                    echo '
+                    </div>            
+                </section>
 
-            <div class="row m-2">
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Zaangażowanie i motywacja do pracy</p>
-                </div>
+                <section class="ogloszenie mt-2 rounded-3">
 
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Gotowość do pracy w systemie zmianowym</p>
-                </div>  
+                    <h3 class="text-light mx-3 my-4">Benefity</h3>
 
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Umiejętność współpracy w zespole</p>
-                </div>
+                    <div class="row m-2">';
+                    if($wynikBenef->num_rows > 0)
+                    {
+                      while ($rowBenef = $wynikBenef->fetch_assoc())
+                      {
+                        echo '
+                        <div class="col-12 d-flex">
+                            <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
+                            <p class="text-light ms-2">'.$rowBenef['obowiazekText'].'</p>
+                        </div> ';
+                      }
+                    }
+                     
+                    echo '
+                    </div>            
+                </section>
 
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">Otwartość na kontakt z klientem</p>
-                </div>
-            </div>            
-        </section>
+                <section class="ogloszenie mt-2 rounded-3">
+                    <h3 class="text-light mx-3 my-4">Stokrotka</h3>    
+                    <p class="text-light m-4 text-wrap w-50">'.$rowOglo['informacje'].'</p>      
+                </section>';
+              }
+            }
 
-        <section class="ogloszenie mt-2 rounded-3">
-
-            <h3 class="text-light mx-3 my-4">Benefity</h3>
-
-            <div class="row m-2">
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">dofinansowanie zajęć sportowych</p>
-                </div>
-
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">ubezpieczenie na życie</p>
-                </div>  
-
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">dodatkowe świadczenia socjalne</p>
-                </div>
-
-                <div class="col-12 d-flex">
-                    <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                    <p class="text-light ms-2">szkolenia</p>
-                </div>
-            </div>            
-        </section>
-
-        <section class="ogloszenie mt-2 rounded-3">
-            <h3 class="text-light mx-3 my-4">Stokrotka</h3>    
-            <p class="text-light m-4 text-wrap w-50">Nasza firma jest na rynku pracy od ponad 20 lat. Zawsze dbamy o naszych pracowników. Cieszymy się renomą w całej Polsce.</p>      
-        </section>
+      ?>
                    
     </section>
 
