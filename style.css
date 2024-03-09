@@ -35,6 +35,12 @@
     }
 }
 
+@media (max-width: 425px) {
+    .navbar{
+        padding: 10px;
+    }
+}
+
 @media (min-width: 300px){
     .szczegolowe-wysz
     {
