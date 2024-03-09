@@ -64,8 +64,7 @@
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
-                  </ul>';
-                                  
+                  </ul>';                                  
                 }  
                 else
                 {
@@ -84,8 +83,7 @@
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
-                  </ul>';
-                    
+                  </ul>';                    
                 }                 
                }   
                else
@@ -119,87 +117,81 @@
             </div>
 
             <div class="col-8 col-xl-2 border border-dark rounded-1 bg-secondary-subtle border-2 my-2">
-                <div class="dropdown row">
-                    <button class="btn dropdown-toggle text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Kategorie
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
-                      <li><a class="dropdown-item" href="#">Another action</a></li>
-                      <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                  </div> 
+              <div class="dropdown row">
+                  <button class="btn dropdown-toggle text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Kategorie
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+              </div> 
             </div>
 
             <div class="col-8 col-xl-2 border border-dark rounded-1 border-2 my-2">
-                <form class="d-flex row h-100">
-                    <input type="search" class="border border-0 form-control bg-secondary-subtle" placeholder="Lokalizacja">               
-                </form>
+              <form class="d-flex row h-100">
+                  <input type="search" class="border border-0 form-control bg-secondary-subtle" placeholder="Lokalizacja">               
+              </form>
             </div>
 
             <div class="col-8 col-xl-2 border border-dark bg-secondary-subtle rounded-1 border-2 my-2">
-                <div class="dropdown row">
-                    <button class="btn dropdown-toggle text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Odległość
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
-                      <li><a class="dropdown-item" href="#">Another action</a></li>
-                      <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                  </div>    
+              <div class="dropdown row">
+                  <button class="btn dropdown-toggle text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Odległość
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+              </div>    
             </div>
           </section>                                   
           <section class="row szczegolowe-wysz">
             
               <div class="dropdown col-12 col-xl-3 border border-0 rounded-1 my-2 border-2 pierwszySzczegol">
-                  <button class="btn dropdown-toggle border border-0 fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Poziom stanowiska 
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item text-wrap" href="#">Something else here</a></li>
-                  </ul>
-                </div> 
-            
-
-            
-              <div class="dropdown col-12 col-xl-2 border border-0 rounded-1  border-2 my-2">
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Rodzaj umowy
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
+                <button class="btn dropdown-toggle border border-0 fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Poziom stanowiska 
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><a class="dropdown-item text-wrap" href="#">Something else here</a></li>
+                </ul>
               </div> 
-            
-
-            
+                        
               <div class="dropdown col-12 col-xl-2 border border-0 rounded-1  border-2 my-2">
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Wymiar pracy
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
+                <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Rodzaj umowy
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
               </div> 
-            
-
-            
+                        
+              <div class="dropdown col-12 col-xl-2 border border-0 rounded-1  border-2 my-2">
+                <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Wymiar pracy
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </div> 
+                        
               <div class="dropdown col-12 col-xl-2 border border-0 my-2">
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Tryb pracy
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
+                <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Tryb pracy
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
               </div> 
             
             <button type="button" class="btn col-12 col-xl-2 btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2">Szukaj</button>
@@ -228,37 +220,35 @@
               <div class="row mt-5">
               <p class="text-light">'.str_replace(".", ",", $zapytanie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $zapytanie['najw_wynagrodzenie']).' zł/mies</p>
               </div>
-
-
                 
               <div class="row">
                   <img src="'.$zapytanie['zdjecie'].'" alt="" class="logoOgloszenia col-6">
                   <p class="fs-5 text-light mt-4 ms-2 col-6">'.$zapytanie['nazwa_firmy'].'</p>
               </div>
               <div class="row">
-              <p class="text-light mt-3">'.$formattedDate.'</p>
+                <p class="text-light mt-3">'.$formattedDate.'</p>
               </div>                
             </a>
             </div>';
         }
         ?>         
         </section>
-       <div class="paginacja">
+        <div class="paginacja">
           <?php
           
           if ($aktualnaStrona > 1)
           {
-            echo '<a href="?strona='.($aktualnaStrona - 1).'">« Poprzednia</a> ';
+            echo '<a class="paginacjaNextPrev" href="?strona='.($aktualnaStrona - 1).'">« Poprzednia</a> ';
           }
          
           for ($i = 1; $i <= $strony; $i++)
           {
-            echo '<a href="?strona='.$i.'">'.$i.'</a> ';
+            echo '<a class="paginacjaNumery px-3" href="?strona='.$i.'">'.$i.'</a> ';
           }
           
           if ($aktualnaStrona < $strony)
           {
-            echo '<a href="?strona='.($aktualnaStrona + 1).'">Następna »</a>';
+            echo '<a class="paginacjaNextPrev" href="?strona='.($aktualnaStrona + 1).'">Następna »</a>';
           }
           ?>
         </div> 
@@ -277,10 +267,10 @@
           </div>          
         </div>         
       </footer>
-    
-  
-            
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+                      
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>          
   </body>
+  <?php  
+    $polaczenie->close();
+  ?>
 </html>

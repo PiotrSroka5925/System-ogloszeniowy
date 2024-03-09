@@ -34,7 +34,7 @@ else
     $login = $_POST['login']; 
     $haslo = $_POST['haslo']; 
 
-    $login ==  htmlentities($login, ENT_QUOTES, "UTF-8");
+    $login = htmlentities($login, ENT_QUOTES, "UTF-8");
          
     if($result = $polaczenie->query(sprintf("SELECT * FROM uzytkownicy WHERE nick='%s'", mysqli_real_escape_string($polaczenie,$login))))
     { 

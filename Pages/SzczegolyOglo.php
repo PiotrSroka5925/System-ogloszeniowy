@@ -10,6 +10,10 @@ $zapytanieOglo = "SELECT ogloszenia.*, ogloszenie_stanowisko.nazwa_stanowiska, o
 FROM ogloszenia JOIN ogloszenie_stanowisko USING(stanowisko_id) WHERE ogloszenie_id='{$_GET['id']}';";
 $wynikOglo = $polaczenie->query($zapytanieOglo);
 
+$zapytanieOgloFirma = "SELECT firmy.nazwa_firmy FROM ogloszenia JOIN firmy USING(firma_id) WHERE ogloszenie_id='{$_GET['id']}';";
+$wynikOgloFirma = $polaczenie->query($zapytanieOgloFirma);
+$wierszOgloFirma = $wynikOgloFirma ->  fetch_assoc();
+
 $zapytanieObo = "SELECT * FROM ogloszenie_obowiazki WHERE ogloszenie_id='{$_GET['id']}';";
 $wynikObo = $polaczenie->query($zapytanieObo);
 
@@ -119,7 +123,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                         <p class="text-light ms-3 fs-3">'.$rowOglo['nazwa_ogloszenia'].'</p>                    
                         <div class="d-flex">                     
                             <img src="'.$rowOglo['zdjecie'].'" class="logoSzczegolyOgloszenia ms-3 mt-1" alt="">
-                            <p class="text-light ms-3 mt-4 fs-4">Stokrotka</p>
+                            <p class="text-light ms-3 mt-4 fs-4">'.$wierszOgloFirma['nazwa_firmy'].'</p>
                         </div>
                     </div>            
                 </section>
@@ -169,12 +173,12 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                           <div class="row">
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/stanowisko.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light mt-3 ms-2">'.$rowOglo['nazwa_stanowiska'].' - '.$rowOglo['poziom_stanowiska'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['nazwa_stanowiska'].' - '.$rowOglo['poziom_stanowiska'].'</p>                        
                             </div>  
 
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/miejscePracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light mt-3 ms-2">'.$rowOglo['rodzaj_pracy'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['rodzaj_pracy'].'</p>                        
                             </div> 
                           </div>';
                         }
@@ -184,12 +188,12 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                             <div class="row">
                               <div class="col-12 col-xl-4 my-2 d-flex">
                                   <img src="../Images/Icons/stanowisko.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                  <p class="text-light mt-3 ms-2">'.$rowOglo['nazwa_stanowiska'].'</p>                        
+                                  <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['nazwa_stanowiska'].'</p>                        
                               </div>  
 
                               <div class="col-12 col-xl-4 my-2 d-flex">
                                   <img src="../Images/Icons/miejscePracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                  <p class="text-light mt-3 ms-2">'.$rowOglo['rodzaj_pracy'].'</p>                        
+                                  <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['rodzaj_pracy'].'</p>                        
                               </div> 
                             </div>   
                             ';
@@ -234,7 +238,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                         echo '
                         <div class="col-12 d-flex">
                             <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                            <p class="text-light ms-2">'.$rowWymag['obowiazekText'].'</p>
+                            <p class="text-light ms-2">'.$rowWymag['wymaganieText'].'</p>
                         </div> ';                      
                       }
                     }
@@ -254,7 +258,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                         echo '
                         <div class="col-12 d-flex">
                             <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                            <p class="text-light ms-2">'.$rowBenef['obowiazekText'].'</p>
+                            <p class="text-light ms-2">'.$rowBenef['benefitText'].'</p>
                         </div> ';
                       }
                     }
@@ -264,7 +268,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                 </section>
 
                 <section class="ogloszenie mt-2 rounded-3">
-                    <h3 class="text-light mx-3 my-4">Stokrotka</h3>    
+                    <h3 class="text-light mx-3 my-4">'.$wierszOgloFirma['nazwa_firmy'].'</h3>    
                     <p class="text-light m-4 text-wrap w-50">'.$rowOglo['informacje'].'</p>      
                 </section>';
               }
@@ -274,7 +278,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                    
     </section>
 
-    <footer class="mt-auto bg-dark">
+    <footer class="mt-auto UlubionyKolor">
         <div class="row m-3">
           <div class="col-12 col-xl-2 d-flex">
             <p class="text-light"><i class="bi bi-telephone-fill"></i> +48 676 543 353</p>
@@ -285,9 +289,10 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
           </div>          
         </div>         
     </footer>
-  
-            
-    
+                  
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>
+  <?php  
+    $polaczenie->close();
+  ?>
 </html>
