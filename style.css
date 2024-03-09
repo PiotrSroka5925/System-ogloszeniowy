@@ -223,3 +223,9 @@
     text-decoration-color: white;
     text-decoration-thickness: 2px;
 }
+
+.iframeSzczegoly
+{
+    width: 90%;
+    padding: 10px;
+}

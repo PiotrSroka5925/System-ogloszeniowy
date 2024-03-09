@@ -36,7 +36,7 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
                   echo '
                   <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
                     <li class="nav-item">
-                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
+                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
                     </li> 
                     <li class="nav-item lewyNav">
                       <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="#">Panel admina</a>

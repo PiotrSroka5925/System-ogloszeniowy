@@ -103,9 +103,8 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                ?>            
         </div>     
     </nav>
-
-
-    <section class="container my-2">
+    
+    <section class="container my-2">    
       <?php
             if($wynikOglo->num_rows > 0)
             {
@@ -123,6 +122,14 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                             <p class="text-light ms-3 mt-4 fs-4">Stokrotka</p>
                         </div>
                     </div>            
+                </section>
+
+                <section class="ogloszenie mt-2 rounded-3">
+                  <div class="p-3">                              
+                      <div class="d-flex">                     
+                      <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d330519.21887411654!2d18.57307145776759!3d51.04068453577747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spl!2spl!4v1710008321774!5m2!1spl!2spl" width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>      
+                      </div>
+                  </div>            
                 </section>
 
                 <section class="ogloszenie mt-2 rounded-3">
