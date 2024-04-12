@@ -53,7 +53,7 @@
                       <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
                     </li> 
                     <li class="nav-item lewyNav">
-                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="#">Panel admina</a>
+                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="PanelAdmina.php">Panel admina</a>
                     </li>
                     <li class="nav-item dropdown border-white border border-1 rounded-3"> 
                       <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -253,8 +253,6 @@
           ?>
         </div> 
     </section>
-
-  
     
       <footer class="mt-auto UlubionyKolor">
         <div class="row m-3">
