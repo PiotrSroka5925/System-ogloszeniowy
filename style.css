@@ -23,7 +23,6 @@
     width: 75%;
 }
 
-
 .pierwszy-div
 {
     margin-right: 30px;
@@ -73,6 +72,11 @@
     {
         font-size: 4vh;
     }    
+
+    .ContainerAdmin
+    {
+        overflow-y: auto; 
+    }
        
 }
 
@@ -88,7 +92,6 @@
         width: 90% !important;
         margin: 0 auto;
     }
-
 
     .RejestracjaMainDiv
     {
@@ -176,6 +179,7 @@
     height: 25px;
 }
 
+
 .Profilowe
 {
     border-radius: 99px;
@@ -198,7 +202,14 @@
 
 .LogowanieTlo
 {
-    background-image: url(Images/Other/forest.jpg);
+    background-image: url(Images/Other/skyscraper_wallpaper.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.GlownaTlo
+{
+    background-color: white;
 }
 
 .LogowanieMainDiv
@@ -253,7 +264,24 @@
 
 .paginacjaNumery
 {    
-    padding: 10px;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    line-height: 40px; 
+    text-align: center;
+    border-radius: 100%;
+    background-color: #222222;
+    color: white;
+    text-decoration: none;
+}
+
+.paginacjaNumeryCurrent
+{    
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    line-height: 40px;
+    text-align: center;
     border-radius: 100%;
     background-color: #222222;
     color: white;
@@ -269,7 +297,91 @@
     padding: 10px;
 }
 
+.pagiancjaUkrycie
+{
+    line-height: 40px;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .paginacjaNumery {
+        display: none; 
+    }
+
+    .paginacjaNextPrev
+    {
+        display: block; /* Zmienia sposób wyświetlania na blokowy, co powoduje, że elementy będą się układać pionowo */
+        width: auto; /* Resetuje szerokość do domyślnej */
+        margin: 5px auto;
+    }
+
+    .pagiancjaUkrycie
+    {
+        display: none;
+    }
+}
+
+@media (min-width: 1200px) {
+    .sticky-top {
+      position: static; 
+    }
+  }
+
 .PanelAdminaH1
 {
     font-size: 5vh;
+}
+
+.ContainerAdmin
+{
+    overflow-y: scroll;
+}
+
+.ContainerAdmin::-webkit-scrollbar {
+    display: none;
+}
+
+.AdminScroll
+{   
+    max-height: 800px;  
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 200vh;    
+}
+
+.DodajAdmin
+{
+    width: 180px;
+}
+
+.SzczegolyIconAdm
+{
+    align-items: center;
+    width: 50px;
+    height: 50px;
+}
+
+.przyciskiAdm
+{
+    margin-top: 0px;
+}
+
+.AdminOglo
+{
+    border: 0;
+}
+
+@media (max-width: 767px) { /* Przykład dla ekranów szerszych niż 768px */
+    .AdminOglo {
+        width: 100%;
+        border-color: white;
+        border-top: solid;
+        padding: 5px;
+        border-width: 1px;
+    }
+
+    .przyciskiAdm
+    {
+        margin-top: -20px;
+    }
 }

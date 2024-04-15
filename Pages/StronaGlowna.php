@@ -18,6 +18,7 @@
   
   $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
   JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
+  ORDER BY ogloszenia.data_utworzenia DESC 
   LIMIT $start, $ogloszeniaNaStrone";
   $wynik = $polaczenie->query($zapytanie);
 
@@ -33,8 +34,8 @@
     <link rel="icon" href="../Images/Other/logo.png" type="image/icon type">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"/>
   </head>
-  <body class="d-flex flex-column min-vh-100">    
-      <nav class="navbar navbar-expand-lg UlubionyKolor shadow-lg" data-bs-theme="dark">    
+  <body class="d-flex flex-column min-vh-100 GlownaTlo">    
+      <nav class="navbar navbar-expand-lg UlubionyKolor shadow-lg sticky-top" data-bs-theme="dark">    
         <a href="#" class="border border-dark"><img src="../Images/Other/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
         <a class="navbar-brand fs-3 fw-bold" href="#">MoonWork</a>
         <button class="navbar-toggler mx-3 border-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,14 +54,14 @@
                       <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Strona główna</a>
                     </li> 
                     <li class="nav-item lewyNav">
-                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="PanelAdmina.php">Panel admina</a>
+                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Panel admina</a>
                     </li>
                     <li class="nav-item dropdown border-white border border-1 rounded-3"> 
                       <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       '.$_SESSION['user'].'
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
-                        <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                        <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
@@ -79,7 +80,7 @@
                       '.$_SESSION['user'].'
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
-                        <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                        <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
@@ -235,23 +236,51 @@
         </section>
         <div class="paginacja">
           <?php
-          
+          $liczbaStronDoPokazania = 5;
+          $start = max(1, $aktualnaStrona - 2);
+          $koniec = min($strony, $aktualnaStrona + 2);
+
           if ($aktualnaStrona > 1)
           {
-            echo '<a class="paginacjaNextPrev" href="?strona='.($aktualnaStrona - 1).'">« Poprzednia</a> ';
+              echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
           }
-         
-          for ($i = 1; $i <= $strony; $i++)
+
+          if ($start > 1)
           {
-            echo '<a class="paginacjaNumery px-3" href="?strona='.$i.'">'.$i.'</a> ';
+              echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
+              if ($start > 2)
+              {
+                  echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+              }
           }
-          
+
+          for ($i = $start; $i <= $koniec; $i++)
+          {
+              if ($i == $aktualnaStrona)
+              {
+                  echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
+              }
+              else
+              {
+                  echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
+              }
+          }
+
+          if ($koniec < $strony)
+          {
+              if ($koniec < $strony - 1)
+              {
+                  echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+              }
+              echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
+          }
+
           if ($aktualnaStrona < $strony)
           {
-            echo '<a class="paginacjaNextPrev" href="?strona='.($aktualnaStrona + 1).'">Następna »</a>';
+              echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';
           }
           ?>
-        </div> 
+      </div>
     </section>
     
       <footer class="mt-auto UlubionyKolor">

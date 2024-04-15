@@ -38,7 +38,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"/>
   </head>
   <body class="d-flex flex-column min-vh-100">    
-      <nav class="navbar navbar-expand-lg UlubionyKolor shadow-lg" data-bs-theme="dark">    
+      <nav class="navbar navbar-expand-lg UlubionyKolor shadow-lg sticky-top" data-bs-theme="dark">    
         <a href="StronaGlowna.php" class="border border-dark"><img src="../Images/Other/logo.png" class="d-none d-sm-block border border-dark" alt="logo"></a>
         <a class="navbar-brand fs-3 fw-bold" href="StronaGlowna.php">MoonWork</a>
         <button class="navbar-toggler mx-3 border-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,14 +57,14 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                       <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
                     </li> 
                     <li class="nav-item lewyNav">
-                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="PanelAdmina.php">Panel admina</a>
+                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Panel admina</a>
                     </li>
                     <li class="nav-item dropdown border-white border border-1 rounded-3"> 
                       <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       '.$_SESSION['user'].'
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
-                        <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                        <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
@@ -84,7 +84,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                       '.$_SESSION['user'].'
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
-                        <a href="Profil.php" class="text-decoration-none text-light fs-5 col-12 marginChange">Profil</a>
+                        <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
