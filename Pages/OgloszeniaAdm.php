@@ -25,7 +25,15 @@ $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia
 JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
 ORDER BY ogloszenia.data_utworzenia DESC 
 LIMIT $start, $ogloszeniaNaStrone";
-$wynik = $polaczenie->query($zapytanie)
+$wynik = $polaczenie->query($zapytanie);
+
+
+if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
+{
+    $idukryte = $_POST['ukryty'];
+    $polaczenie->query("DELETE FROM ogloszenia WHERE ogloszenie_id='{$idukryte}';");   
+    header('Location: OgloszeniaAdm.php');
+} 
 
 ?>
 
@@ -113,28 +121,32 @@ $wynik = $polaczenie->query($zapytanie)
             </div>            
                  
             <?php
-while($zapytanie = $wynik->fetch_assoc()) {
-    $dataZBazy = $zapytanie['data_utworzenia']; 
-    $data = new DateTime($dataZBazy);
-    $formattedDate = $data->format('d.m.Y');
+                while($zapytanie = $wynik->fetch_assoc()) {
+                    $dataZBazy = $zapytanie['data_utworzenia']; 
+                    $data = new DateTime($dataZBazy);
+                    $formattedDate = $data->format('d.m.Y');
 
-    echo '
-    <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
-        <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
-            <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="my-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
-                <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                <h5 class="fs-5 col px-2 AdminOglo">'.$zapytanie['nazwa_firmy'].'</h5>                
-                <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                <h5 class="fs-5 col px-2 AdminOglo">'.$formattedDate.'</h5>
-            </a>
-            <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
-                <a href="Profil.php" class="btn UlubionyKolor text-light rounded-5 mb-2 mb-md-0"><img src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
-                <a href="Profil.php" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
-            </div>
-        </div>
-    </div>';
-}
-?>
+                    echo '
+                    <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
+                        <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
+                            <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
+                                <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
+                                <h5 class="fs-5 col px-2 AdminOglo">'.$zapytanie['nazwa_firmy'].'</h5>                
+                                <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
+                                <h5 class="fs-5 col px-2 AdminOglo">'.$formattedDate.'</h5>
+                            </a>
+                            <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
+                                <a href="Profil.php" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
+                                <form method="post">                 
+                                <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
+                                <input type="number" value="'.$zapytanie['ogloszenie_id'].'" name="ukryty" hidden>
+                            </form>            
+                            </div>
+                        </div>
+                    </div>';
+                }
+            ?>
+    
             <div class="paginacja">
                 <?php
                 $liczbaStronDoPokazania = 5;

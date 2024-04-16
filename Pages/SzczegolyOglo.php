@@ -6,8 +6,18 @@ require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
-$zapytanieOglo = "SELECT ogloszenia.*, ogloszenie_stanowisko.nazwa_stanowiska, ogloszenie_stanowisko.poziom_stanowiska 
-FROM ogloszenia JOIN ogloszenie_stanowisko USING(stanowisko_id) WHERE ogloszenie_id='{$_GET['id']}';";
+$zapytanieOglo = "SELECT ogloszenia.*, 
+ogloszenie_stanowiska.nazwa_stanowiska, 
+ogloszenie_stanowiska.poziom_stanowiska,
+ogloszenie_etaty.wymiar_etatu, 
+ogloszenie_rodzaje_pracy.rodzaj_pracy, 
+ogloszenie_umowy.rodzaj_umowy
+FROM ogloszenia 
+JOIN ogloszenie_stanowiska USING(stanowisko_id) 
+JOIN ogloszenie_etaty ON ogloszenia.etat_id = ogloszenie_etaty.etat_id 
+JOIN ogloszenie_rodzaje_pracy ON ogloszenia.rodzaj_pracy_id = ogloszenie_rodzaje_pracy.rodzaj_pracy_id 
+JOIN ogloszenie_umowy ON ogloszenia.umowa_id = ogloszenie_umowy.umowa_id 
+WHERE ogloszenie_id='{$_GET['id']}';";
 $wynikOglo = $polaczenie->query($zapytanieOglo);
 
 $zapytanieOgloFirma = "SELECT firmy.nazwa_firmy FROM ogloszenia JOIN firmy USING(firma_id) WHERE ogloszenie_id='{$_GET['id']}';";
@@ -22,6 +32,7 @@ $wynikBenef = $polaczenie->query($zapytanieBenef);
 
 $zapytanieWymag = "SELECT * FROM ogloszenie_wymagania WHERE ogloszenie_id='{$_GET['id']}';";
 $wynikWymag = $polaczenie->query($zapytanieWymag);
+
 
 
 ?>
@@ -163,7 +174,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
 
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/czasPracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['wymiar_zatrudnienia'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['wymiar_etatu'].'</p>                        
                             </div> 
                         </div>';    
                         
