@@ -117,7 +117,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
         <div class="col-12 col-xl-10 AdminScroll min-vh-100">
             <div class="d-flex flex-wrap">
                 <h1 class="text-center mx-auto">Zarządzanie ogłoszeniami</h1>
-                <a href="Profil.php" active class="mx-auto btn btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2 text-center DodajAdmin" role="button">Dodaj ogłoszenie</a>
+                <a href="DodajOglo.php" active class="mx-auto btn btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2 text-center DodajAdmin" role="button">Dodaj ogłoszenie</a>
             </div>            
                  
             <?php

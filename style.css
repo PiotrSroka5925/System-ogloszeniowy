@@ -349,6 +349,13 @@
     height: 200vh;    
 }
 
+.FormScroll
+{   
+    overflow-x: hidden;
+    overflow-y: auto;    
+    max-height: 200px; 
+}
+
 .DodajAdmin
 {
     width: 180px;
@@ -384,4 +391,10 @@
     {
         margin-top: -20px;
     }
+}
+
+
+.PrzyciskDodawania
+{
+    width: 200px;
 }

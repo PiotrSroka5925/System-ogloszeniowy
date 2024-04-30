@@ -212,24 +212,23 @@
       
             echo '
             <div class="col-12 col-xl-4 d-flex justify-content-center">
+              <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">
+                <div class="row maxPierwszywOglo">
+                  <h5 class="text-light mt-3 text-break">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
+                </div>
 
-            <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">
-              <div class="row maxPierwszywOglo">
-                <h5 class="text-light mt-3 text-break">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-              </div>
-
-              <div class="row mt-5">
-              <p class="text-light">'.str_replace(".", ",", $zapytanie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $zapytanie['najw_wynagrodzenie']).' zł/mies</p>
-              </div>
-                
-              <div class="row">
-                  <img src="'.$zapytanie['zdjecie'].'" alt="" class="logoOgloszenia col-6">
-                  <p class="fs-5 text-light mt-4 ms-2 col-6">'.$zapytanie['nazwa_firmy'].'</p>
-              </div>
-              <div class="row">
-                <p class="text-light mt-3">'.$formattedDate.'</p>
-              </div>                
-            </a>
+                <div class="row mt-5">
+                  <p class="text-light">'.str_replace(".", ",", $zapytanie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $zapytanie['najw_wynagrodzenie']).' zł/mies</p>
+                </div>
+                  
+                <div class="row">
+                    <img src="'.$zapytanie['zdjecie'].'" alt="" class="logoOgloszenia col-6">
+                    <p class="fs-5 text-light mt-4 ms-2 col-6">'.$zapytanie['nazwa_firmy'].'</p>
+                </div>
+                <div class="row">
+                  <p class="text-light mt-3">'.$formattedDate.'</p>
+                </div>                
+              </a>
             </div>';
         }
         ?>         

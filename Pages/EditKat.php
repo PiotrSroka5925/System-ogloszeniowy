@@ -1,72 +1,58 @@
 <?php
 
 session_start();
-if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany']!=true))
-{
+if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany']!=true)) {
     header('Location: Logowanie.php'); 
     exit();
 }
 
 require_once "../PHPScripts/connect.php";
-
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
 $komunikat = "";
-
-if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
-{
-    $idukryte = $_POST['ukryty'];
-    $polaczenie->query("DELETE FROM kategorie WHERE kategoria_id='{$idukryte}';");   
-    header('Location: KategorieAdm.php');
-} 
-
-$nazwa_kategorii="";
-
-if (isset($_POST['nazwa_kategorii'])) {
-    $nazwa_kategorii = $_POST['nazwa_kategorii'];  
+if (isset($_POST['ukrytyedit'])) {
+    $idukryte = $_POST['ukrytyedit'];
+} else {
+    if (isset($_GET['id'])) {
+        $idukryte = $_GET['id'];
+    } else {
+        $idukryte = "";
+    }
 }
 
-$result = $polaczenie->query("SELECT kategoria_id FROM kategorie WHERE nazwa_kategorii = '$nazwa_kategorii'");
+if ($idukryte != null) {
+    $resultKategoriaEdit = $polaczenie->execute_query("SELECT * FROM kategorie WHERE kategoria_id = ?", [$idukryte]);
+    $kategoria = $resultKategoriaEdit->fetch_assoc();
+} else {
+    $komunikat = "Brak identyfikatora kategorii.";
+}
 
-if(isset($_POST['Dodaj_kat']))
-{
+
+
+if (isset($_POST['Edytuj_kat']) && $idukryte!= null) { 
+    if(isset($_POST['nazwa_kategorii']))
+    $nazwa_kategorii = $_POST['nazwa_kategorii'];   
+    $result = $polaczenie->query("SELECT kategoria_id FROM kategorie WHERE nazwa_kategorii = '$nazwa_kategorii'");
+    
     if(strlen($nazwa_kategorii) == 0) 
     {
         $komunikat = "Podaj nazwę kategorii!";
     } 
-    elseif (strlen($nazwa_kategorii) > 90) 
+    elseif(strlen($nazwa_kategorii) > 90) 
     {
-        $komunikat = "Przekroczono limit znaków!";    
-    }    
+        $komunikat = "Przekroczono limit znaków!";
+    }
     elseif ($result->num_rows > 0) 
     {
         $komunikat = "Kategoria o tej nazwie już istnieje!";
-    }            
+    }  
     else
     {                       
-        $polaczenie->query("INSERT INTO kategorie (kategoria_id, nazwa_kategorii) VALUES (NULL, '$nazwa_kategorii')");
-        $nazwa_kategorii = "";
-        header('Location: KategorieAdm.php');
+        $polaczenie->query("UPDATE kategorie SET nazwa_kategorii = '{$nazwa_kategorii}' WHERE kategoria_id = '{$idukryte}'");
+        header("Location: EditKat.php?id={$idukryte}");
         exit();
     }
 }
-
-
-
-$KategorieNaStrone = 15;
-$aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
-$start = ($aktualnaStrona - 1) * $KategorieNaStrone;
-
-$zapytanie = "SELECT COUNT(*) AS ile FROM kategorie";
-$wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieKategorie = $r['ile'];
-$strony = ceil($wszystkieKategorie / $KategorieNaStrone);
-
-$zapytanie = "SELECT * FROM kategorie
-LIMIT $start, $KategorieNaStrone";
-$wynik = $polaczenie->query($zapytanie);
-
 ?>
 
 <!Doctype html>
@@ -94,6 +80,9 @@ $wynik = $polaczenie->query($zapytanie);
                 </li>                        
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
+                </li>
+                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Firmy</a>
@@ -127,6 +116,9 @@ $wynik = $polaczenie->query($zapytanie);
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
+                </li>
+                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Firmy</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
@@ -148,93 +140,28 @@ $wynik = $polaczenie->query($zapytanie);
         </div>
         <div class="col-12 col-xl-10 AdminScroll min-vh-100">
             <div class="d-flex flex-wrap">
-                <h1 class="text-center mx-auto">Zarządzanie kategoriami</h1>            
+                <h1 class="text-center mx-auto">Edycja kategorii</h1>            
             </div>            
 
             <form  method="post" class="mt-4 p-3 w-100 UlubionyKolor rounded-5 text-light">
-                <div class="p-3 d-flex flex-wrap">
-                    <label for="nazwa_kategorii" class="mb-2">Nazwa kategorii:</label>
-                    <input type="text" class="w-100 LogowanieInput border-0 rounded-3" name="nazwa_kategorii" required>
-                </div>                
-                                                
-                <input type="submit" name="Dodaj_kat" class="PrzyciskDodawania m-3 btn UlubionyKolor btn-secondary text-light rounded-5 sm-ms-5 my-2"  value="Dodaj kategorię">
+                <?php
+                        echo '
+                        <input type="hidden" name="ukrytyedit" value="'.$idukryte.'">
+                        <div class="p-3 d-flex flex-wrap">
+                            <label for="nazwa_kategorii" class="mb-2">Nazwa kategorii:</label>
+                            <input type="text" class="w-100 LogowanieInput border-0 rounded-3" value="'.$kategoria['nazwa_kategorii'].'" name="nazwa_kategorii" required>
+                        </div>                
+                                                        
+                        <input type="submit" name="Edytuj_kat" class="PrzyciskDodawania m-3 btn UlubionyKolor btn-secondary text-light rounded-5 sm-ms-5 my-2"  value="Edytuj kategorię">';
+                
+                ?>
 
                 <?php
                     echo '<p class="text-danger">' . $komunikat . '</p>';
                 ?>
             </form> 
                  
-            <?php
-                while($zapytanie = $wynik->fetch_assoc()) {                    
-                    echo '
-                    <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
-                        <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
-                            <div class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
-                                <h5 class="fs-5 col px-2">Id: '.$zapytanie['kategoria_id'].'</h5>                                                            
-                                <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_kategorii'].'</h5>                                                
-                            </div>
-                            <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
-                                <form action="EditKat.php" method="post">
-                                    <a href="EditKat.php"><input type="image" src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3 me-2 mt-1 dlt-btn" alt="Edytuj" name="edycja" value="edycja"></a>
-                                    <input type="number" value="'.$zapytanie['kategoria_id'].'" name="ukrytyedit" hidden >                                       
-                                </form>                                     
-                                <form method="post">                 
-                                    <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
-                                    <input type="number" value="'.$zapytanie['kategoria_id'].'" name="ukryty" hidden>
-                                </form>            
-                            </div>
-                        </div>
-                    </div>';
-                }
-            ?>
     
-            <div class="paginacja">
-                <?php
-                $liczbaStronDoPokazania = 5;
-                $start = max(1, $aktualnaStrona - 2);
-                $koniec = min($strony, $aktualnaStrona + 2);
-
-                if ($aktualnaStrona > 1)
-                {
-                    echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
-                }
-
-                if ($start > 1)
-                {
-                    echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
-                    if ($start > 2)
-                    {
-                        echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
-                    }
-                }
-
-                for ($i = $start; $i <= $koniec; $i++)
-                {
-                    if ($i == $aktualnaStrona)
-                    {
-                        echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
-                    } 
-                    else
-                    {
-                        echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
-                    }
-                }
-
-                if ($koniec < $strony) 
-                {
-                    if ($koniec < $strony - 1)
-                    {
-                        echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
-                    }
-                    echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
-                }
-
-                if ($aktualnaStrona < $strony)
-                {
-                    echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';
-                }
-                ?>
-            </div>       
         </div>
     </div>
                                  

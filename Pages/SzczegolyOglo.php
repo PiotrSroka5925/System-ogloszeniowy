@@ -20,7 +20,7 @@ JOIN ogloszenie_umowy ON ogloszenia.umowa_id = ogloszenie_umowy.umowa_id
 WHERE ogloszenie_id='{$_GET['id']}';";
 $wynikOglo = $polaczenie->query($zapytanieOglo);
 
-$zapytanieOgloFirma = "SELECT firmy.nazwa_firmy FROM ogloszenia JOIN firmy USING(firma_id) WHERE ogloszenie_id='{$_GET['id']}';";
+$zapytanieOgloFirma = "SELECT firmy.nazwa_firmy, firmy.informacje FROM ogloszenia JOIN firmy USING(firma_id) WHERE ogloszenie_id='{$_GET['id']}';";
 $wynikOgloFirma = $polaczenie->query($zapytanieOgloFirma);
 $wierszOgloFirma = $wynikOgloFirma ->  fetch_assoc();
 
@@ -280,7 +280,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
 
                 <section class="ogloszenie mt-2 rounded-3">
                     <h3 class="text-light mx-3 my-4">'.$wierszOgloFirma['nazwa_firmy'].'</h3>    
-                    <p class="text-light m-4 text-wrap w-50">'.$rowOglo['informacje'].'</p>      
+                    <p class="text-light m-4 text-wrap w-50">'.$wierszOgloFirma['informacje'].'</p>      
                 </section>';
               }
             }
