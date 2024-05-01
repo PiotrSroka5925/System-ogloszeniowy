@@ -398,3 +398,8 @@
 {
     width: 200px;
 }
+
+.UsunDolnyScroll
+{
+    overflow-x: hidden;
+}
