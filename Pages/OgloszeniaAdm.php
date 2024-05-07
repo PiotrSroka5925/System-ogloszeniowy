@@ -117,7 +117,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
         <div class="col-12 col-xl-10 AdminScroll min-vh-100">
             <div class="d-flex flex-wrap">
                 <h1 class="text-center mx-auto">Zarządzanie ogłoszeniami</h1>
-                <a href="DodajOglo.php" active class="mx-auto btn btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2 text-center DodajAdmin" role="button">Dodaj ogłoszenie</a>
+                <a href="DodajEditOglo.php" active class="mx-auto btn btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2 text-center DodajAdmin" role="button">Dodaj ogłoszenie</a>
             </div>            
                  
             <?php
@@ -136,7 +136,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                                 <h5 class="fs-5 col px-2 AdminOglo">'.$formattedDate.'</h5>
                             </a>
                             <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
-                                <a href="Profil.php" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
+                                <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
                                 <form method="post">                 
                                 <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
                                 <input type="number" value="'.$zapytanie['ogloszenie_id'].'" name="ukryty" hidden>
