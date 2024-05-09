@@ -385,7 +385,12 @@
     border: 0;
 }
 
-@media (max-width: 767px) { /* Przykład dla ekranów szerszych niż 768px */
+.AdminUzytkownik
+{
+    border: 0;
+}
+
+@media (max-width: 767px) {
     .AdminOglo {
         width: 100%;
         border-color: white;
@@ -400,6 +405,17 @@
     }
 }
 
+@media (max-width: 1400px)
+{
+    .AdminUzytkownik
+    {
+        width: 100%;
+        border-color: white;
+        border-top: solid;
+        padding: 5px;
+        border-width: 1px;
+    }
+}
 
 .PrzyciskDodawania
 {

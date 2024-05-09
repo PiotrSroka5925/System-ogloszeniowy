@@ -11,29 +11,49 @@ require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
-$ogloszeniaNaStrone = 15;
+$uzytkownicyNaStrone = 15;
 $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
-$start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
+$start = ($aktualnaStrona - 1) * $uzytkownicyNaStrone;
 
-$zapytanie = "SELECT COUNT(*) AS ile FROM ogloszenia";
+$zapytanie = "SELECT COUNT(*) AS ile FROM uzytkownicy";
 $wynik = $polaczenie->query($zapytanie);
 $r = $wynik->fetch_assoc();
-$wszystkieOgloszenia = $r['ile'];
-$strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
+$wszyscyUzytkownicy = $r['ile'];
+$strony = ceil($wszyscyUzytkownicy / $uzytkownicyNaStrone);
 
-$zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
-JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
-ORDER BY ogloszenia.data_utworzenia DESC 
-LIMIT $start, $ogloszeniaNaStrone";
+$zapytanie = "SELECT * FROM uzytkownicy LIMIT $start, $uzytkownicyNaStrone";
 $wynik = $polaczenie->query($zapytanie);
 
-
-if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
+if (isset($_POST['ukrytyeditKat'])) 
 {
-    $idukryte = $_POST['ukryty'];
-    $polaczenie->query("DELETE FROM ogloszenia WHERE ogloszenie_id='{$idukryte}';");   
-    header('Location: OgloszeniaAdm.php');
-} 
+    $idukryte = $_POST['ukrytyeditKat'];
+} else 
+{
+    if (isset($_GET['id'])) 
+    {
+        $idukryte = $_GET['id'];
+    } 
+    else 
+    {
+        $idukryte = "";
+    }
+}
+
+
+if (isset($_POST['OdbierzAdm']) && isset($_POST['ukrytyEditUzytkownika'])) {
+    $idUzytkownika = $_POST['ukrytyEditUzytkownika'];
+    $polaczenie->query("UPDATE uzytkownicy SET administrator = 0 WHERE uzytkownik_id = '$idUzytkownika'");
+    header('Location: UzytkownicyAdm.php');
+    exit();
+}
+
+if (isset($_POST['DajAdm']) && isset($_POST['ukrytyEditUzytkownika'])) {
+    $idUzytkownika = $_POST['ukrytyEditUzytkownika'];
+    $polaczenie->query("UPDATE uzytkownicy SET administrator = 1 WHERE uzytkownik_id = '$idUzytkownika'");
+    header('Location: UzytkownicyAdm.php');
+    exit();
+    
+}
 
 ?>
 
@@ -116,37 +136,43 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
         </div>
         <div class="col-12 col-xl-10 AdminScroll min-vh-100">
             <div class="d-flex flex-wrap">
-                <h1 class="text-center mx-auto">Zarządzanie ogłoszeniami</h1>
-                <a href="DodajEditOglo.php" active class="mx-auto btn btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2 text-center DodajAdmin" role="button">Dodaj ogłoszenie</a>
+                <h1 class="text-center mx-auto">Zarządzanie użytkownikami</h1>               
             </div>            
                  
             <?php
-                while($zapytanie = $wynik->fetch_assoc()) {
-                    $dataWaznosci = new DateTime($zapytanie['data_waznosci']);
-                    $dataUtworzenia = new DateTime($zapytanie['data_utworzenia']);                           
-                    $dzis = new DateTime();
-
-                                         
+                while ($zapytanie = $wynik->fetch_assoc()) {
                     echo '
-                    <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
-                        <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
-                        <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
-                                <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                                <h5 class="fs-5 col px-2 AdminOglo">'.$zapytanie['nazwa_firmy'].'</h5>                
-                                <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                                <h5 class="fs-5 col px-2 AdminOglo">'.$dataUtworzenia->format('d.m.Y').'</h5>
-                            </a>
-                            <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
-                                <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
-                                <form method="post">                 
-                                <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
-                                <input type="number" value="'.$zapytanie['ogloszenie_id'].'" name="ukryty" hidden>
-                            </form>            
+                    <div class="d-flex flex-column flex-xxl-row align-items-center text-center UlubionyKolor my-2 rounded-5">
+                        <div class="d-flex flex-column flex-xxl-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
+                            <div class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-xxl-row justify-content-between w-100 rounded-5 align-items-center">
+                                <h5 class="fs-5 px-2"> id: ' . $zapytanie['uzytkownik_id'] . '</h5>
+                                <h5 class="fs-5 px-2 AdminUzytkownik">' . $zapytanie['nick'] . '</h5>
+                                <h5 class="fs-5 col-xxl-5 px-2 AdminUzytkownik text-wrap">' . $zapytanie['email'] . '</h5>
+                                <h5 class="fs-5 px-2 AdminUzytkownik">';
+                                    if ($zapytanie['administrator'] == 1)
+                                    {
+                                        echo "administrator";
+                                    }
+                                    else 
+                                    {
+                                        echo "użytkownik";
+                                    }
+                                echo
+                             '</h5>
+                            </div>
+                            <div class="d-flex flex-column flex-xxl-row justify-content-center mx-3">
+                            <form method="post" class="d-flex flex-column flex-xxl-row align-items-center w-100">
+                            <input type="submit" name="OdbierzAdm" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-5 my-2" value="Odbierz admina">
+                            <input type="number" value="'. $zapytanie['uzytkownik_id'] .'" name="ukrytyEditUzytkownika" hidden>
+                        </form>
+                        <form method="post" class="d-flex flex-column flex-xxl-row align-items-center w-100">
+                            <input type="submit" name="DajAdm" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-5 mx-3 my-2" value="Daj admina">
+                            <input type="number" value="'.$zapytanie['uzytkownik_id'].'" name="ukrytyEditUzytkownika" hidden>
+                        </form>
                             </div>
                         </div>
                     </div>';
-                }                    
-                
+                }
             ?>
     
             <div class="paginacja">
