@@ -11,29 +11,92 @@ require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
-$ogloszeniaNaStrone = 15;
-$aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
-$start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
-
-$zapytanie = "SELECT COUNT(*) AS ile FROM ogloszenia";
-$wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieOgloszenia = $r['ile'];
-$strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
-
-$zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
-JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
-ORDER BY ogloszenia.data_utworzenia DESC 
-LIMIT $start, $ogloszeniaNaStrone";
-$wynik = $polaczenie->query($zapytanie);
-
+$komunikat = "";
 
 if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
 {
     $idukryte = $_POST['ukryty'];
-    $polaczenie->query("DELETE FROM ogloszenia WHERE ogloszenie_id='{$idukryte}';");   
-    header('Location: OgloszeniaAdm.php');
+    $polaczenie->query("DELETE FROM firmy WHERE firma_id='{$idukryte}';");   
+    header('Location: FirmyAdm.php');
 } 
+
+$nazwa_firmy="";
+$informacje_firmy= "";
+
+if (isset($_POST['nazwa_firmy'])) {
+    $nazwa_firmy = $_POST['nazwa_firmy'];  
+    $_SESSION['nazwa_firmyZarzadzanie'] = $_POST['nazwa_firmy'];
+}
+
+if (isset($_POST['informacje_firmy'])) {
+    $informacje_firmy = $_POST['informacje_firmy'];  
+    $_SESSION['informacje_firmyZarzadzanie'] = $_POST['informacje_firmy'];
+}
+
+
+$wszystkoOk= true;
+
+$result = $polaczenie->query("SELECT firma_id FROM firmy WHERE nazwa_firmy = '$nazwa_firmy'");
+
+if(isset($_POST['Dodaj_firm']))
+{
+    if(strlen($nazwa_firmy) == 0) 
+    {
+        $wszystkoOk = false;
+        $_SESSION['komunikatNazw'] = "Podaj nazwę firmy!";
+    } 
+    else
+    {
+        if(strlen($informacje_firmy) == 0) 
+        {
+            $wszystkoOk = false;
+            $_SESSION['komunikatNazw'] = "Podaj informację o firmie!";
+        }        
+
+        if (strlen($nazwa_firmy) > 90) 
+        {
+            $wszystkoOk = false;
+            $_SESSION['komunikatNazw'] = "Przekroczono limit znaków!";   
+        }
+
+        if($result->num_rows > 0) 
+        {
+            $wszystkoOk = false;
+            $_SESSION['komunikatNazw'] = "Firma o tej nazwie już istnieje!";
+        }
+
+        if(strlen($informacje_firmy) > 255)
+        {
+            $wszystkoOk = false;
+            $_SESSION['komunikatInfo'] = "Przekroczono limit znaków!";
+        }
+    }                  
+    
+    if($wszystkoOk == true)
+    {                       
+        unset($_SESSION['nazwa_firmy'], $_SESSION['informacje_firmy']);
+
+        $polaczenie->query("INSERT INTO firmy (firma_id, nazwa_firmy, informacje) VALUES (NULL, '$nazwa_firmy', '$informacje_firmy')");
+        $nazwa_firmy = "";
+        header('Location: FirmyAdm.php');
+        exit();
+    }
+}
+
+
+$FirmyNaStrone = 15;
+$aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
+$start = ($aktualnaStrona - 1) * $FirmyNaStrone;
+
+$zapytanie = "SELECT COUNT(*) AS ile FROM firmy";
+$wynik = $polaczenie->query($zapytanie);
+$r = $wynik->fetch_assoc();
+$wszystkieFirmy = $r['ile'];
+$strony = ceil($wszystkieFirmy / $FirmyNaStrone);
+
+$zapytanie = "SELECT * FROM firmy
+LIMIT $start, $FirmyNaStrone";
+$wynik = $polaczenie->query($zapytanie);
 
 ?>
 
@@ -61,11 +124,11 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                 <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
                 </li>                        
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
-                </li>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
+                </li>              
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Użytkownicy</a>
                 </li>
@@ -92,11 +155,11 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
                 </li>                    
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
-                </li>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
+                </li>                
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Użytkownicy</a>
                 </li>
@@ -116,59 +179,61 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
         </div>
         <div class="col-12 col-xl-10 AdminScroll min-vh-100">
             <div class="d-flex flex-wrap">
-                <h1 class="text-center mx-auto">Zarządzanie ogłoszeniami</h1>
-                <a href="DodajEditOglo.php" active class="mx-auto btn btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2 text-center DodajAdmin" role="button">Dodaj ogłoszenie</a>
+                <h1 class="text-center mx-auto">Zarządzanie firmami</h1>            
             </div>            
+
+            <form  method="post" class="mt-4 p-3 w-100 UlubionyKolor rounded-5 text-light">
+                <div class="p-3">
+                    <label for="nazwa_firmy" class="mb-2">Nazwa firmy:</label>
+                    <input type="text" class="w-100 LogowanieInput border-0 rounded-3 mb-2" name="nazwa_firmy" value="<?php
+                    if(isset( $_SESSION['nazwa_firmZarzadzaniey']))
+                     {
+                         echo  $_SESSION['nazwa_firmyZarzadzanie'];
+                         unset($_SESSION['nazwa_firmyZarzadzanie']);
+                     }?>" id="nazwa_firmy" required>
+                    <?php
+                        if(isset($_SESSION['komunikatNazw']))
+                        echo '<p class="text-danger">' . $_SESSION['komunikatNazw'] . '</p>';
+                        unset($_SESSION['komunikatNazw']);
+                    ?>
+                    <label for="informcje_firmy" class="mb-2">Informacje o firmie:</label>
+                    <textarea name="informacje_firmy" class="w-100 LogowanieInput border-0 rounded-3" cols="30" required rows="5" id="informcje_firmy"><?php
+                    if(isset( $_SESSION['informacje_firmyZarzadzanie']))
+                     {
+                         echo  $_SESSION['informacje_firmyZarzadzanie'];
+                         unset($_SESSION['informacje_firmyZarzadzanie']);
+                     }?></textarea>          
+                    <?php
+                        if(isset($_SESSION['komunikatInfo']))
+                        echo '<p class="text-danger">' . $_SESSION['komunikatInfo'] . '</p>';
+                        unset($_SESSION['komunikatInfo'])
+                    ?>          
+                </div>                
+                                                
+                <input type="submit" name="Dodaj_firm" class="PrzyciskDodawania m-3 btn UlubionyKolor btn-secondary text-light rounded-5 sm-ms-5 my-2"  value="Dodaj Firmę">                
+            </form> 
                  
             <?php
-                while($zapytanie = $wynik->fetch_assoc()) {
-                    $dataWaznosci = new DateTime($zapytanie['data_waznosci']);
-                    $dataUtworzenia = new DateTime($zapytanie['data_utworzenia']);                           
-                    $dzis = new DateTime();
-
-                     
-                    if ($dataWaznosci < $dzis) {
-                        echo '
-                        <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center bg-secondary my-2 rounded-5">
-                            <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center bg-secondary text-light rounded-5 text-decoration-none">
-                                <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
-                                    <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$zapytanie['nazwa_firmy'].'</h5>                
-                                    <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$dataUtworzenia->format('d.m.Y').'</h5>
-                                </a>
-                                <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
-                                    <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn bg-secondary text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
-                                    <form method="post">                 
-                                        <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
-                                        <input type="number" value="'.$zapytanie['ogloszenie_id'].'" name="ukryty" hidden>
-                                    </form>            
-                                </div>
+                while($zapytanie = $wynik->fetch_assoc()) {                    
+                    echo '
+                    <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
+                        <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
+                            <div class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
+                                <h5 class="fs-5 col px-2">Id: '.$zapytanie['firma_id'].'</h5>                                                            
+                                <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_firmy'].'</h5>                                                
                             </div>
-                        </div>';
-                        
-                    }
-                    else
-                    {
-                        echo '
-                        <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
-                            <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
-                            <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
-                                    <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$zapytanie['nazwa_firmy'].'</h5>                
-                                    <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$dataUtworzenia->format('d.m.Y').'</h5>
-                                </a>
-                                <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
-                                    <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
-                                    <form method="post">                 
+                            <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
+                                <form action="EditFirm.php" method="post">
+                                    <a href="EditFirm.php"><input type="image" src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3 me-2 mt-1 dlt-btn" alt="Edytuj" name="edycja" value="edycja"></a>
+                                    <input type="number" value="'.$zapytanie['firma_id'].'" name="ukrytyeditFirm" hidden >                                       
+                                </form>                                     
+                                <form method="post">                 
                                     <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
-                                    <input type="number" value="'.$zapytanie['ogloszenie_id'].'" name="ukryty" hidden>
+                                    <input type="number" value="'.$zapytanie['firma_id'].'" name="ukryty" hidden>
                                 </form>            
-                                </div>
                             </div>
-                        </div>';
-                    }                    
+                        </div>
+                    </div>';
                 }
             ?>
     
@@ -179,12 +244,12 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                     $liczbaStronDoPokazania = 5;
                     $start = max(1, $aktualnaStrona - 2);
                     $koniec = min($strony, $aktualnaStrona + 2);
-    
+
                     if ($aktualnaStrona > 1)
                     {
                         echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
                     }
-    
+
                     if ($start > 1)
                     {
                         echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
@@ -193,7 +258,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                             echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
                         }
                     }
-    
+
                     for ($i = $start; $i <= $koniec; $i++)
                     {
                         if ($i == $aktualnaStrona)
@@ -205,7 +270,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                             echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
                         }
                     }
-    
+
                     if ($koniec < $strony) 
                     {
                         if ($koniec < $strony - 1)
@@ -214,7 +279,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                         }
                         echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
                     }
-    
+
                     if ($aktualnaStrona < $strony)
                     {
                         echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';

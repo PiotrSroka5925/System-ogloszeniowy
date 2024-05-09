@@ -96,7 +96,7 @@ $wynik = $polaczenie->query($zapytanie);
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Firmy</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Użytkownicy</a>
@@ -127,7 +127,7 @@ $wynik = $polaczenie->query($zapytanie);
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Firmy</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Użytkownicy</a>
@@ -176,7 +176,7 @@ $wynik = $polaczenie->query($zapytanie);
                             <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
                                 <form action="EditKat.php" method="post">
                                     <a href="EditKat.php"><input type="image" src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3 me-2 mt-1 dlt-btn" alt="Edytuj" name="edycja" value="edycja"></a>
-                                    <input type="number" value="'.$zapytanie['kategoria_id'].'" name="ukrytyedit" hidden >                                       
+                                    <input type="number" value="'.$zapytanie['kategoria_id'].'" name="ukrytyeditKat" hidden >                                       
                                 </form>                                     
                                 <form method="post">                 
                                     <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
@@ -190,57 +190,57 @@ $wynik = $polaczenie->query($zapytanie);
     
             <div class="paginacja">
                 <?php
-                $liczbaStronDoPokazania = 5;
-                $start = max(1, $aktualnaStrona - 2);
-                $koniec = min($strony, $aktualnaStrona + 2);
+                if($strony > 1 )
+                {   
+                    $liczbaStronDoPokazania = 5;
+                    $start = max(1, $aktualnaStrona - 2);
+                    $koniec = min($strony, $aktualnaStrona + 2);
 
-                if ($aktualnaStrona > 1)
-                {
-                    echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
-                }
-
-                if ($start > 1)
-                {
-                    echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
-                    if ($start > 2)
+                    if ($aktualnaStrona > 1)
                     {
-                        echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+                        echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
                     }
-                }
 
-                for ($i = $start; $i <= $koniec; $i++)
-                {
-                    if ($i == $aktualnaStrona)
+                    if ($start > 1)
                     {
-                        echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
-                    } 
-                    else
-                    {
-                        echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
+                        echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
+                        if ($start > 2)
+                        {
+                            echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+                        }
                     }
-                }
 
-                if ($koniec < $strony) 
-                {
-                    if ($koniec < $strony - 1)
+                    for ($i = $start; $i <= $koniec; $i++)
                     {
-                        echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+                        if ($i == $aktualnaStrona)
+                        {
+                            echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
+                        } 
+                        else
+                        {
+                            echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
+                        }
                     }
-                    echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
-                }
 
-                if ($aktualnaStrona < $strony)
-                {
-                    echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';
-                }
+                    if ($koniec < $strony) 
+                    {
+                        if ($koniec < $strony - 1)
+                        {
+                            echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+                        }
+                        echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
+                    }
+
+                    if ($aktualnaStrona < $strony)
+                    {
+                        echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';
+                    }
+                }                
                 ?>
             </div>       
         </div>
     </div>
                                  
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>
   <?php  

@@ -125,7 +125,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
             {
               while ($rowOglo = $wynikOglo->fetch_assoc())
               {     
-                $dataZBazy = $rowOglo['data_utworzenia']; 
+                $dataZBazy = $rowOglo['data_waznosci']; 
                 $data = new DateTime($dataZBazy);
                 $formattedDate = $data->format('d.m.Y');
                 echo '

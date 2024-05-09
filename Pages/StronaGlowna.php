@@ -109,7 +109,7 @@
             <p class="fs-4">od najlepszych pracodawców</p>               
         </section>
     
-        <section class="row d-flex justify-content-center bg-secondary rounded-3 shadow-lg wyszukiwanie">
+        <section class="row d-flex justify-content-center bg-secondary rounded-4 shadow-lg wyszukiwanie">
           <section class="row d-flex justify-content-center">
             <div class="col-8 col-xl-3 border border-dark rounded-1 border-2 my-2">
               <form class="d-flex row h-100">
@@ -204,80 +204,87 @@
         </section>
 
         <section class="row">                      
-        <?php
-           while($zapytanie = $wynik->fetch_assoc()) {
-            $dataZBazy = $zapytanie['data_utworzenia']; 
-            $data = new DateTime($dataZBazy);
-            $formattedDate = $data->format('d.m.Y');
-      
-            echo '
-            <div class="col-12 col-xl-4 d-flex justify-content-center">
-              <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">
-                <div class="row maxPierwszywOglo">
-                  <h5 class="text-light mt-3 text-break">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                </div>
+          <?php
+            while($ogloszenie = $wynik->fetch_assoc()) {
+              $dataWaznosci = new DateTime($ogloszenie['data_waznosci']); 
+              $dataUtworzenia = new DateTime($ogloszenie['data_utworzenia']);            
+              $dzis = new DateTime();
+                         
+              $linkStart = '<a href="SzczegolyOglo.php?id='.$ogloszenie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">';
+              $linkEnd = '</a>';              
+              if ($dataWaznosci > $dzis) {                                     
+                echo '
+                <div class="col-12 col-xl-4 d-flex justify-content-center">
+                    <a href="SzczegolyOglo.php?id='.$ogloszenie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">
+                      <div class="row maxPierwszywOglo">
+                        <h5 class="text-light mt-3 text-break">'.$ogloszenie['nazwa_ogloszenia'].'</h5>                
+                      </div>
 
-                <div class="row mt-5">
-                  <p class="text-light">'.str_replace(".", ",", $zapytanie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $zapytanie['najw_wynagrodzenie']).' zł/mies</p>
-                </div>
-                  
-                <div class="row">
-                    <img src="'.$zapytanie['zdjecie'].'" alt="" class="logoOgloszenia col-6">
-                    <p class="fs-5 text-light mt-4 ms-2 col-6">'.$zapytanie['nazwa_firmy'].'</p>
-                </div>
-                <div class="row">
-                  <p class="text-light mt-3">'.$formattedDate.'</p>
-                </div>                
-              </a>
-            </div>';
-        }
-        ?>         
+                      <div class="row mt-5">
+                        <p class="text-light">'.str_replace(".", ",", $ogloszenie['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $ogloszenie['najw_wynagrodzenie']).' zł/mies</p>
+                      </div>
+                        
+                      <div class="row">
+                          <img src="'.$ogloszenie['zdjecie'].'" alt="" class="logoOgloszenia col-6">
+                          <p class="fs-5 text-light mt-4 ms-2 col-6">'.$ogloszenie['nazwa_firmy'].'</p>
+                      </div>
+                      <div class="row">
+                        <p class="text-light mt-3">'. $dataUtworzenia->format('d.m.Y').'</p>
+                      </div>                
+                    </a>
+                </div>';
+              }
+            }
+          ?>         
         </section>
         <div class="paginacja">
           <?php
-          $liczbaStronDoPokazania = 5;
-          $start = max(1, $aktualnaStrona - 2);
-          $koniec = min($strony, $aktualnaStrona + 2);
-
-          if ($aktualnaStrona > 1)
+          if($strony > 1 )
           {
-              echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
-          }
+            $liczbaStronDoPokazania = 5;
+            $start = max(1, $aktualnaStrona - 2);
+            $koniec = min($strony, $aktualnaStrona + 2);
 
-          if ($start > 1)
-          {
-              echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
-              if ($start > 2)
-              {
-                  echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
-              }
-          }
+            if ($aktualnaStrona > 1)
+            {
+                echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
+            }
 
-          for ($i = $start; $i <= $koniec; $i++)
-          {
-              if ($i == $aktualnaStrona)
-              {
-                  echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
-              }
-              else
-              {
-                  echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
-              }
-          }
+            if ($start > 1)
+            {
+                echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
+                if ($start > 2)
+                {
+                    echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+                }
+            }
 
-          if ($koniec < $strony)
-          {
-              if ($koniec < $strony - 1)
-              {
-                  echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
-              }
-              echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
-          }
+            for ($i = $start; $i <= $koniec; $i++)
+            {
+                if ($i == $aktualnaStrona)
+                {
+                    echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
+                }
+                else
+                {
+                    echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
+                }
+            }
 
-          if ($aktualnaStrona < $strony)
-          {
-              echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';
-          }
+            if ($koniec < $strony)
+            {
+                if ($koniec < $strony - 1)
+                {
+                    echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
+                }
+                echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
+            }
+
+            if ($aktualnaStrona < $strony)
+            {
+                echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';
+            }
+          }          
           ?>
       </div>
     </section>

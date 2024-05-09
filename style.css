@@ -226,10 +226,17 @@
     width: 400px;
 }
 
-.LogowanieInput
+.LogowanieInput:not(select,textarea)
 {
     height: 35px;
     text-indent: 10px;
+    color: black;
+}
+
+.LogowanieInput
+{
+    background-color: #C9CAC9 !important;
+    color: black;
 }
 
 .error
@@ -402,4 +409,17 @@
 .UsunDolnyScroll
 {
     overflow-x: hidden;
+}
+
+
+.FormOgloInput
+{
+    width: calc(100% - 50px);
+}
+
+.FormOgloDiv
+{
+    display: flex;      
+    align-items: center;
+
 }

@@ -29,11 +29,11 @@
         </div>              
         <div class="UlubionyKolor rounded-4 LogowanieMainDiv">
             <h2 class="text-center mb-5 text-light">Logowanie</h2>
-            <form action="../PHPScripts/zaloguj.php" class="d-flex flex-column text-light px-1" method="post">   
+            <form action="../PHPScripts/zaloguj.php" class="d-flex flex-column px-1" method="post">   
             <p class="mb-0 ms-1">Login</p>                  
-            <input type="text" class="bg-secondary LogowanieInput border-0 rounded-3 text-light" name="login"><br>       
+            <input type="text" class="bg-secondary LogowanieInput border-0 rounded-3" name="login"><br>       
             <p class="mb-0 ms-1">Hasło</p>        
-            <input type="password" class="bg-secondary LogowanieInput border-0 rounded-3 text-light" placeholder="haslo" name="haslo"><br> 
+            <input type="password" class="bg-secondary LogowanieInput border-0 rounded-3" placeholder="haslo" name="haslo"><br> 
             <button type="button" class="btn UlubionyKolor btn-secondary text-light rounded-5 sm-ms-5 my-2"><input type="submit" class="w-100 bg-transparent border-0 text-light" value="Zaloguj się"></button>               
             <a class="text-center mt-3 text-light text-decoration-none" href="Rejestracja.php" >Zarejestruj się</a>
             </form>   

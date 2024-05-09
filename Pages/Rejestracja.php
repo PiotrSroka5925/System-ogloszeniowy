@@ -166,10 +166,10 @@
     </div>
     <div  class="UlubionyKolor rounded-4 RejestracjaMainDiv">
         <h2 class="text-center mb-4 text-light">Rejestracja</h2>
-        <form method="post" class="d-flex flex-column text-light px-1">
+        <form method="post" class="d-flex flex-column px-1">
         
             <p class="mb-0 ms-1">Login</p>
-            <input type="text" class="bg-secondary LogowanieInput border-0 rounded-3 text-light" value="<?php
+            <input type="text" class="bg-secondary LogowanieInput border-0 rounded-3" value="<?php
 			if (isset($_SESSION['fr_nick']))
 			{
 				echo $_SESSION['fr_nick'];
@@ -192,7 +192,7 @@
                     echo $_SESSION['fr_email'];
                     unset($_SESSION['fr_email']);
                 }
-		    ?>" class="bg-secondary LogowanieInput border-0 rounded-3 text-light" name="email" placeholder="e-mail" />    
+		    ?>" class="bg-secondary LogowanieInput border-0 rounded-3" name="email" placeholder="e-mail" />    
             
             <?php
                 if (isset($_SESSION['e_email']))
@@ -203,7 +203,7 @@
 		    ?>
             
             <p class="mb-0 ms-1 mt-3">Hasło</p>
-            <input type="password" placeholder="haslo" class="bg-secondary LogowanieInput border-0 rounded-3 text-light" value="<?php
+            <input type="password" placeholder="haslo" class="bg-secondary LogowanieInput border-0 rounded-3" value="<?php
                 if (isset($_SESSION['fr_haslo1']))
                 {
                     echo $_SESSION['fr_haslo1'];
@@ -220,7 +220,7 @@
             ?>
             
             <p class="mb-0 ms-1 mt-3">Powtórz hasło</p>       
-            <input type="password" placeholder="powtórz hasło" class="bg-secondary LogowanieInput border-0 rounded-3 text-light" value="<?php
+            <input type="password" placeholder="powtórz hasło" class="bg-secondary LogowanieInput border-0 rounded-3" value="<?php
                 if (isset($_SESSION['fr_haslo2']))
                 {
                     echo $_SESSION['fr_haslo2'];
@@ -253,8 +253,7 @@
 
             </div>            
                                                 
-          <!--<div class="g-recaptcha mt-3"  data-sitekey="6Lfr3ekkAAAAADzxweqZoBErhOHJzVxqcDnEXecm"></div> -->
-                                                          
+                                                              
             <button type="button" class="btn UlubionyKolor btn-secondary text-light rounded-5 mt-3 sm-ms-5 my-2"><input type="submit" class="w-100 bg-transparent border-0 text-light" value="Zarejestruj się" /></button>
             <a href="Logowanie.php" class="text-decoration-none text-light text-center mt-2">Zaloguj się</a>
             

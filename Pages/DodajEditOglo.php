@@ -72,6 +72,14 @@ if(isset($_POST['nazwa_ogloszenia'], $_POST['lokalizacja'], $_POST['kategoria'],
 $_POST['etat'], $_POST['rodzajPracy'], $_POST['umowa'], $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'],
 $_POST['godziny_pracy'], $_POST['data_waznosci']))
 {
+    $dataWaznosci = $_POST['data_waznosci'];
+    $dzisiejszaData = date('Y-m-d');
+
+    if ($dataWaznosci <= $dzisiejszaData) {
+        $ok = false;
+        $_SESSION['dataBlad'] = "Data ważności nie może być wcześniejsza lub równa dzisiejszej dacie!";
+    }    
+
     if($_POST['najmn_wynagrodzenie']>$_POST['najw_wynagrodzenie'])
     {
         $ok = false;
@@ -191,6 +199,10 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
     }    
         
 }
+else
+{
+    unset($_SESSION['obowiazki'], $_SESSION['wymagania'], $_SESSION['benefity']);
+}
 
 
    
@@ -227,7 +239,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Firmy</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Użytkownicy</a>
@@ -261,7 +273,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Firmy</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="#">Użytkownicy</a>
@@ -304,7 +316,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
             <form class="m-1 p-2 UlubionyKolor rounded-5 text-light col-12" method="post" enctype="multipart/form-data">
                 <div class="m-1">
                     <label for="nazwa_ogloszenia">Nazwa ogłoszenia:</label>
-                    <input type="text" id="nazwa_ogloszenia" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" name="nazwa_ogloszenia" required value="<?php                    
+                    <input type="text" id="nazwa_ogloszenia" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="nazwa_ogloszenia" name="nazwa_ogloszenia" required value="<?php                    
                     if(isset($_SESSION['nazwa_ogloszenia']))
                     {
                         echo $_SESSION['nazwa_ogloszenia'];
@@ -318,7 +330,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                 
                 <div class="m-1">
                     <label for="lokalizacja">Lokalizacja:</label>
-                    <input type="text" id="lokalizacja" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" name="lokalizacja" required value="<?php                    
+                    <input type="text" id="lokalizacja" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="lokalizacja" name="lokalizacja" required value="<?php                    
                     if(isset($_SESSION['lokalizacja']))
                     {
                         echo $_SESSION['lokalizacja'];
@@ -350,7 +362,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                             }  
                         }
                     ?>
-                    <select name="kategoria[]" class="col-12 col-md-10 w-100 bg-secondary border-0 rounded-3 text-light" multiple size="3" required>                    
+                    <select name="kategoria[]" class="col-12 col-md-10 w-100 LogowanieInput border-0 rounded-3" multiple size="3" id="kategoria" required>                    
                         <?php while($rowKategoria = $wynikKategorie->fetch_assoc())
                         {
                             echo '<option value="'.$rowKategoria["kategoria_id"].'" '.(in_array($rowKategoria["kategoria_id"],$id_kategoriiTab)?" selected":"").'>'.$rowKategoria["nazwa_kategorii"].'</option>';
@@ -363,7 +375,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                 
                 <div class="m-1">
                     <label for="firma">Firma:</label>
-                    <select name="firma" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" required>
+                    <select name="firma" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="firma" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
                         <?php while($rowFirma = $wynikFirmy->fetch_assoc())
                         {
@@ -377,7 +389,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                                     
                 <div class="m-1">
                     <label for="stanowisko" >Stanowisko:</label>
-                    <select name="stanowisko" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" required>
+                    <select name="stanowisko" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="stanowisko" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
                         <?php while($rowStanowisko = $wynikStanowiska->fetch_assoc())
                         {
@@ -391,7 +403,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
 
                 <div class="m-1">
                     <label for="etat">Wymiar zatrudnienia:</label>
-                    <select name="etat" required class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light">
+                    <select name="etat" required class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="etat">
                         <option value="" disabled selected hidden>Wybierz...</option>
                         <?php while($rowEtat = $wynikEtaty->fetch_assoc())
                         {
@@ -405,7 +417,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
 
                 <div class="m-1">
                     <label for="rodzajPracy">Rodzaj pracy:</label>
-                    <select name="rodzajPracy" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" required>
+                    <select name="rodzajPracy" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="rodzajPracy" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
                         <?php while($rowRodzajPracy = $wynikRodzajePracy->fetch_assoc())
                         {
@@ -419,7 +431,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
 
                 <div class="m-1">
                     <label for="umowa">Rodzaj umowy:</label>
-                    <select name="umowa" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" required>
+                    <select name="umowa" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="umowa" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
                         <?php
                             while($rowUmowa = $wynikUmowy->fetch_assoc())
@@ -435,7 +447,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
 
                 <div class="m-1">
                     <label for="najmn_wynagrodzenie">Najniższe wynagrodzenie:</label>
-                    <input type="number" min="0" step="0.01" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" name="najmn_wynagrodzenie" value="<?php                    
+                    <input type="number" min="0" step="0.01" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="najmn_wynagrodzenie" name="najmn_wynagrodzenie" value="<?php                    
                     if(isset($_SESSION['najmn_wynagrodzenie']))
                     {
                         echo  $_SESSION['najmn_wynagrodzenie'];
@@ -449,7 +461,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                 
                 <div class="m-1">
                     <label for="najw_wynagrodzenie">Najwyższe wynagrodzenie:</label>
-                    <input type="number" min="0" step="0.01" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" name="najw_wynagrodzenie" value="<?php                    
+                    <input type="number" min="0" step="0.01" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="najw_wynagrodzenie" name="najw_wynagrodzenie" value="<?php                    
                     if(isset( $_SESSION['najw_wynagrodzenie']))
                     {
                         echo  $_SESSION['najw_wynagrodzenie'];
@@ -470,7 +482,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                 
                 <div class="m-1">
                     <label for="dni_pracy">Dni pracy:</label>                
-                    <textarea name="dni_pracy" class="w-100 bg-secondary border-0 rounded-3 text-light"  id="dni_pracy" cols="30" required rows="5"><?php
+                    <textarea name="dni_pracy" class="w-100 bg-light border-0 rounded-3 LogowanieInput"  id="dni_pracy" cols="30" required rows="5"><?php
                     if($edytowanie)
                     {
                         echo $ogloEdit['dni_pracy'];                    
@@ -484,7 +496,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                 
                 <div class="m-1">
                     <label for="godziny_pracy">Godziny pracy:</label>
-                    <input type="number" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" value="<?php                    
+                    <input type="number" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="godziny_pracy" max="24" min="1" value="<?php                    
                     if(isset( $_SESSION['godziny_pracy']))
                     {
                         echo  $_SESSION['godziny_pracy'];
@@ -498,7 +510,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                 
                 <div class="m-1">
                     <label for="data_waznosci">Data ważności:</label>
-                    <input type="date" class="col-12 col-md-10 w-100 bg-secondary LogowanieInput border-0 rounded-3 text-light" value="<?php                    
+                    <input type="date" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="data_waznosci" value="<?php                    
                     if(isset( $_SESSION['data_waznosci']))
                     {
                         echo  $_SESSION['data_waznosci'];
@@ -508,23 +520,32 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                     {
                         echo $ogloEdit['data_waznosci'];                    
                     }?>" name="data_waznosci" required>
+                    <p class="text-danger"><?php
+                    if(isset($_SESSION['dataBlad']))
+                    {
+                        echo $_SESSION['dataBlad'];
+                        unset($_SESSION['dataBlad']);
+                    }                
+                    ?></p>
                 </div>                
                 
                 <div class="m-1 w-100">
-                    <label class="col-md-2 mt-2">Zdjęcie:
-                        <div class="PrzyciskDodawania btn UlubionyKolor btn-secondary text-light rounded-5 w-100 sm-ms-5 my-2">Wybierz zdjęcie</div>
-                        <p id="ZdjecieText"></p>
+                    <label class="mt-2 position-relative">Zdjęcie:
+                        <div class="btn UlubionyKolor btn-light text-light rounded-5 w-100 my-2">Wybierz zdjęcie</div>
+                        <p id="ZdjecieText" class="text-break"></p>
                         <input type="file" required id="zdjecie" class="col-12 col-md-10" style="opacity: 0; position: absolute; z-index:-1" name="zdjecie">
                     </label>                   
                 </div>                
         
 
-                <div class="FormScroll p-2">                    
+                <div class="p-2">                    
                     <div class="d-flex">
-                        <h2 class="text-light mt-2 border-white border border-start-0 border-end-0 border-top-0 border-1 w-100">Obowiązki  </h2>
-                        <input type="image" src="../Images/Icons/dodawanie.png" id="DodajObowiazek" class="SzczegolyIconAdm rounded-3 ms-4 p-1 dlt-btn" alt="DodajObowiazek">
+                        <h2 class="text-light mt-2 border-white border border-start-0 border-end-0 border-top-0 border-1 w-100">Obowiązki</h2>
+                        <button type="button" id="DodajObowiazek" class="SzczegolyIconAdm bg-transparent border-0 rounded-3 ms-4 p-1 dlt-btn">
+                            <img src="../Images/Icons/dodawanie.png" class="SzczegolyIconAdm" alt="">
+                        </button>
                     </div>                                        
-                    <div id="PoleObowiazki" class="row">
+                    <div id="PoleObowiazki" class="FormScroll">
 
                     </div>  
                     <p class="text-danger"><?php
@@ -536,12 +557,14 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                     ?></p>
                 </div>
                 
-                <div class="FormScroll p-2">
+                <div class="p-2">
                     <div class="d-flex">
                         <h2 class="text-light mt-2 border-white border border-start-0 border-end-0 border-top-0 border-1 w-100">Wymagania</h2>
-                        <input type="image" src="../Images/Icons/dodawanie.png" id="DodajWymaganie" class="SzczegolyIconAdm rounded-3 ms-4 p-1 dlt-btn" alt="DodajWymaganie">
+                        <button type="button" id="DodajWymaganie" class="SzczegolyIconAdm rounded-3 bg-transparent border-0 ms-4 p-1 dlt-btn">
+                        <img src="../Images/Icons/dodawanie.png" class="SzczegolyIconAdm" alt="">
+                        </button>
                     </div>                
-                    <div id="PoleWymagania">
+                    <div id="PoleWymagania" class="FormScroll">
 
                     </div>
                     <p class="text-danger"><?php
@@ -553,12 +576,14 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
                     ?></p>
                 </div>
             
-                <div class="FormScroll p-2">
+                <div class="p-2">
                     <div class="d-flex">
                         <h2 class="text-light mt-2 border-white border border-start-0 border-end-0 border-top-0 border-1 w-100">Benefity</h2>
-                        <input type="image" src="../Images/Icons/dodawanie.png" id="DodajBenefit" class="SzczegolyIconAdm rounded-3 ms-4 p-1 dlt-btn" alt="DodajBenefit">
+                        <button type="button" id="DodajBenefit" class="SzczegolyIconAdm bg-transparent border-0 rounded-3 ms-4 p-1 dlt-btn">
+                        <img src="../Images/Icons/dodawanie.png" class="SzczegolyIconAdm" alt="">
+                        </button>
                     </div>
-                    <div id="PoleBenefity">
+                    <div id="PoleBenefity" class="FormScroll">
 
                     </div>
                     <p class="text-danger"><?php
@@ -584,23 +609,23 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
         </div>
     </div>
                                  
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <!--Skrypt dla dynamicznego dodawania i usuwania obowiązków, wymagań, benefitów -->
     <script>       
         function DodajObowiazek(obowiazek)
         {        
             const imgUsun = document.createElement('img');
             imgUsun.src = '../Images/Icons/usun.png';
             imgUsun.alt = 'Usuń';
-            imgUsun.classList.add('SzczegolyIconAdm', 'rounded-3', 'me-2', 'dlt-btn');
+            imgUsun.classList.add('SzczegolyIconAdm', 'rounded-3', 'dlt-btn');
             const WyswietlanyObowiazek = document.createElement("div");
+            WyswietlanyObowiazek.classList.add('FormOgloDiv');
             const ObowiazekInput = document.createElement("input");
             ObowiazekInput.type="text";
             ObowiazekInput.name="obowiazki[]";
             ObowiazekInput.value= obowiazek;
-            ObowiazekInput.classList.add('bg-secondary', 'LogowanieInput', 'border-0', 'rounded-3', 'text-light');
+            ObowiazekInput.classList.add('bg-light', 'LogowanieInput', 'm-0', 'border-0', 'rounded-3', 'FormOgloInput');
             ObowiazekInput.setAttribute("required", "");
             const ObowiazekPrzycisk = document.createElement("button");
             ObowiazekPrzycisk.type = "button";        
@@ -624,13 +649,14 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
             const imgUsun = document.createElement('img');
             imgUsun.src = '../Images/Icons/usun.png';
             imgUsun.alt = 'Usuń';
-            imgUsun.classList.add('SzczegolyIconAdm', 'rounded-3', 'me-2', 'dlt-btn');     
+            imgUsun.classList.add('SzczegolyIconAdm', 'rounded-3', 'dlt-btn');     
             const WyswietlaneWymaganie = document.createElement("div");
             const WymaganieInput = document.createElement("input");
+            WyswietlaneWymaganie.classList.add('FormOgloDiv');
             WymaganieInput.type="text";
             WymaganieInput.name="wymagania[]";
             WymaganieInput.value= wymaganie;
-            WymaganieInput.classList.add('bg-secondary', 'LogowanieInput', 'border-0', 'rounded-3', 'text-light');
+            WymaganieInput.classList.add('bg-light', 'LogowanieInput', 'm-0', 'border-0', 'rounded-3', 'FormOgloInput');
             WymaganieInput.setAttribute("required", "");
             const WymaganiePrzycisk = document.createElement("button");
             WymaganiePrzycisk.type = "button";            
@@ -653,10 +679,11 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
         {            
             const WyswietlanyBenefit = document.createElement("div");
             const BenefitInput = document.createElement("input");
+            WyswietlanyBenefit.classList.add('FormOgloDiv');
             BenefitInput.type="text";
             BenefitInput.name="benefity[]";
             BenefitInput.value= benefit;
-            BenefitInput.classList.add('bg-secondary', 'LogowanieInput', 'border-0', 'rounded-3', 'text-light');
+            BenefitInput.classList.add('bg-light', 'LogowanieInput' , 'm-0', 'border-0', 'rounded-3', 'FormOgloInput');
             BenefitInput.setAttribute("required", "");
             const BenefitPrzycisk = document.createElement("button");
             BenefitPrzycisk.type = "button";
@@ -671,7 +698,7 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
             const imgUsun = document.createElement('img');
             imgUsun.src = '../Images/Icons/usun.png';
             imgUsun.alt = 'Usuń';
-            imgUsun.classList.add('SzczegolyIconAdm', 'rounded-3', 'me-2', 'dlt-btn');
+            imgUsun.classList.add('SzczegolyIconAdm', 'rounded-3', 'dlt-btn');
             BenefitPrzycisk.appendChild(imgUsun);                    
             BenefitPrzycisk.style.border = "none";
         }
@@ -694,6 +721,9 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
 
     </script>
     <?php
+        //Geneoranie obowiązków, wymagań, benefitów z baxy danych
+
+
         if($edytowanie)
         {
             $result = $polaczenie->execute_query("SELECT obowiazekText FROM ogloszenie_obowiazki WHERE ogloszenie_id = ?", [$_GET['id']]);
