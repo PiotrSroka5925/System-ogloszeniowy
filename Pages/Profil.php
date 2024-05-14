@@ -11,6 +11,16 @@ require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
+$nazwaUzytkownika = $_SESSION['user'];
+
+$wynikUzytkownik = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
+$wierszUzytkownk = $wynikUzytkownik->fetch_assoc();
+
+$idUzytkownika =$wierszUzytkownk['uzytkownik_id'];
+
+$wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id = $idUzytkownika");
+
+$wynik =
 
 ?>
 <!Doctype html>
@@ -50,7 +60,9 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
                       <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       '.$_SESSION['user'].'
                       </a>
-                      <form class="dropdown-menu UlubionyKolor p-4 row">                        
+                      <form class="dropdown-menu UlubionyKolor p-4 row">      
+                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>     
+                        <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>             
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>

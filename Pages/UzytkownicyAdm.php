@@ -24,35 +24,22 @@ $strony = ceil($wszyscyUzytkownicy / $uzytkownicyNaStrone);
 $zapytanie = "SELECT * FROM uzytkownicy LIMIT $start, $uzytkownicyNaStrone";
 $wynik = $polaczenie->query($zapytanie);
 
-if (isset($_POST['ukrytyeditKat'])) 
-{
-    $idukryte = $_POST['ukrytyeditKat'];
-} else 
-{
-    if (isset($_GET['id'])) 
-    {
-        $idukryte = $_GET['id'];
-    } 
-    else 
-    {
-        $idukryte = "";
-    }
-}
+
+$nazwaUzytkownika = $_SESSION['user'];
 
 
-if (isset($_POST['OdbierzAdm']) && isset($_POST['ukrytyEditUzytkownika'])) {
-    $idUzytkownika = $_POST['ukrytyEditUzytkownika'];
+if (isset($_POST['OdbierzAdm']) && isset($_POST['ukrytyEditUzytkownikaAdm'])) {
+    $idUzytkownika = $_POST['ukrytyEditUzytkownikaAdm'];
     $polaczenie->query("UPDATE uzytkownicy SET administrator = 0 WHERE uzytkownik_id = '$idUzytkownika'");
     header('Location: UzytkownicyAdm.php');
     exit();
 }
 
-if (isset($_POST['DajAdm']) && isset($_POST['ukrytyEditUzytkownika'])) {
-    $idUzytkownika = $_POST['ukrytyEditUzytkownika'];
+if (isset($_POST['DajAdm']) && isset($_POST['ukrytyEditUzytkownikaUzy'])) {
+    $idUzytkownika = $_POST['ukrytyEditUzytkownikaUzy'];
     $polaczenie->query("UPDATE uzytkownicy SET administrator = 1 WHERE uzytkownik_id = '$idUzytkownika'");
     header('Location: UzytkownicyAdm.php');
-    exit();
-    
+    exit();    
 }
 
 ?>
@@ -160,16 +147,26 @@ if (isset($_POST['DajAdm']) && isset($_POST['ukrytyEditUzytkownika'])) {
                                 echo
                              '</h5>
                             </div>
-                            <div class="d-flex flex-column flex-xxl-row justify-content-center mx-3">
-                            <form method="post" class="d-flex flex-column flex-xxl-row align-items-center w-100">
-                            <input type="submit" name="OdbierzAdm" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-5 my-2" value="Odbierz admina">
-                            <input type="number" value="'. $zapytanie['uzytkownik_id'] .'" name="ukrytyEditUzytkownika" hidden>
-                        </form>
-                        <form method="post" class="d-flex flex-column flex-xxl-row align-items-center w-100">
-                            <input type="submit" name="DajAdm" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-5 mx-3 my-2" value="Daj admina">
-                            <input type="number" value="'.$zapytanie['uzytkownik_id'].'" name="ukrytyEditUzytkownika" hidden>
-                        </form>
-                            </div>
+                            <div class="d-flex flex-column flex-xxl-row justify-content-center mx-3">';
+                            $wynikUzytkownicy = $polaczenie->execute_query("SELECT COUNT(uzytkownik_id) as liczba FROM uzytkownicy WHERE uzytkownik_id = ? AND administrator = ?",[$zapytanie['uzytkownik_id'], 1]);
+                            $uzytkownicyLiczba = $wynikUzytkownicy->fetch_assoc();
+                            if($uzytkownicyLiczba['liczba'] > 0) 
+                            {
+                                echo '
+                                <form method="post" class="d-flex flex-column flex-xxl-row align-items-center w-100">
+                                    <input type="submit" name="OdbierzAdm" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-5 my-2" value="Odbierz admina">
+                                    <input type="number" value="'. $zapytanie['uzytkownik_id'] .'" name="ukrytyEditUzytkownikaAdm" hidden>                           
+                                </form>';
+                            }
+                            else
+                            {
+                            echo ' 
+                                <form method="post" class="d-flex flex-column flex-xxl-row align-items-center w-100">
+                                    <input type="submit" name="DajAdm" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-5 mx-3 my-2" value="Daj admina">
+                                    <input type="number" value="'.$zapytanie['uzytkownik_id'].'" name="ukrytyEditUzytkownikaUzy" hidden>                           
+                                </form>';
+                            }                       
+                            echo '</div>
                         </div>
                     </div>';
                 }

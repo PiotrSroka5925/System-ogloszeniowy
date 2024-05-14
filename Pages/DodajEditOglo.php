@@ -70,7 +70,7 @@ $ok = true;
 
 if(isset($_POST['nazwa_ogloszenia'], $_POST['lokalizacja'], $_POST['kategoria'], $_POST['firma'], $_POST['stanowisko'],
 $_POST['etat'], $_POST['rodzajPracy'], $_POST['umowa'], $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'],
-$_POST['godziny_pracy'], $_POST['data_waznosci']))
+$_POST['godziny_pracy'], $_POST['data_waznosci'], $_POST['poziom_stanowiska']))
 {
     $dataWaznosci = $_POST['data_waznosci'];
     $dzisiejszaData = date('Y-m-d');
@@ -79,37 +79,43 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
         $ok = false;
         $_SESSION['dataBlad'] = "Data ważności nie może być wcześniejsza lub równa dzisiejszej dacie!";
     }    
-
-    if($_POST['najmn_wynagrodzenie']>$_POST['najw_wynagrodzenie'])
+    elseif($_POST['najmn_wynagrodzenie']>$_POST['najw_wynagrodzenie'])
     {
         $ok = false;
         $_SESSION['wynagrodzenieBlad'] = "Najmniejsze wynagrodzenie jest większe niż największe!";
     }
-    if(!isset($_POST['obowiazki']))    
+    elseif(strlen($_POST['dni_pracy'])>70)
     {
         $ok = false;
-        $_SESSION['obowiazekBlad'] = "Dodaj obowiązek!";
+        $_SESSION['dniPracyBlad'] = "Przekroczono limit 70 znaków!";
     }
     else
-    $_SESSION['obowiazki'] = $_POST['obowiazki'];
-
-    if(!isset($_POST['wymagania']))    
     {
-        $ok = false;
-        $_SESSION['wymaganieBlad'] = "Dodaj wymaganie!";
+        if(!isset($_POST['obowiazki']))    
+        {
+            $ok = false;
+            $_SESSION['obowiazekBlad'] = "Dodaj obowiązek!";
+        }
+        else
+        $_SESSION['obowiazki'] = $_POST['obowiazki'];
+
+        if(!isset($_POST['wymagania']))    
+        {
+            $ok = false;
+            $_SESSION['wymaganieBlad'] = "Dodaj wymaganie!";
+        }
+        else
+        $_SESSION['wymagania'] = $_POST['wymagania'];
+
+        if(!isset($_POST['benefity']))    
+        {
+            $ok = false;
+            $_SESSION['benefitBlad'] = "Dodaj benefit!";
+        }
+        else
+        $_SESSION['benefity'] = $_POST['benefity'];
     }
-    else
-    $_SESSION['wymagania'] = $_POST['wymagania'];
-
-    if(!isset($_POST['benefity']))    
-    {
-        $ok = false;
-        $_SESSION['benefitBlad'] = "Dodaj benefit!";
-    }
-    else
-    $_SESSION['benefity'] = $_POST['benefity'];
-
-
+    
     $_SESSION['kategoria'] = $_POST['kategoria'];
     $_SESSION['nazwa_ogloszenia'] = $_POST['nazwa_ogloszenia'];
     $_SESSION['lokalizacja'] = $_POST['lokalizacja'];
@@ -123,22 +129,23 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
     $_SESSION['dni_pracy'] = $_POST['dni_pracy'];
     $_SESSION['godziny_pracy'] = $_POST['godziny_pracy'];
     $_SESSION['data_waznosci'] = $_POST['data_waznosci'];
+    $_SESSION['poziom_stanowiska'] = $_POST['poziom_stanowiska'];
 
 
     if($ok)
     {        
         unset($_SESSION['nazwa_ogloszenia'], $_SESSION['lokalizacja'], $_SESSION['kategoria'], $_SESSION['firma'], $_SESSION['stanowisko'],$_SESSION['umowa'],$_SESSION['etat'],$_SESSION['rodzajPracy'],
-        $_SESSION['najmn_wynagrodzenie'], $_SESSION['najw_wynagrodzenie'], $_SESSION['dni_pracy'], $_SESSION['godziny_pracy'], $_SESSION['data_waznosci'], $_SESSION['obowiazki'], $_SESSION['wymagania'], $_SESSION['benefity']);
+        $_SESSION['najmn_wynagrodzenie'], $_SESSION['najw_wynagrodzenie'], $_SESSION['dni_pracy'], $_SESSION['godziny_pracy'], $_SESSION['data_waznosci'], $_SESSION['obowiazki'], $_SESSION['wymagania'], $_SESSION['benefity'], $_SESSION['poziom_stanowiska']);
 
        if($edytowanie) 
        {
             $result= $polaczenie->execute_query("UPDATE ogloszenia SET nazwa_ogloszenia = ?, lokalizacja = ?, firma_id = ?, stanowisko_id = ?,umowa_id = ?, 
-            etat_id = ? ,rodzaj_pracy_id = ? ,najmn_wynagrodzenie = ?, najw_wynagrodzenie = ?, dni_pracy = ?, godziny_pracy = ?, data_waznosci = ?, zdjecie = ? WHERE ogloszenie_id = ?"
+            etat_id = ? ,rodzaj_pracy_id = ? ,najmn_wynagrodzenie = ?, najw_wynagrodzenie = ?, dni_pracy = ?, godziny_pracy = ?, data_waznosci = ?, zdjecie = ?, poziom_stanowiska = ? WHERE ogloszenie_id = ?"
             , [$_POST['nazwa_ogloszenia'], $_POST['lokalizacja'], $_POST['firma'], $_POST['stanowisko'], $_POST['umowa'], $_POST['etat'], $_POST['rodzajPracy'], 
-            $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'], $_POST['godziny_pracy'], $_POST['data_waznosci'], $zdjecieDodanie, $_GET['id']]);
+            $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'], $_POST['godziny_pracy'], $_POST['data_waznosci'], $zdjecieDodanie, $_POST['poziom_stanowiska'], $_GET['id']]);
 
             $zlapId = $_GET['id'];
-
+            
             $result = $polaczenie->execute_query("DELETE FROM ogloszenie_kategorie WHERE ogloszenie_id= ?", [$_GET['id']]);
 
             foreach($_POST['kategoria'] as $k)
@@ -166,13 +173,14 @@ $_POST['godziny_pracy'], $_POST['data_waznosci']))
             {        
                 $result = $polaczenie->execute_query("INSERT INTO ogloszenie_benefity VALUES(NULL, ?, ?)", [$benef, $zlapId]);
             }
+            
        }
        else
        {
             $result= $polaczenie->execute_query("INSERT INTO ogloszenia (ogloszenie_id, nazwa_ogloszenia, lokalizacja, firma_id, stanowisko_id ,umowa_id, 
-            etat_id ,rodzaj_pracy_id ,najmn_wynagrodzenie, najw_wynagrodzenie, dni_pracy, godziny_pracy, data_waznosci, data_utworzenia, zdjecie) VALUES (NULL, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?)"
+            etat_id ,rodzaj_pracy_id ,najmn_wynagrodzenie, najw_wynagrodzenie, dni_pracy, godziny_pracy, data_waznosci, data_utworzenia, zdjecie, poziom_stanowiska) VALUES (NULL, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?)"
             , [$_POST['nazwa_ogloszenia'], $_POST['lokalizacja'], $_POST['firma'], $_POST['stanowisko'], $_POST['umowa'], $_POST['etat'], $_POST['rodzajPracy'], 
-            $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'], $_POST['godziny_pracy'], $_POST['data_waznosci'], date("Y-m-d"), $zdjecieDodanie]);
+            $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'], $_POST['godziny_pracy'], $_POST['data_waznosci'], date("Y-m-d"), $zdjecieDodanie, $_POST['poziom_stanowiska']]);
 
             $zlapId = $polaczenie->insert_id;
                 
@@ -203,10 +211,7 @@ else
 {
     unset($_SESSION['obowiazki'], $_SESSION['wymagania'], $_SESSION['benefity']);
 }
-
-
    
-
 ?>
 
 <!Doctype html>
@@ -341,6 +346,20 @@ else
                         echo $ogloEdit['lokalizacja'];                    
                     }?>">
                 </div>              
+
+                <div class="m-1">
+                    <label for="poziom_stanowiska">Poziom stanowiska:</label>
+                    <input type="text" id="poziom_stanowiska" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="poziom_stanowiska" name="poziom_stanowiska" required value="<?php                    
+                    if(isset($_SESSION['poziom_stanowiska']))
+                    {
+                        echo $_SESSION['poziom_stanowiska'];
+                        unset($_SESSION['poziom_stanowiska']);
+                    }
+                    elseif($edytowanie)
+                    {
+                        echo $ogloEdit['poziom_stanowiska'];                    
+                    }?>">
+                </div>   
                 
                 <div class="m-1">
                     <label for="kategoria">Kategoria:</label>
@@ -482,16 +501,23 @@ else
                 
                 <div class="m-1">
                     <label for="dni_pracy">Dni pracy:</label>                
-                    <textarea name="dni_pracy" class="w-100 bg-light border-0 rounded-3 LogowanieInput"  id="dni_pracy" cols="30" required rows="5"><?php
-                    if($edytowanie)
-                    {
-                        echo $ogloEdit['dni_pracy'];                    
-                    }
+                    <textarea name="dni_pracy" class="w-100 bg-light border-0 rounded-3 LogowanieInput"  id="dni_pracy" cols="30" max="70" required rows="5"><?php                    
                     if(isset( $_SESSION['dni_pracy']))
                     {
                         echo  $_SESSION['dni_pracy'];
                         unset($_SESSION['dni_pracy']);
+                    }
+                    elseif($edytowanie)
+                    {
+                        echo $ogloEdit['dni_pracy'];                    
                     }?></textarea>
+                    <p class="text-danger"><?php
+                    if(isset($_SESSION['dniPracyBlad']))
+                    {
+                        echo $_SESSION['dniPracyBlad'];
+                        unset($_SESSION['dniPracyBlad']);
+                    }                
+                    ?></p>
                 </div>                
                 
                 <div class="m-1">

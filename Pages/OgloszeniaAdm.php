@@ -129,13 +129,13 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                      
                     if ($dataWaznosci < $dzis) {
                         echo '
-                        <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center bg-secondary my-2 rounded-5">
-                            <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center bg-secondary text-light rounded-5 text-decoration-none">
-                                <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
+                        <div class="d-flex flex-column flex-lg-row w-100 align-items-center text-center bg-secondary my-2 rounded-5">
+                            <div class="d-flex flex-column flex-lg-row justify-content-between w-100 text-center bg-secondary text-light rounded-5 text-decoration-none">
+                                <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-lg-row justify-content-between w-100 rounded-5 align-items-center">
                                     <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$zapytanie['nazwa_firmy'].'</h5>                
-                                    <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$dataUtworzenia->format('d.m.Y').'</h5>
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$zapytanie['nazwa_firmy'].'</h5>                
+                                    <h5 class="fs-5 col-5 px-2 AdminUzytkownik text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$dataUtworzenia->format('d.m.Y').'</h5>
                                 </a>
                                 <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
                                     <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn bg-secondary text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
@@ -151,13 +151,13 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                     else
                     {
                         echo '
-                        <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
-                            <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
-                            <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
+                        <div class="d-flex flex-column flex-lg-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
+                            <div class="d-flex flex-column flex-lg-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
+                            <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-lg-row justify-content-between w-100 rounded-5 align-items-center">
                                     <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$zapytanie['nazwa_firmy'].'</h5>                
-                                    <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminOglo">'.$dataUtworzenia->format('d.m.Y').'</h5>
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$zapytanie['nazwa_firmy'].'</h5>                
+                                    <h5 class="fs-5 col-5 px-2 AdminUzytkownik text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$dataUtworzenia->format('d.m.Y').'</h5>
                                 </a>
                                 <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
                                     <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>

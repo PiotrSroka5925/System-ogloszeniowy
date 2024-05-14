@@ -6,9 +6,14 @@ require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
+if((!isset($_GET['id'])))
+{
+    header('Location: StronaGlowna.php'); 
+    exit();
+}
+
 $zapytanieOglo = "SELECT ogloszenia.*, 
 ogloszenie_stanowiska.nazwa_stanowiska, 
-ogloszenie_stanowiska.poziom_stanowiska,
 ogloszenie_etaty.wymiar_etatu, 
 ogloszenie_rodzaje_pracy.rodzaj_pracy, 
 ogloszenie_umowy.rodzaj_umowy
@@ -33,8 +38,42 @@ $wynikBenef = $polaczenie->query($zapytanieBenef);
 $zapytanieWymag = "SELECT * FROM ogloszenie_wymagania WHERE ogloszenie_id='{$_GET['id']}';";
 $wynikWymag = $polaczenie->query($zapytanieWymag);
 
+if(isset($_SESSION['zalogowany']))
+{              
+
+$nazwaUzytkownika = $_SESSION['user'];
+$wynik = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
+$wierszUzytkownk = $wynik->fetch_assoc();
+
+$idUzytkownika =$wierszUzytkownk['uzytkownik_id'];
 
 
+$ogloszenieId = $_GET['id'];
+
+
+if(isset($_POST['aplikuj']))
+{
+  $wynik = $polaczenie->query("INSERT INTO aplikowania (aplikowanie_id, uzytkownik_id, ogloszenie_id) VALUES(NULL, $idUzytkownika, $ogloszenieId)");
+}
+
+$wynikAplikacja = $polaczenie->execute_query("SELECT aplikowanie_id FROM aplikowania WHERE ogloszenie_id = ? AND uzytkownik_id = ?",[$ogloszenieId,$idUzytkownika]);
+
+$wynikUlubione = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
+
+if(isset($_POST['nie_polubione_x']) && isset($_POST['nie_polubione_y']))
+{
+  $wynikUlubione = $polaczenie->query("INSERT INTO ulubione (ulubione_id, uzytkownik_id, ogloszenie_id) VALUES(NULL, $idUzytkownika, $ogloszenieId)");  
+  
+}  
+
+if(isset($_POST['polubione_x']) && isset($_POST['polubione_y']))
+{
+  $wynikUlubione = $polaczenie->query("DELETE FROM ulubione WHERE ogloszenie_id = $ogloszenieId");    
+} 
+$wynikUlubione = $polaczenie->execute_query("SELECT ulubione_id FROM ulubione WHERE ogloszenie_id = ? AND uzytkownik_id = ?",[$ogloszenieId,$idUzytkownika]);
+
+
+}
 ?>
 
 <!Doctype html>
@@ -76,6 +115,8 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
                         <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
+                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
+                        <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
@@ -96,6 +137,8 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
                         <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
+                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
+                        <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
@@ -118,25 +161,103 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                ?>            
         </div>     
     </nav>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <form method="post" class="m-auto d-flex text-centre align-items-center">
+              <input type="submit" name="aplikuj" class="btn UlubionyKolor text-center btn-secondary text-light border-3 m-auto rounded-5 px-5 my-2" value="Aplikuj">
+              <input type="number" value="'.$wierszOglo['ogloszenie_id'].'" name="ukrytyOglo" hidden>
+            </form>
+          </div>
+        </div>
+      </div>
+  </div>
     
     <section class="container my-2">    
       <?php
             if($wynikOglo->num_rows > 0)
             {
-              while ($rowOglo = $wynikOglo->fetch_assoc())
+              while ($wierszOglo = $wynikOglo->fetch_assoc())
               {     
-                $dataZBazy = $rowOglo['data_waznosci']; 
-                $data = new DateTime($dataZBazy);
-                $formattedDate = $data->format('d.m.Y');
+                $dataZBazy = $wierszOglo['data_waznosci']; 
+                $dataWaznosci = new DateTime($dataZBazy);
+                $sformatowanaData = $dataWaznosci->format('d.m.Y');
+                $dzis = new DateTime();
                 echo '
-                <section class="ogloszenie mt-2 rounded-3">
-                    <div class="p-3">
-                        <p class="text-light ms-3 fs-3">'.$rowOglo['nazwa_ogloszenia'].'</p>                    
+                <section class="ogloszenie mt-2 rounded-3 d-flex flex-wrap">
+                    <div class="p-3 col-12 col-md-7">
+                        <p class="text-light ms-3 fs-3">'.$wierszOglo['nazwa_ogloszenia'].'</p>                    
                         <div class="d-flex">                     
-                            <img src="'.$rowOglo['zdjecie'].'" class="logoSzczegolyOgloszenia ms-3 mt-1" alt="">
+                            <img src="'.$wierszOglo['zdjecie'].'" class="logoSzczegolyOgloszenia ms-3 mt-1" alt="ZdjecieFirmy">
                             <p class="text-light ms-3 mt-4 fs-4">'.$wierszOgloFirma['nazwa_firmy'].'</p>
                         </div>
-                    </div>            
+                    </div>                       
+                    <div class="col-12 col-md-3 text-centre align-items-center d-flex">';                      
+                      if(isset($_SESSION['zalogowany']))
+                      {        
+                        if($dataWaznosci > $dzis)
+                        {
+                          if($wynikAplikacja->num_rows > 0) 
+                          {                    
+                            echo '
+                            <form method="post" class="m-auto d-flex text-centre align-items-center">
+                              <div class="text-center p-2 fw-bold bg-secondary m-auto text-light m-auto border-3 rounded-5 px-5 my-2">Aplikowano</div>;                        
+                            </form>';
+                          }
+                          else
+                          {
+                            echo '
+                         
+                            <input type="submit" name="aplikuj" class="btn UlubionyKolor text-center btn-secondary text-light border-3 m-auto rounded-5 px-5 my-2" data-bs-toggle="modal" data-bs-target="#exampleModal" value="Aplikuj">';
+                                                    
+                          } 
+                          if($wynikUlubione->num_rows > 0) 
+                          {
+                            echo '
+                            <form method="post" class="mt-2 mx-2">                 
+                              <input type="image" src="../Images/Icons/polubione.png" class="SzczegolyIconMain rounded-3 m-auto dlt-btn" name="polubione" alt="polubione">                           
+                            </form>';
+                          }
+                          else
+                          {
+                            echo '
+                            <form method="post" class="mt-2 mx-2">                 
+                              <input type="image" src="../Images/Icons/nie_polubione.png" class="SzczegolyIconMain rounded-3 m-auto dlt-btn" name="nie_polubione" alt="nie_polubione">                            
+                            </form>';
+                          }
+                        }
+                        else
+                        {
+                          if($wynikAplikacja->num_rows > 0) 
+                          {             
+                                  
+                            echo '
+                            <form method="post" class="m-auto d-flex text-centre align-items-center">
+                              <div class="text-center p-2 fw-bold bg-secondary m-auto text-light m-auto border-3 rounded-5 px-5 my-2">Aplikowano</div>;                        
+                            </form>';
+                          }
+
+                          if($wynikUlubione->num_rows > 0) 
+                          {
+                            echo '
+                            <form method="post" class="mt-2 mx-2">                 
+                              <input type="image" src="../Images/Icons/polubione.png" class="SzczegolyIconMain rounded-3 m-auto dlt-btn" name="polubione" alt="polubione">                           
+                            </form>';
+                          }
+                        }  
+                      }                             
+                    echo '
+                    </div>                            
                 </section>
 
                 <section class="ogloszenie mt-2 rounded-3">
@@ -152,45 +273,55 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                         <div class="row">                    
                             <div class="my-2 d-flex col-12 col-xl-4">
                                 <img src="../Images/Icons/ADlocalization.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['lokalizacja'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['lokalizacja'].'</p>                        
                             </div> 
                             
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/waznosc.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">Ważne do '.$formattedDate.'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">Ważne do '.$sformatowanaData.'</p>                        
                             </div>
 
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/money.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.str_replace(".", ",", $rowOglo['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $rowOglo['najw_wynagrodzenie']).' zł/mies</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.str_replace(".", ",", $wierszOglo['najmn_wynagrodzenie']).' - '.str_replace(".", ",", $wierszOglo['najw_wynagrodzenie']).' zł/mies</p>                        
                             </div>  
                         </div>
                                             
                         <div class="row">
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/umowa.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['rodzaj_umowy'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['rodzaj_umowy'].'</p>                        
                             </div>  
 
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/czasPracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['wymiar_etatu'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['wymiar_etatu'].'</p>                        
+                            </div> 
+
+                            <div class="col-12 col-xl-4 my-2 d-flex">
+                                <img src="../Images/Icons/godziny_pracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['godziny_pracy'].' godz</p>                        
                             </div> 
                         </div>';    
                         
-                        if($rowOglo['poziom_stanowiska'] != null)
+                        if($wierszOglo['poziom_stanowiska'] != null)
                         {
                           echo '
                           <div class="row">
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/stanowisko.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['nazwa_stanowiska'].' - '.$rowOglo['poziom_stanowiska'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['nazwa_stanowiska'].' - '.$wierszOglo['poziom_stanowiska'].'</p>                        
                             </div>  
 
                             <div class="col-12 col-xl-4 my-2 d-flex">
                                 <img src="../Images/Icons/miejscePracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['rodzaj_pracy'].'</p>                        
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['rodzaj_pracy'].'</p>                        
                             </div> 
+                      
+                            <div class="my-2 d-flex col-12 col-xl-4">
+                              <img src="../Images/Icons/dni_pracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                              <p class="text-light ms-2 my-0 d-flex align-items-center">Dni pracy: '.$wierszOglo['dni_pracy'].'</p>                        
+                            </div>
                           </div>';
                         }
                         else
@@ -199,18 +330,23 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                             <div class="row">
                               <div class="col-12 col-xl-4 my-2 d-flex">
                                   <img src="../Images/Icons/stanowisko.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                  <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['nazwa_stanowiska'].'</p>                        
+                                  <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['nazwa_stanowiska'].'</p>                        
                               </div>  
 
                               <div class="col-12 col-xl-4 my-2 d-flex">
                                   <img src="../Images/Icons/miejscePracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
-                                  <p class="text-light ms-2 my-0 d-flex align-items-center">'.$rowOglo['rodzaj_pracy'].'</p>                        
+                                  <p class="text-light ms-2 my-0 d-flex align-items-center">'.$wierszOglo['rodzaj_pracy'].'</p>                        
                               </div> 
+                                                                                        
+                              <div class="my-2 d-flex col-12 col-xl-4">
+                                <img src="../Images/Icons/dni_pracy.png" class="SzczegolyIcon mt-1 rounded-3" alt="">
+                                <p class="text-light ms-2 my-0 d-flex align-items-center">Dni pracy: '.$wierszOglo['dni_pracy'].'</p>                        
+                              </div>
                             </div>   
                             ';
                         }
-
-                         echo '
+                        
+                         echo '                         
                     </div>            
                 </section>
                                 
@@ -222,12 +358,12 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                       ';
                       if($wynikObo->num_rows > 0)
                       {
-                        while ($rowObo = $wynikObo->fetch_assoc())
+                        while ($wierszObo = $wynikObo->fetch_assoc())
                         {
                           echo '
                           <div class="col-12 d-flex">
                               <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                              <p class="text-light ms-2">'.$rowObo['obowiazekText'].'</p>
+                              <p class="text-light ms-2">'.$wierszObo['obowiazekText'].'</p>
                           </div>                          
                         ';    
                         }   
@@ -244,12 +380,12 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                     <div class="row m-2">';
                     if($wynikWymag->num_rows > 0)
                     {
-                      while ($rowWymag = $wynikWymag->fetch_assoc())
+                      while ($wierszWymag = $wynikWymag->fetch_assoc())
                       {
                         echo '
                         <div class="col-12 d-flex">
                             <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                            <p class="text-light ms-2">'.$rowWymag['wymaganieText'].'</p>
+                            <p class="text-light ms-2">'.$wierszWymag['wymaganieText'].'</p>
                         </div> ';                      
                       }
                     }
@@ -264,12 +400,12 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                     <div class="row m-2">';
                     if($wynikBenef->num_rows > 0)
                     {
-                      while ($rowBenef = $wynikBenef->fetch_assoc())
+                      while ($wierszBenef = $wynikBenef->fetch_assoc())
                       {
                         echo '
                         <div class="col-12 d-flex">
                             <img src="../Images/Icons/checked.png" class="ObowiazekIcon" alt="">
-                            <p class="text-light ms-2">'.$rowBenef['benefitText'].'</p>
+                            <p class="text-light ms-2">'.$wierszBenef['benefitText'].'</p>
                         </div> ';
                       }
                     }
@@ -281,7 +417,7 @@ $wynikWymag = $polaczenie->query($zapytanieWymag);
                 <section class="ogloszenie mt-2 rounded-3">
                     <h3 class="text-light mx-3 my-4">'.$wierszOgloFirma['nazwa_firmy'].'</h3>    
                     <p class="text-light m-4 text-wrap w-50">'.$wierszOgloFirma['informacje'].'</p>      
-                </section>';
+                </section>';                               
               }
             }
 
