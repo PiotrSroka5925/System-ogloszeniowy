@@ -1,86 +1,89 @@
 <?php
- session_start();
- 
- require_once "../PHPScripts/connect.php";
+session_start();
+require_once "../PHPScripts/connect.php";
 
- $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
+$polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
-  $ogloszeniaNaStrone = 15;
-  $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
-  $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
+$ogloszeniaNaStrone = 15;
+$aktualnaStrona = isset($_GET['strona']) ? (int)$_GET['strona'] : 1;
+$start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 
+$dzis = new DateTime();
+$dzisFormt = $dzis->format('Y-m-d');
 
-  $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
-  JOIN firmy USING (firma_id) JOIN ogloszenie_umowy USING (umowa_id) JOIN ogloszenie_etaty USING (etat_id) JOIN ogloszenie_stanowiska USING(stanowisko_id) WHERE 1=1";
-  if(isset($_GET['kategoria']))
-  {
-    $zapytanie.=" AND ogloszenie_id IN (SELECT ogloszenie_id FROM ogloszenie_kategorie INNER JOIN kategorie USING(kategoria_id) WHERE nazwa_kategorii IN ('".(implode("', '", $_GET['kategoria']))."'))";
-  }
-  if(isset($_GET['firma']))
-  {
-    $zapytanie.=" AND nazwa_firmy IN ('".(implode("', '", $_GET['firma']))."')";
-  }
-  if(isset($_GET['stanowisko']))
-  {
-    $zapytanie.=" AND nazwa_stanowiska IN ('".(implode("', '", $_GET['stanowisko']))."')";
-  }
-  
-  if(isset($_GET['lokalizacja']))
-  {
+$zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
+JOIN firmy USING (firma_id) JOIN ogloszenie_umowy USING (umowa_id) JOIN ogloszenie_etaty USING (etat_id) JOIN ogloszenie_rodzaje_pracy USING (rodzaj_pracy_id) JOIN ogloszenie_stanowiska USING(stanowisko_id) WHERE 1=1";
+
+$warunki = "";
+
+if(isset($_GET['kategoria'])) {
+    $warunki .= " AND ogloszenie_id IN (SELECT ogloszenie_id FROM ogloszenie_kategorie INNER JOIN kategorie USING(kategoria_id) WHERE nazwa_kategorii IN ('" . implode("', '", $_GET['kategoria']) . "'))";
+}
+if(isset($_GET['firma'])) {
+    $warunki .= " AND nazwa_firmy IN ('" . implode("', '", $_GET['firma']) . "')";
+}
+if(isset($_GET['stanowisko'])) {
+    $warunki .= " AND nazwa_stanowiska IN ('" . implode("', '", $_GET['stanowisko']) . "')";
+}
+if(isset($_GET['lokalizacja'])) {
     $lokalizacja = $_GET['lokalizacja'];
-    $zapytanie.= " AND (ogloszenia.lokalizacja LIKE '%$lokalizacja%' OR 
+    $warunki .= " AND (ogloszenia.lokalizacja LIKE '%$lokalizacja%' OR 
     lokalizacja LIKE '%$lokalizacja' OR
     lokalizacja LIKE '$lokalizacja%')";
-  }
-  if(isset($_GET['poziom_stanowiska']))
-  {
-    $zapytanie.=" AND ogloszenia.poziom_stanowiska IN ('".(implode("', '", $_GET['poziom_stanowiska']))."')";
-  }
-  if(isset($_GET['rodzaj_umowy']))
-  {
-    $zapytanie.=" AND rodzaj_umowy IN ('".(implode("', '", $_GET['rodzaj_umowy']))."')";
-  }
-  if(isset($_GET['wymiar_pracy']))
-  {
-    $zapytanie.=" AND wymiar_etatu IN ('".(implode("', '", $_GET['wymiar_pracy']))."')";
-  }
+}
+if(isset($_GET['poziom_stanowiska'])) {
+    $warunki .= " AND ogloszenia.poziom_stanowiska IN ('" . implode("', '", $_GET['poziom_stanowiska']) . "')";
+}
+if(isset($_GET['rodzaj_umowy'])) {
+    $warunki .= " AND rodzaj_umowy IN ('" . implode("', '", $_GET['rodzaj_umowy']) . "')";
+}
+if(isset($_GET['wymiar_pracy'])) {
+    $warunki .= " AND wymiar_etatu IN ('" . implode("', '", $_GET['wymiar_pracy']) . "')";
+}
+if(isset($_GET['tryb_pracy'])) {
+    $warunki .= " AND rodzaj_pracy IN ('" . implode("', '", $_GET['tryb_pracy']) . "')";
+}
+$zapytanie .= $warunki;
 
-  $zapytanie.=" ORDER BY ogloszenia.data_utworzenia DESC";
-  echo $zapytanie;
-  $wynik = $polaczenie->query($zapytanie);
+$zapytanie .= " AND data_waznosci > '" . $dzisFormt . "' ORDER BY ogloszenia.data_utworzenia DESC LIMIT $start, $ogloszeniaNaStrone";
 
-  
+$wynik = $polaczenie->query($zapytanie);
 
-if(isset($_SESSION['zalogowany']))
-{              
+$zapytanieCount = "SELECT COUNT(*) AS ile FROM ogloszenia 
+JOIN firmy USING (firma_id) JOIN ogloszenie_umowy USING (umowa_id) JOIN ogloszenie_etaty USING (etat_id) JOIN ogloszenie_rodzaje_pracy USING (rodzaj_pracy_id) JOIN ogloszenie_stanowiska USING(stanowisko_id) WHERE 1=1";
+$zapytanieCount .= $warunki;
+$zapytanieCount .= " AND data_waznosci > '" . $dzisFormt . "'";
+$wynikStrony = $polaczenie->query($zapytanieCount);
+$r = $wynikStrony->fetch_assoc();
 
-  $nazwaUzytkownika = $_SESSION['user'];
-  $wynikUlubione = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
-  $wierszUzytkownk = $wynikUlubione->fetch_assoc();
+$wszystkieOgloszenia = $r['ile'];
+$strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
 
-  $idUzytkownika = $wierszUzytkownk['uzytkownik_id'];
+$wynikPoziomStanowiska = $polaczenie->query("SELECT DISTINCT poziom_stanowiska FROM ogloszenia");
 
-
-  $zapytanieStanowiska = "SELECT stanowisko_id, nazwa_stanowiska FROM ogloszenie_stanowiska";
-  $wynikStanowiska = $polaczenie->query($zapytanieStanowiska);
-
-  $zapytanieEtaty = "SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty";
-  $wynikEtaty = $polaczenie->query($zapytanieEtaty);
-
-  $wynikRodzajePracy = $polaczenie->execute_query("SELECT rodzaj_pracy_id, rodzaj_pracy FROM ogloszenie_rodzaje_pracy");
-
-  $zapytanieUmowy = "SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy";
-  $wynikUmowy = $polaczenie->query($zapytanieUmowy);
-
-  $zapytanieKategorie = "SELECT kategoria_id, nazwa_kategorii FROM kategorie";
-  $wynikKategorie = $polaczenie->query($zapytanieKategorie);
-
-  $zapytanieFirmy = "SELECT firma_id, nazwa_firmy FROM firmy";
-  $wynikFirmy = $polaczenie->query($zapytanieFirmy);
-
+if(isset($_SESSION['zalogowany'])) {              
+    $nazwaUzytkownika = $_SESSION['user'];
+    $wynikUlubione = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
+    $wierszUzytkownk = $wynikUlubione->fetch_assoc();
+    $idUzytkownika = $wierszUzytkownk['uzytkownik_id'];   
 }
 
+$zapytanieStanowiska = "SELECT stanowisko_id, nazwa_stanowiska FROM ogloszenie_stanowiska";
+$wynikStanowiska = $polaczenie->query($zapytanieStanowiska);
+$zapytanieEtaty = "SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty";
+$wynikEtaty = $polaczenie->query($zapytanieEtaty);
+$wynikRodzajePracy = $polaczenie->execute_query("SELECT rodzaj_pracy_id, rodzaj_pracy FROM ogloszenie_rodzaje_pracy");
+$zapytanieUmowy = "SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy";
+$wynikUmowy = $polaczenie->query($zapytanieUmowy);
+$zapytanieKategorie = "SELECT kategoria_id, nazwa_kategorii FROM kategorie";
+$wynikKategorie = $polaczenie->query($zapytanieKategorie);
+$zapytanieFirmy = "SELECT firma_id, nazwa_firmy FROM firmy";
+$wynikFirmy = $polaczenie->query($zapytanieFirmy);
+
+
+
 ?>
+
 <!Doctype html>
 <html lang="pl">
   <head>
@@ -101,173 +104,186 @@ if(isset($_SESSION['zalogowany']))
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <?php
-               if(isset($_SESSION['zalogowany']))
-               {
-                if($_SESSION['administrator']==1)
-                {
-                 
-                  echo '
-                  <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
-                    <li class="nav-item">
-                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
-                    </li> 
-                    <li class="nav-item lewyNav">
-                      <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Panel admina</a>
-                    </li>
-                    <li class="nav-item dropdown border-white border border-1 rounded-3"> 
-                      <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      '.$_SESSION['user'].'
-                      </a>
-                      <form class="dropdown-menu UlubionyKolor p-4 row">
-                        <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
-                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
-                        <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
-                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
-                      </form>
-                    </li>
-                  </ul>';                                  
-                }  
-                else
-                {
-                 
-                  echo '
-                  <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
-                    <li class="nav-item lewyNav">
-                      <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
-                    </li>                   
-                    <li class="nav-item dropdown border-white border border-1 rounded-3"> 
-                      <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      '.$_SESSION['user'].'
-                      </a>
-                      <form class="dropdown-menu UlubionyKolor p-4 row">
-                        <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
-                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
-                        <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
-                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
-                      </form>
-                    </li>
-                  </ul>';                    
-                }                 
-               }   
-               else
-               {
-                  echo '
-                    <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
-                      <li class="nav-item lewyNav">
+            if(isset($_SESSION['zalogowany'])) {
+                if($_SESSION['administrator']==1) {
+                    echo '
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
+                        <li class="nav-item">
                         <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
-                      </li>                     
-                      <li class="nav-item" >
-                        <a class="nav-link active mt-1 fs-5  marginChange" aria-current="page" href="Logowanie.php">Zaloguj się</a>
-                      </li>
-                    </ul>';
-               }                                    
-               ?>            
+                        </li> 
+                        <li class="nav-item lewyNav">
+                        <a class="nav-link active mt-1 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Panel admina</a>
+                        </li>
+                        <li class="nav-item dropdown border-white border border-1 rounded-3"> 
+                        <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        '.$_SESSION['user'].'
+                        </a>
+                        <form class="dropdown-menu UlubionyKolor p-4 row">
+                            <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
+                            <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
+                            <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
+                            <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
+                        </form>
+                        </li>
+                    </ul>';                                  
+                } else {
+                    echo '
+                    <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
+                        <li class="nav-item lewyNav">
+                        <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
+                        </li>                   
+                        <li class="nav-item dropdown border-white border border-1 rounded-3"> 
+                        <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        '.$_SESSION['user'].'
+                        </a>
+                        <form class="dropdown-menu UlubionyKolor p-4 row">
+                            <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
+                            <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
+                            <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
+                            <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
+                        </form>
+                        </li>
+                    </ul>';                    
+                }                 
+            } else {
+                echo '
+                <ul class="navbar-nav me-auto mb-2 lewyNav mb-lg-0"> 
+                    <li class="nav-item lewyNav">
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="StronaGlowna.php">Strona główna</a>
+                    </li>                     
+                    <li class="nav-item" >
+                    <a class="nav-link active mt-1 fs-5  marginChange" aria-current="page" href="Logowanie.php">Zaloguj się</a>
+                    </li>
+                </ul>';
+            }                                    
+            ?>            
         </div>      
     </nav>
 
-    <section class="container">
-        <section class="my-5 text-center">                    
-            <h1>67 542 <span class="mx-2">Sprawdzone oferty pracy</span></h1>                                        
-            <p class="fs-4">od najlepszych pracodawców</p>               
-        </section>
-  <form method="get">
-        <section class="row d-flex justify-content-center bg-secondary rounded-4 shadow-lg wyszukiwanie">
-          <section class="row d-flex justify-content-center">
-            <div class="col-8 col-xl-3 border border-dark rounded-1 border-2 my-2">
-              <div class="d-flex row h-100">
-                  <input type="search" class="border border-0 form-control bg-secondary-subtle" placeholder="Stanowisko">               
-              </div>
-            </div>
-
-            <div class="col-8 col-xl-2 border border-dark rounded-1 bg-secondary-subtle border-2 my-2">
-              <div class="dropdown row">
-                      <select name="kategoria[]" class="col-12 col-md-10 w-100 LogowanieInput border-0 rounded-3" multiple size="3" required>                    
-                        <?php while($rowKategoria = $wynikKategorie->fetch_assoc())
-                        {
-                            echo '<option value="'.$rowKategoria["nazwa_kategorii"].'">'.$rowKategoria["nazwa_kategorii"].'</option>';
+    <section class="container">         
+        <section class="row d-flex justify-content-center mt-5 bg-secondary rounded-4 shadow-lg p-2 wyszukiwanie">
+          <form method="get" action="Wyszukiwanie.php" class="d-flex justify-content-center row wyszukiwanie">
+            <section class="row d-flex justify-content-center text-center align-items-center">          
+            
+              <div class="col-8 col-xl-3 border border-dark rounded-1 bg-secondary-subtle border-2 my-2">
+                <div class="dropdown row">            
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center pierwszySzczegol" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Stanowiska
+                  </button>
+                  <select name="stanowisko[]" class="dropdown-menu rounded-3" multiple>                    
+                        <?php while($wierszStanowisko = $wynikStanowiska->fetch_assoc()) {
+                            echo '<option class="rounded-2" value="'.$wierszStanowisko["nazwa_stanowiska"].'">'.$wierszStanowisko["nazwa_stanowiska"].'</option>';
                         }                      
                         ?>
-                    </select>
-              </div> 
-            </div>
-
-            <div class="col-8 col-xl-2 border border-dark rounded-1 border-2 my-2">
-              <form class="d-flex row h-100">
-                  <input type="search" class="border border-0 form-control bg-secondary-subtle" name="lokalizacja" placeholder="Lokalizacja">               
-              </form>
-            </div>
-
-            <div class="col-8 col-xl-2 border border-dark bg-secondary-subtle rounded-1 border-2 my-2">
-              <div class="dropdown row">
-                  <button class="btn dropdown-toggle text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Odległość
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-              </div>    
-            </div>
-          </section>                                   
-          <section class="row szczegolowe-wysz">
+                  </select>
+                </div> 
+              </div>     
             
-              <div class="dropdown col-12 col-xl-3 border border-0 rounded-1 my-2 border-2 pierwszySzczegol">
-                <button class="btn dropdown-toggle border border-0 fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Poziom stanowiska 
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><a class="dropdown-item text-wrap" href="#">Something else here</a></li>
-                </ul>
+              <div class="col-8 col-xl-3 border border-dark rounded-1 bg-secondary-subtle border-2 my-2">
+                <div class="dropdown row">            
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Kategorie
+                  </button>
+                                  
+                  <select name="kategoria[]" class="dropdown-menu rounded-3" multiple>                    
+                    <?php while($rowKategoria = $wynikKategorie->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$rowKategoria["nazwa_kategorii"].'">'.$rowKategoria["nazwa_kategorii"].'</option>';
+                    }                      
+                    ?>
+                  </select>
+                                          
+                </div> 
+              </div>
+
+              <input type="search" class="border border-dark rounded-1 border-2 col-8 col-xl-3 LokalizacjaInput text-dark" name="lokalizacja" placeholder="Lokalizacja">                                                 
+            
+              <div class="col-8 col-xl-3 border border-dark bg-secondary-subtle rounded-1 border-2 my-2">
+                <div class="dropdown row">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Firmy
+                  </button>                             
+                  <select name="firma[]" class="dropdown-menu rounded-3"  multiple >
+                    <option value="" disabled selected hidden>Wybierz...</option>
+                    <?php while($rowFirma = $wynikFirmy->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$rowFirma["nazwa_firmy"].'" >'.$rowFirma["nazwa_firmy"].'</option>';
+                    }                                                 
+                    ?>
+                  </select>             
+                </div>    
+              </div>
+            </section>                                   
+            <section class="row szczegolowe-wysz">
+              
+              <div class="dropdown col-12 col-xl-3  border border-0 rounded-1 my-2 border-2">
+                <div class="dropdown row">
+                  <button class="btn dropdown-toggle border border-0 fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Poziom stanowiska
+                  </button>
+                
+                  <select name="poziom_stanowiska[]" class="dropdown-menu rounded-3 col-12" multiple>                    
+                    <?php while( $wierszPoziomStanowiska = $wynikPoziomStanowiska->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$wierszPoziomStanowiska["poziom_stanowiska"].'">'.$wierszPoziomStanowiska["poziom_stanowiska"].'</option>';
+                    }                      
+                    ?>
+                  </select>   
+                </div>                       
+              </div> 
+                        
+              <div class="dropdown col-12 col-xl-3 border border-0 rounded-1  border-2 my-2">
+                <div class="dropdown row">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Rodzaj umowy
+                  </button>
+                  <select name="rodzaj_umowy[]" class="dropdown-menu rounded-3 col-12" multiple>                    
+                    <?php while($wierszUmowy = $wynikUmowy->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$wierszUmowy["rodzaj_umowy"].'">'.$wierszUmowy["rodzaj_umowy"].'</option>';
+                    }                      
+                    ?>
+                  </select> 
+                </div>  
               </div> 
                         
               <div class="dropdown col-12 col-xl-2 border border-0 rounded-1  border-2 my-2">
-                <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Rodzaj umowy
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-              </div> 
-                        
-              <div class="dropdown col-12 col-xl-2 border border-0 rounded-1  border-2 my-2">
-                <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Wymiar pracy
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
+                <div class="dropdown row">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Wymiar pracy
+                  </button>
+                  <select name="wymiar_pracy[]" class="dropdown-menu rounded-3 col-12" multiple>                    
+                    <?php while($wierszEtaty = $wynikEtaty->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$wierszEtaty["wymiar_etatu"].'">'.$wierszEtaty["wymiar_etatu"].'</option>';
+                    }                      
+                    ?>
+                  </select> 
+                </div>
+              
               </div> 
                         
               <div class="dropdown col-12 col-xl-2 border border-0 my-2">
-                <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Tryb pracy
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Action</a></li>
-                  <li><a class="dropdown-item" href="#">Another action</a></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
+                <div class="dropdown row d-flex justify-content-center">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Tryb pracy
+                  </button>
+                  <select name="tryb_pracy[]" class="dropdown-menu rounded-3 col-12" multiple>                    
+                    <?php while($wierszRodzajePracy = $wynikRodzajePracy->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$wierszRodzajePracy["rodzaj_pracy"].'">'.$wierszRodzajePracy["rodzaj_pracy"].'</option>';
+                    }                      
+                    ?>
+                  </select> 
+                </div>            
               </div> 
             
             <button type="submit" class="btn col-12 col-xl-2 btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2">Szukaj</button>
-
-            </form>
-          </section>                    
+                      
+            </section>                    
+          </form>
         </section>
 
         <section class="my-5 text-center">                    
-          <h1>Wyszukane oferty</h1>                                                  
+          <h1>Najnowsze oferty</h1>                                                  
         </section>
 
         <section class="row">                      
-        <?php
+          <?php
             while($ogloszenie = $wynik->fetch_assoc()) {
               $dataWaznosci = new DateTime($ogloszenie['data_waznosci']); 
               $dataUtworzenia = new DateTime($ogloszenie['data_utworzenia']);            
@@ -296,11 +312,52 @@ if(isset($_SESSION['zalogowany']))
                 </div>';
               }              
             }
-          ?>    
+          ?>         
         </section>
         <div class="paginacja">
-         
-      </div>
+          <?php
+          if ($strony > 1) {
+              $liczbaStronDoPokazania = 5;
+              $start = max(1, $aktualnaStrona - 2);
+              $koniec = min($strony, $aktualnaStrona + 2);
+
+              // Zbieranie parametrów wyszukiwania
+              $queryStringArray = $_GET;
+              unset($queryStringArray['strona']); // Usunięcie parametru strona, aby móc go dodać osobno
+              $queryString = http_build_query($queryStringArray);
+
+              if ($aktualnaStrona > 1) {
+                  echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '&' . $queryString . '">« Poprzednia</a> ';
+              }
+
+              if ($start > 1) {
+                  echo '<a class="paginacjaNumery" href="?strona=1&' . $queryString . '">1</a> ';
+                  if ($start > 2) {
+                      echo '<a class="text-dark text-decoration-none paginacjaUkrycie" href="#">...</a> ';
+                  }
+              }
+
+              for ($i = $start; $i <= $koniec; $i++) {
+                  if ($i == $aktualnaStrona) {
+                      echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
+                  } else {
+                      echo '<a class="paginacjaNumery" href="?strona=' . $i . '&' . $queryString . '">' . $i . '</a> ';
+                  }
+              }
+
+              if ($koniec < $strony) {
+                  if ($koniec < $strony - 1) {
+                      echo '<a class="text-dark text-decoration-none paginacjaUkrycie" href="#">...</a> ';
+                  }
+                  echo '<a class="paginacjaNumery" href="?strona=' . $strony . '&' . $queryString . '">' . $strony . '</a> ';
+              }
+
+              if ($aktualnaStrona < $strony) {
+                  echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '&' . $queryString . '">Następna »</a>';
+              }
+          }
+          ?>
+        </div>
     </section>
     
       <footer class="mt-auto UlubionyKolor">

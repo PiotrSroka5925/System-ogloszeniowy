@@ -9,8 +9,11 @@
   $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
   $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 
+  $dzis = new DateTime();
+  $dzisFormt = $dzis->format('Y-m-d'); 
   
-  $zapytanie = "SELECT COUNT(*) AS ile FROM ogloszenia";
+
+  $zapytanie = "SELECT COUNT(*) AS ile FROM ogloszenia WHERE data_waznosci > '" . $dzisFormt . "'";
   $wynik = $polaczenie->query($zapytanie);
   $r = $wynik->fetch_assoc();
   $wszystkieOgloszenia = $r['ile'];
@@ -18,6 +21,7 @@
   
   $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
   JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
+  WHERE data_waznosci > '" . $dzisFormt . "'
   ORDER BY ogloszenia.data_utworzenia DESC 
   LIMIT $start, $ogloszeniaNaStrone";
   $wynik = $polaczenie->query($zapytanie);
@@ -48,6 +52,8 @@ if(isset($_SESSION['zalogowany']))
     
   } 
 
+}
+
   $zapytanieEtaty = "SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty";
   $wynikEtaty = $polaczenie->query($zapytanieEtaty);
 
@@ -64,8 +70,6 @@ if(isset($_SESSION['zalogowany']))
 
   $zapytanieStanowiska = "SELECT * FROM ogloszenie_stanowiska";
   $wynikStanowiska = $polaczenie->query($zapytanieStanowiska);
-
-}
 
 ?>
 <!Doctype html>
@@ -163,7 +167,7 @@ if(isset($_SESSION['zalogowany']))
             
               <div class="col-8 col-xl-3 border border-dark rounded-1 bg-secondary-subtle border-2 my-2">
                 <div class="dropdown row">            
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Stanowiska
                   </button>
                   <select name="stanowisko[]" class="dropdown-menu rounded-3" multiple>                    
@@ -178,7 +182,7 @@ if(isset($_SESSION['zalogowany']))
             
               <div class="col-8 col-xl-3 border border-dark rounded-1 bg-secondary-subtle border-2 my-2">
                 <div class="dropdown row">            
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Kategorie
                   </button>
                                   
@@ -197,7 +201,7 @@ if(isset($_SESSION['zalogowany']))
             
               <div class="col-8 col-xl-3 border border-dark bg-secondary-subtle rounded-1 border-2 my-2">
                 <div class="dropdown row">
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       Firmy
                   </button>                             
                   <select name="firma[]" class="dropdown-menu rounded-3"  multiple >
@@ -213,7 +217,7 @@ if(isset($_SESSION['zalogowany']))
             </section>                                   
             <section class="row szczegolowe-wysz">
               
-              <div class="dropdown col-12 col-xl-3  border border-0 rounded-1 my-2 border-2">
+              <div class="dropdown col-12 col-xl-3 border border-0  rounded-1 my-2 border-2">
                 <div class="dropdown row">
                   <button class="btn dropdown-toggle border border-0 fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Poziom stanowiska
@@ -231,7 +235,7 @@ if(isset($_SESSION['zalogowany']))
                         
               <div class="dropdown col-12 col-xl-3 border border-0 rounded-1  border-2 my-2">
                 <div class="dropdown row">
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Rodzaj umowy
                   </button>
                   <select name="rodzaj_umowy[]" class="dropdown-menu rounded-3 col-12" multiple>                    
@@ -246,7 +250,7 @@ if(isset($_SESSION['zalogowany']))
                         
               <div class="dropdown col-12 col-xl-2 border border-0 rounded-1  border-2 my-2">
                 <div class="dropdown row">
-                  <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Wymiar pracy
                   </button>
                   <select name="wymiar_pracy[]" class="dropdown-menu rounded-3 col-12" multiple>                    
@@ -261,10 +265,18 @@ if(isset($_SESSION['zalogowany']))
               </div> 
                         
               <div class="dropdown col-12 col-xl-2 border border-0 my-2">
-                <button class="btn dropdown-toggle border border-0 fw-bold text-start" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Tryb pracy
-                </button>
-              
+                <div class="dropdown row d-flex justify-content-center">
+                  <button class="btn dropdown-toggle border border-0 fw-bold text-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Tryb pracy
+                  </button>
+                  <select name="tryb_pracy[]" class="dropdown-menu rounded-3 col-12" multiple>                    
+                    <?php while($wierszRodzajePracy = $wynikRodzajePracy->fetch_assoc())
+                    {
+                        echo '<option class="rounded-2" value="'.$wierszRodzajePracy["rodzaj_pracy"].'">'.$wierszRodzajePracy["rodzaj_pracy"].'</option>';
+                    }                      
+                    ?>
+                  </select> 
+                </div>            
               </div> 
             
             <button type="submit" class="btn col-12 col-xl-2 btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2">Szukaj</button>

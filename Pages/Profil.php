@@ -20,7 +20,7 @@ $idUzytkownika =$wierszUzytkownk['uzytkownik_id'];
 
 $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id = $idUzytkownika");
 
-$wynik =
+
 
 ?>
 <!Doctype html>

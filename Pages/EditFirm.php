@@ -158,6 +158,8 @@ $wynik = $polaczenie->query($zapytanie);
                         </a>
                         <form class="dropdown-menu UlubionyKolor p-4 row">
                             <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12" role="button">Profil</a>
+                            <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Aplikowania</a>
+                            <a href="Ulubione.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Ulubione</a>
                             <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                         </form>
                     </li>';
@@ -192,6 +194,8 @@ $wynik = $polaczenie->query($zapytanie);
                         </a>
                         <form class="dropdown-menu border-white border border-top-0 border-1 UlubionyKolor p-4 row w-100">
                             <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
+                            <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Aplikowania</a>
+                            <a href="Ulubione.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Ulubione</a>
                             <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white text-light rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                         </form>
                     </li>';
