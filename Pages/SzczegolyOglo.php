@@ -45,7 +45,7 @@ $nazwaUzytkownika = $_SESSION['user'];
 $wynik = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
 $wierszUzytkownk = $wynik->fetch_assoc();
 
-$idUzytkownika =$wierszUzytkownk['uzytkownik_id'];
+$idUzytkownika = $wierszUzytkownk['uzytkownik_id'];
 
 
 $ogloszenieId = $_GET['id'];
@@ -53,7 +53,7 @@ $ogloszenieId = $_GET['id'];
 
 if(isset($_POST['aplikuj']))
 {
-  $wynik = $polaczenie->query("INSERT INTO aplikowania (aplikowanie_id, uzytkownik_id, ogloszenie_id) VALUES(NULL, $idUzytkownika, $ogloszenieId)");
+  $wynik = $polaczenie->query("INSERT INTO aplikowania (aplikowanie_id, uzytkownik_id, ogloszenie_id, status) VALUES(NULL, $idUzytkownika, $ogloszenieId, 'nie zatwierdzone')");
 }
 
 $wynikAplikacja = $polaczenie->execute_query("SELECT aplikowanie_id FROM aplikowania WHERE ogloszenie_id = ? AND uzytkownik_id = ?",[$ogloszenieId,$idUzytkownika]);
@@ -115,7 +115,7 @@ $wynikUlubione = $polaczenie->execute_query("SELECT ulubione_id FROM ulubione WH
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
                         <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
-                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
+                        <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowane</a>
                         <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
@@ -137,7 +137,7 @@ $wynikUlubione = $polaczenie->execute_query("SELECT ulubione_id FROM ulubione WH
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">
                         <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
-                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>
+                        <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowane</a>
                         <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>

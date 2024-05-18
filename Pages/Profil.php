@@ -61,7 +61,7 @@ $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id =
                       '.$_SESSION['user'].'
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">      
-                        <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowania</a>     
+                      <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowane</a>    
                         <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>             
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12" role="button">Wyloguj</a>           
                       </form>

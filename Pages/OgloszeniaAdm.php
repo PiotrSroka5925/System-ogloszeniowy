@@ -69,6 +69,9 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="UzytkownicyAdm.php">Użytkownicy</a>
                 </li>
+                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="AplikowaniaAdm.php">Aplikowania</a>
+                </li>
                 <?php
                     echo '
                     <li class="nav-item dropdown border-white border border-1 rounded-3 mb-2"> 
@@ -77,7 +80,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                         </a>
                         <form class="dropdown-menu UlubionyKolor p-4 row">
                             <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12" role="button">Profil</a>
-                            <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Aplikowania</a>
+                            <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Aplikowane</a>
                             <a href="Ulubione.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Ulubione</a>
                             <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                         </form>
@@ -102,6 +105,9 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="UzytkownicyAdm.php">Użytkownicy</a>
                 </li>
+                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="AplikowaniaAdm.php">Aplikowania</a>
+                </li>
                 <?php
                 echo '
                     <li class="nav-item dropdown border-white border border-start-0 border-end-0 border-1"> 
@@ -110,7 +116,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                         </a>
                         <form class="dropdown-menu border-white border border-top-0 border-1 UlubionyKolor p-4 row w-100">
                             <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 text-light" role="button">Profil</a>
-                            <a href="Aplikowania.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Aplikowania</a>
+                            <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Aplikowane</a>
                             <a href="Ulubione.php" active class="btn UlubionyKolor border-1 mt-3 border-white rounded-4 col-12 text-light" role="button">Ulubione</a>
                             <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white text-light rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                         </form>
@@ -123,7 +129,7 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                 <h1 class="text-center mx-auto">Zarządzanie ogłoszeniami</h1>
                 <a href="DodajEditOglo.php" active class="mx-auto btn btn-dark UlubionyKolor text-light rounded-5 sm-ms-5 my-2 text-center DodajAdmin" role="button">Dodaj ogłoszenie</a>
             </div>            
-                 
+
             <?php
                 while($zapytanie = $wynik->fetch_assoc()) {
                     $dataWaznosci = new DateTime($zapytanie['data_waznosci']);
@@ -137,9 +143,9 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                             <div class="d-flex flex-column flex-lg-row justify-content-between w-100 text-center bg-secondary text-light rounded-5 text-decoration-none">
                                 <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-lg-row justify-content-between w-100 rounded-5 align-items-center">
                                     <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$zapytanie['nazwa_firmy'].'</h5>                
-                                    <h5 class="fs-5 col-5 px-2 AdminUzytkownik text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$dataUtworzenia->format('d.m.Y').'</h5>
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">Firma: '.$zapytanie['nazwa_firmy'].'</h5>                
+                                    <h5 class="fs-5 col-5 px-2 AdminUzytkownik text-wrap">Nazwa: '.$zapytanie['nazwa_ogloszenia'].'</h5>                
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">Data: '.$dataUtworzenia->format('d.m.Y').'</h5>
                                 </a>
                                 <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
                                     <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn bg-secondary text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>
@@ -159,9 +165,9 @@ if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
                             <div class="d-flex flex-column flex-lg-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
                             <a href="SzczegolyOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-lg-row justify-content-between w-100 rounded-5 align-items-center">
                                     <h5 class="fs-5 col px-2">Id: '.$zapytanie['ogloszenie_id'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$zapytanie['nazwa_firmy'].'</h5>                
-                                    <h5 class="fs-5 col-5 px-2 AdminUzytkownik text-wrap">'.$zapytanie['nazwa_ogloszenia'].'</h5>                
-                                    <h5 class="fs-5 col px-2 AdminUzytkownik">'.$dataUtworzenia->format('d.m.Y').'</h5>
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">Firma: '.$zapytanie['nazwa_firmy'].'</h5>                
+                                    <h5 class="fs-5 col-5 px-2 AdminUzytkownik text-wrap">Nazwa: '.$zapytanie['nazwa_ogloszenia'].'</h5>                
+                                    <h5 class="fs-5 col px-2 AdminUzytkownik">Data: '.$dataUtworzenia->format('d.m.Y').'</h5>
                                 </a>
                                 <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
                                     <a href="DodajEditOglo.php?id='.$zapytanie['ogloszenie_id'].'" class="btn UlubionyKolor text-light rounded-5"><img src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3" alt=""></a>

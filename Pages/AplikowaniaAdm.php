@@ -11,61 +11,36 @@ require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
-$komunikat = "";
-
-if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
-{
-    $idukryte = $_POST['ukryty'];
-    $polaczenie->query("DELETE FROM kategorie WHERE kategoria_id='{$idukryte}';");   
-    header('Location: KategorieAdm.php');
-} 
-
-$nazwa_kategorii="";
-
-if (isset($_POST['nazwa_kategorii'])) {
-    $nazwa_kategorii = $_POST['nazwa_kategorii'];  
-}
-
-$result = $polaczenie->query("SELECT kategoria_id FROM kategorie WHERE nazwa_kategorii = '$nazwa_kategorii'");
-
-if(isset($_POST['Dodaj_kat']))
-{
-    if(strlen($nazwa_kategorii) == 0) 
-    {
-        $komunikat = "Podaj nazwę kategorii!";
-    } 
-    elseif (strlen($nazwa_kategorii) > 90) 
-    {
-        $komunikat = "Przekroczono limit znaków!";    
-    }    
-    elseif ($result->num_rows > 0) 
-    {
-        $komunikat = "Kategoria o tej nazwie już istnieje!";
-    }            
-    else
-    {                       
-        $polaczenie->query("INSERT INTO kategorie (kategoria_id, nazwa_kategorii) VALUES (NULL, '$nazwa_kategorii')");
-        $nazwa_kategorii = "";
-        header('Location: KategorieAdm.php');
-        exit();
-    }
-}
-
-
-
-$KategorieNaStrone = 15;
+$aplikowaniaNaStrone = 15;
 $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
-$start = ($aktualnaStrona - 1) * $KategorieNaStrone;
+$start = ($aktualnaStrona - 1) * $aplikowaniaNaStrone;
 
-$zapytanie = "SELECT COUNT(*) AS ile FROM kategorie";
+$zapytanie = "SELECT COUNT(*) AS ile FROM aplikowania";
 $wynik = $polaczenie->query($zapytanie);
 $r = $wynik->fetch_assoc();
-$wszystkieKategorie = $r['ile'];
-$strony = ceil($wszystkieKategorie / $KategorieNaStrone);
+$wszystkieAplikowania = $r['ile'];
+$strony = ceil($wszystkieAplikowania / $aplikowaniaNaStrone);
 
-$zapytanie = "SELECT * FROM kategorie
-LIMIT $start, $KategorieNaStrone";
+$zapytanie = "SELECT aplikowania.*, nick FROM aplikowania JOIN uzytkownicy USING(uzytkownik_id) LIMIT $start, $aplikowaniaNaStrone";
 $wynik = $polaczenie->query($zapytanie);
+
+
+$nazwaUzytkownika = $_SESSION['user'];
+
+
+if (isset($_POST['UsunZatwierdzenie']) && isset($_POST['ukrytyEditAplikowaniaZatw'])) {
+    $idAplikowania = $_POST['ukrytyEditAplikowaniaZatw'];
+    $polaczenie->query("UPDATE aplikowania SET status = 'nie zatwierdzono' WHERE aplikowanie_id = '$idAplikowania'");
+    header('Location: AplikowaniaAdm.php');
+    exit();
+}
+
+if (isset($_POST['Zatwierdz']) && isset($_POST['ukrytyEditAplikowaniaNZatw'])) {
+    $idAplikowania = $_POST['ukrytyEditAplikowaniaNZatw'];
+    $polaczenie->query("UPDATE aplikowania SET status = 'zatwierdzono' WHERE aplikowanie_id = '$idAplikowania'");
+    header('Location: AplikowaniaAdm.php');
+    exit();    
+}
 
 ?>
 
@@ -96,13 +71,13 @@ $wynik = $polaczenie->query($zapytanie);
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
                 </li>
+                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
+                </li>                
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="UzytkownicyAdm.php">Użytkownicy</a>
-                </li>
-                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="AplikowaniaAdm.php">Aplikowania</a>
                 </li>
                 <?php
                     echo '
@@ -132,13 +107,13 @@ $wynik = $polaczenie->query($zapytanie);
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="OgloszeniaAdm.php">Ogłoszenia</a>
                 </li>
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="KategorieAdm.php">Kategorie</a>
                 </li>
+                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
+                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="FirmyAdm.php">Firmy</a>
+                </li>                
                 <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
                     <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="UzytkownicyAdm.php">Użytkownicy</a>
-                </li>
-                <li class="list-unstyled text-light border-white border border-bottom-0 border-start-0 border-end-0 border-1  p-2">
-                    <a class="nav-link active mt-1 me-0 fs-5 marginChange" aria-current="page" href="AplikowaniaAdm.php">Aplikowania</a>
                 </li>
                 <?php
                 echo '
@@ -158,40 +133,46 @@ $wynik = $polaczenie->query($zapytanie);
         </div>
         <div class="col-12 col-xl-10 AdminScroll min-vh-100">
             <div class="d-flex flex-wrap">
-                <h1 class="text-center mx-auto">Zarządzanie kategoriami</h1>            
+                <h1 class="text-center mx-auto">Zarządzanie aplikowaniami</h1>               
             </div>            
-
-            <form  method="post" class="mt-4 p-3 w-100 UlubionyKolor rounded-5 text-light">
-                <div class="p-3 d-flex flex-wrap">
-                    <label for="nazwa_kategorii" class="mb-2">Nazwa kategorii:</label>
-                    <input type="text" class="w-100 LogowanieInput border-0 rounded-3" name="nazwa_kategorii" required>
-                </div>                
-                                                
-                <input type="submit" name="Dodaj_kat" class="PrzyciskDodawania m-3 btn UlubionyKolor btn-secondary text-light rounded-5 sm-ms-5 my-2"  value="Dodaj kategorię">
-
-                <?php
-                    echo '<p class="text-danger">' . $komunikat . '</p>';
-                ?>
-            </form> 
                  
             <?php
-                while($zapytanie = $wynik->fetch_assoc()) {                    
+                while ($zapytanie = $wynik->fetch_assoc()) {
                     echo '
-                    <div class="d-flex flex-column flex-md-row w-100 align-items-center text-center UlubionyKolor my-2 rounded-5">
-                        <div class="d-flex flex-column flex-md-row justify-content-between w-100 text-center UlubionyKolor text-light rounded-5 text-decoration-none">
-                            <div class="mt-2 p-3 text-decoration-none text-light d-flex flex-column flex-md-row justify-content-between w-100 rounded-5 align-items-center">
-                                <h5 class="fs-5 col px-2">Id: '.$zapytanie['kategoria_id'].'</h5>                                                            
-                                <h5 class="fs-5 col-5 px-2 AdminOglo text-wrap">'.$zapytanie['nazwa_kategorii'].'</h5>                                                
+                    <div class="row my-2 UlubionyKolor text-light m-5 rounded-5 mx-4 p-1">
+                        <div class="col-12 col-xxl-3 mt-3">
+                            <div class="d-flex flex-column align-items-center text-center UlubionyKolor rounded-5">
+                                <h5 class="fs-5"> id: ' . $zapytanie['aplikowanie_id'] . '</h5>
                             </div>
-                            <div class="d-flex text-center justify-content-center align-items-center przyciskiAdm">
-                                <form action="EditKat.php" method="post">
-                                    <a href="EditKat.php"><input type="image" src="../Images/Icons/edytuj.png" class="SzczegolyIconAdm rounded-3 me-2 mt-1 dlt-btn" alt="Edytuj" name="edycja" value="edycja"></a>
-                                    <input type="number" value="'.$zapytanie['kategoria_id'].'" name="ukrytyeditKat" hidden >                                       
-                                </form>                                     
-                                <form method="post">                 
-                                    <input type="image" src="../Images/Icons/usun.png" class="SzczegolyIconAdm rounded-3 me-2 dlt-btn" alt="Usuń" name="usuwanie" value="usuwanie">
-                                    <input type="number" value="'.$zapytanie['kategoria_id'].'" name="ukryty" hidden>
-                                </form>            
+                        </div>
+                        <div class="col-12 col-xxl-3 mt-3">
+                            <div class="d-flex flex-column align-items-center text-center UlubionyKolor rounded-5 ">
+                                <h5 class="fs-5 AdminUzytkownik">' . $zapytanie['nick'] . '</h5>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xxl-3 mt-3">
+                            <div class="d-flex flex-column align-items-center text-center UlubionyKolor rounded-5">
+                                <h5 class="fs-5 AdminUzytkownik text-wrap">' . $zapytanie['status'] . '</h5>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xxl-3 ">
+                            <div class="d-flex flex-column align-items-center text-center UlubionyKolor rounded-5 ">';
+                            $wynikAplikowania = $polaczenie->execute_query("SELECT COUNT(aplikowanie_id) as liczba FROM aplikowania WHERE aplikowanie_id = ? AND status = ?", [$zapytanie['aplikowanie_id'], "zatwierdzono"]);
+                            $aplikowaniaLiczba = $wynikAplikowania->fetch_assoc();
+                            if ($aplikowaniaLiczba['liczba'] > 0) {
+                                echo '
+                                <form method="post" class="d-flex flex-column align-items-center w-100">
+                                    <input type="submit" name="UsunZatwierdzenie" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-3 my-2" value="Usuń zatwierdzenie">
+                                    <input type="number" value="' . $zapytanie['aplikowanie_id'] . '" name="ukrytyEditAplikowaniaZatw" hidden>                           
+                                </form>';
+                            } else {
+                                echo '
+                                <form method="post" class="d-flex flex-column align-items-center w-100">
+                                    <input type="submit" name="Zatwierdz" class="btn UlubionyKolor btn-secondary text-light border-3 rounded-5 px-5 my-2" value="Zatwierdź">
+                                    <input type="number" value="' . $zapytanie['aplikowanie_id'] . '" name="ukrytyEditAplikowaniaNZatw" hidden>                           
+                                </form>';
+                            }
+                            echo '
                             </div>
                         </div>
                     </div>';
@@ -201,16 +182,16 @@ $wynik = $polaczenie->query($zapytanie);
             <div class="paginacja">
                 <?php
                 if($strony > 1 )
-                {   
+                {
                     $liczbaStronDoPokazania = 5;
                     $start = max(1, $aktualnaStrona - 2);
                     $koniec = min($strony, $aktualnaStrona + 2);
-
+    
                     if ($aktualnaStrona > 1)
                     {
                         echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '">« Poprzednia</a> ';
                     }
-
+    
                     if ($start > 1)
                     {
                         echo '<a class="paginacjaNumery" href="?strona=1">1</a> ';
@@ -219,7 +200,7 @@ $wynik = $polaczenie->query($zapytanie);
                             echo '<a class="text-dark text-decoration-none pagiancjaUkrycie" href="#">...</a> ';
                         }
                     }
-
+    
                     for ($i = $start; $i <= $koniec; $i++)
                     {
                         if ($i == $aktualnaStrona)
@@ -231,7 +212,7 @@ $wynik = $polaczenie->query($zapytanie);
                             echo '<a class="paginacjaNumery" href="?strona=' . $i . '">' . $i . '</a> ';
                         }
                     }
-
+    
                     if ($koniec < $strony) 
                     {
                         if ($koniec < $strony - 1)
@@ -240,7 +221,7 @@ $wynik = $polaczenie->query($zapytanie);
                         }
                         echo '<a class="paginacjaNumery" href="?strona=' . $strony . '">' . $strony . '</a> ';
                     }
-
+    
                     if ($aktualnaStrona < $strony)
                     {
                         echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '">Następna »</a>';
