@@ -9,7 +9,7 @@ $aktualnaStrona = isset($_GET['strona']) ? (int)$_GET['strona'] : 1;
 $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 
 $dzis = new DateTime();
-$dzisFormt = $dzis->format('Y-m-d');
+$dzisFormat = $dzis->format('Y-m-d');
 
 $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
 JOIN firmy USING (firma_id) JOIN ogloszenie_umowy USING (umowa_id) JOIN ogloszenie_etaty USING (etat_id) JOIN ogloszenie_rodzaje_pracy USING (rodzaj_pracy_id) JOIN ogloszenie_stanowiska USING(stanowisko_id) WHERE 1=1";
@@ -45,18 +45,18 @@ if(isset($_GET['tryb_pracy'])) {
 }
 $zapytanie .= $warunki;
 
-$zapytanie .= " AND data_waznosci > '" . $dzisFormt . "' ORDER BY ogloszenia.data_utworzenia DESC LIMIT $start, $ogloszeniaNaStrone";
+$zapytanie .= " AND data_waznosci > '" . $dzisFormat . "' ORDER BY ogloszenia.data_utworzenia DESC LIMIT $start, $ogloszeniaNaStrone";
 
 $wynik = $polaczenie->query($zapytanie);
 
 $zapytanieCount = "SELECT COUNT(*) AS ile FROM ogloszenia 
 JOIN firmy USING (firma_id) JOIN ogloszenie_umowy USING (umowa_id) JOIN ogloszenie_etaty USING (etat_id) JOIN ogloszenie_rodzaje_pracy USING (rodzaj_pracy_id) JOIN ogloszenie_stanowiska USING(stanowisko_id) WHERE 1=1";
 $zapytanieCount .= $warunki;
-$zapytanieCount .= " AND data_waznosci > '" . $dzisFormt . "'";
+$zapytanieCount .= " AND data_waznosci > '" . $dzisFormat . "'";
 $wynikStrony = $polaczenie->query($zapytanieCount);
-$r = $wynikStrony->fetch_assoc();
+$wiersz = $wynikStrony->fetch_assoc();
 
-$wszystkieOgloszenia = $r['ile'];
+$wszystkieOgloszenia = $wiersz['ile'];
 $strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
 
 $wynikPoziomStanowiska = $polaczenie->query("SELECT DISTINCT poziom_stanowiska FROM ogloszenia");
@@ -68,19 +68,12 @@ if(isset($_SESSION['zalogowany'])) {
     $idUzytkownika = $wierszUzytkownk['uzytkownik_id'];   
 }
 
-$zapytanieStanowiska = "SELECT stanowisko_id, nazwa_stanowiska FROM ogloszenie_stanowiska";
-$wynikStanowiska = $polaczenie->query($zapytanieStanowiska);
-$zapytanieEtaty = "SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty";
-$wynikEtaty = $polaczenie->query($zapytanieEtaty);
+$wynikStanowiska = $polaczenie->query("SELECT stanowisko_id, nazwa_stanowiska FROM ogloszenie_stanowiska");
+$wynikEtaty = $polaczenie->query("SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty");
 $wynikRodzajePracy = $polaczenie->execute_query("SELECT rodzaj_pracy_id, rodzaj_pracy FROM ogloszenie_rodzaje_pracy");
-$zapytanieUmowy = "SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy";
-$wynikUmowy = $polaczenie->query($zapytanieUmowy);
-$zapytanieKategorie = "SELECT kategoria_id, nazwa_kategorii FROM kategorie";
-$wynikKategorie = $polaczenie->query($zapytanieKategorie);
-$zapytanieFirmy = "SELECT firma_id, nazwa_firmy FROM firmy";
-$wynikFirmy = $polaczenie->query($zapytanieFirmy);
-
-
+$wynikUmowy = $polaczenie->query("SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy");
+$wynikKategorie = $polaczenie->query("SELECT kategoria_id, nazwa_kategorii FROM kategorie");
+$wynikFirmy = $polaczenie->query("SELECT firma_id, nazwa_firmy FROM firmy");
 
 ?>
 
@@ -186,8 +179,8 @@ $wynikFirmy = $polaczenie->query($zapytanieFirmy);
                   </button>
                                   
                   <select name="kategoria[]" class="dropdown-menu rounded-3" multiple>                    
-                    <?php while($rowKategoria = $wynikKategorie->fetch_assoc()) {
-                        echo '<option class="rounded-2" value="'.$rowKategoria["nazwa_kategorii"].'">'.$rowKategoria["nazwa_kategorii"].'</option>';
+                    <?php while($wierszKategoria = $wynikKategorie->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$wierszKategoria["nazwa_kategorii"].'">'.$wierszKategoria["nazwa_kategorii"].'</option>';
                     }                      
                     ?>
                   </select>
@@ -204,8 +197,8 @@ $wynikFirmy = $polaczenie->query($zapytanieFirmy);
                   </button>                             
                   <select name="firma[]" class="dropdown-menu rounded-3"  multiple >
                     <option value="" disabled selected hidden>Wybierz...</option>
-                    <?php while($rowFirma = $wynikFirmy->fetch_assoc()) {
-                        echo '<option class="rounded-2" value="'.$rowFirma["nazwa_firmy"].'" >'.$rowFirma["nazwa_firmy"].'</option>';
+                    <?php while($wierszFirma = $wynikFirmy->fetch_assoc()) {
+                        echo '<option class="rounded-2" value="'.$wierszFirma["nazwa_firmy"].'" >'.$wierszFirma["nazwa_firmy"].'</option>';
                     }                                                 
                     ?>
                   </select>             
@@ -221,7 +214,7 @@ $wynikFirmy = $polaczenie->query($zapytanieFirmy);
                   </button>
                 
                   <select name="poziom_stanowiska[]" class="dropdown-menu rounded-3 col-12" multiple>                    
-                    <?php while( $wierszPoziomStanowiska = $wynikPoziomStanowiska->fetch_assoc()) {
+                    <?php while($wierszPoziomStanowiska = $wynikPoziomStanowiska->fetch_assoc()) {
                         echo '<option class="rounded-2" value="'.$wierszPoziomStanowiska["poziom_stanowiska"].'">'.$wierszPoziomStanowiska["poziom_stanowiska"].'</option>';
                     }                      
                     ?>
@@ -288,9 +281,7 @@ $wynikFirmy = $polaczenie->query($zapytanieFirmy);
               $dataWaznosci = new DateTime($ogloszenie['data_waznosci']); 
               $dataUtworzenia = new DateTime($ogloszenie['data_utworzenia']);            
               $dzis = new DateTime();
-                         
-              $linkStart = '<a href="SzczegolyOglo.php?id='.$ogloszenie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">';
-              $linkEnd = '</a>';              
+                                                 
               if ($dataWaznosci > $dzis) {                                     
                 echo '
                 <div class="col-12 d-flex justify-content-center">
@@ -322,16 +313,16 @@ $wynikFirmy = $polaczenie->query($zapytanieFirmy);
               $koniec = min($strony, $aktualnaStrona + 2);
 
               // Zbieranie parametrów wyszukiwania
-              $queryStringArray = $_GET;
-              unset($queryStringArray['strona']); // Usunięcie parametru strona, aby móc go dodać osobno
-              $queryString = http_build_query($queryStringArray);
+              $TablicaStringowLinku = $_GET;
+              unset($TablicaStringowLinku['strona']); // Usunięcie parametru strona, aby móc go dodać osobno
+              $StringLinku = http_build_query($TablicaStringowLinku);
 
               if ($aktualnaStrona > 1) {
-                  echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '&' . $queryString . '">« Poprzednia</a> ';
+                  echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona - 1) . '&' . $StringLinku . '">« Poprzednia</a> ';
               }
 
               if ($start > 1) {
-                  echo '<a class="paginacjaNumery" href="?strona=1&' . $queryString . '">1</a> ';
+                  echo '<a class="paginacjaNumery" href="?strona=1&' . $StringLinku . '">1</a> ';
                   if ($start > 2) {
                       echo '<a class="text-dark text-decoration-none paginacjaUkrycie" href="#">...</a> ';
                   }
@@ -341,7 +332,7 @@ $wynikFirmy = $polaczenie->query($zapytanieFirmy);
                   if ($i == $aktualnaStrona) {
                       echo '<span class="paginacjaNumeryCurrent border border-dark rounded-5 paginacjaNumery bg-light text-dark">' . $i . '</span> ';
                   } else {
-                      echo '<a class="paginacjaNumery" href="?strona=' . $i . '&' . $queryString . '">' . $i . '</a> ';
+                      echo '<a class="paginacjaNumery" href="?strona=' . $i . '&' . $StringLinku . '">' . $i . '</a> ';
                   }
               }
 
@@ -349,11 +340,11 @@ $wynikFirmy = $polaczenie->query($zapytanieFirmy);
                   if ($koniec < $strony - 1) {
                       echo '<a class="text-dark text-decoration-none paginacjaUkrycie" href="#">...</a> ';
                   }
-                  echo '<a class="paginacjaNumery" href="?strona=' . $strony . '&' . $queryString . '">' . $strony . '</a> ';
+                  echo '<a class="paginacjaNumery" href="?strona=' . $strony . '&' . $StringLinku . '">' . $strony . '</a> ';
               }
 
               if ($aktualnaStrona < $strony) {
-                  echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '&' . $queryString . '">Następna »</a>';
+                  echo '<a class="paginacjaNextPrev" href="?strona=' . ($aktualnaStrona + 1) . '&' . $StringLinku . '">Następna »</a>';
               }
           }
           ?>

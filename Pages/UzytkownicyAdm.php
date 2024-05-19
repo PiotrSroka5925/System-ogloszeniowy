@@ -1,8 +1,7 @@
 <?php
 
 session_start();
-if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany']!=true))
-{
+if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany'] != true)) {
     header('Location: Logowanie.php'); 
     exit();
 }
@@ -15,29 +14,25 @@ $uzytkownicyNaStrone = 15;
 $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
 $start = ($aktualnaStrona - 1) * $uzytkownicyNaStrone;
 
-$zapytanie = "SELECT COUNT(*) AS ile FROM uzytkownicy";
-$wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszyscyUzytkownicy = $r['ile'];
+$wynik = $polaczenie->query("SELECT COUNT(*) AS ile FROM uzytkownicy");
+$wiersz = $wynik->fetch_assoc();
+$wszyscyUzytkownicy = $wiersz['ile'];
 $strony = ceil($wszyscyUzytkownicy / $uzytkownicyNaStrone);
 
-$zapytanie = "SELECT * FROM uzytkownicy LIMIT $start, $uzytkownicyNaStrone";
-$wynik = $polaczenie->query($zapytanie);
-
+$wynik = $polaczenie->query("SELECT * FROM uzytkownicy LIMIT $start, $uzytkownicyNaStrone");
 
 $nazwaUzytkownika = $_SESSION['user'];
 
-
 if (isset($_POST['OdbierzAdm']) && isset($_POST['ukrytyEditUzytkownikaAdm'])) {
     $idUzytkownika = $_POST['ukrytyEditUzytkownikaAdm'];
-    $polaczenie->query("UPDATE uzytkownicy SET administrator = 0 WHERE uzytkownik_id = '$idUzytkownika'");
+    $polaczenie->execute_query("UPDATE uzytkownicy SET administrator = 0 WHERE uzytkownik_id = ?", [$idUzytkownika]);
     header('Location: UzytkownicyAdm.php');
     exit();
 }
 
 if (isset($_POST['DajAdm']) && isset($_POST['ukrytyEditUzytkownikaUzy'])) {
     $idUzytkownika = $_POST['ukrytyEditUzytkownikaUzy'];
-    $polaczenie->query("UPDATE uzytkownicy SET administrator = 1 WHERE uzytkownik_id = '$idUzytkownika'");
+    $polaczenie->execute_query("UPDATE uzytkownicy SET administrator = 1 WHERE uzytkownik_id = ?", [$idUzytkownika]);
     header('Location: UzytkownicyAdm.php');
     exit();    
 }

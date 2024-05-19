@@ -36,14 +36,14 @@ else
 
     $login = htmlentities($login, ENT_QUOTES, "UTF-8");
          
-    if($result = $polaczenie->query(sprintf("SELECT * FROM uzytkownicy WHERE nick='%s'", mysqli_real_escape_string($polaczenie,$login))))
+    if($wynik = $polaczenie->execute_query("SELECT * FROM uzytkownicy WHERE nick = ?", [$login]))
     { 
         
-        $ile = $result->num_rows;
+        $ile = $wynik->num_rows;
 
         if($ile>0)
         {
-            $wiersz = $result->fetch_assoc();
+            $wiersz = $wynik->fetch_assoc();
             if(password_verify($haslo, $wiersz['haslo']))
             {
 
@@ -56,8 +56,7 @@ else
                 
                 $_SESSION['user'] = $wiersz['nick'];
 
-                unset($_SESSION['blad']);
-                $result->free_result();
+                unset($_SESSION['blad']);               
                 header('Location: ../Pages/StronaGlowna.php');
             }
             else

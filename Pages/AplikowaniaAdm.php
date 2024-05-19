@@ -1,8 +1,7 @@
 <?php
 
 session_start();
-if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany']!=true))
-{
+if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany'] != true)) {
     header('Location: Logowanie.php'); 
     exit();
 }
@@ -15,29 +14,29 @@ $aplikowaniaNaStrone = 15;
 $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
 $start = ($aktualnaStrona - 1) * $aplikowaniaNaStrone;
 
+
 $zapytanie = "SELECT COUNT(*) AS ile FROM aplikowania";
-$wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieAplikowania = $r['ile'];
+$wynik = $polaczenie->execute_query($zapytanie);
+$wiersz = $wynik->fetch_assoc();
+$wszystkieAplikowania = $wiersz['ile'];
 $strony = ceil($wszystkieAplikowania / $aplikowaniaNaStrone);
 
-$zapytanie = "SELECT aplikowania.*, nick FROM aplikowania JOIN uzytkownicy USING(uzytkownik_id) LIMIT $start, $aplikowaniaNaStrone";
-$wynik = $polaczenie->query($zapytanie);
 
+$zapytanie = "SELECT aplikowania.*, nick FROM aplikowania JOIN uzytkownicy USING(uzytkownik_id) LIMIT ?, ?";
+$wynik = $polaczenie->execute_query($zapytanie, [$start, $aplikowaniaNaStrone]);
 
 $nazwaUzytkownika = $_SESSION['user'];
 
-
 if (isset($_POST['UsunZatwierdzenie']) && isset($_POST['ukrytyEditAplikowaniaZatw'])) {
     $idAplikowania = $_POST['ukrytyEditAplikowaniaZatw'];
-    $polaczenie->query("UPDATE aplikowania SET status = 'nie zatwierdzono' WHERE aplikowanie_id = '$idAplikowania'");
+    $polaczenie->execute_query("UPDATE aplikowania SET status = 'nie zatwierdzono' WHERE aplikowanie_id = ?", [$idAplikowania]);
     header('Location: AplikowaniaAdm.php');
     exit();
 }
 
 if (isset($_POST['Zatwierdz']) && isset($_POST['ukrytyEditAplikowaniaNZatw'])) {
     $idAplikowania = $_POST['ukrytyEditAplikowaniaNZatw'];
-    $polaczenie->query("UPDATE aplikowania SET status = 'zatwierdzono' WHERE aplikowanie_id = '$idAplikowania'");
+    $polaczenie->execute_query("UPDATE aplikowania SET status = 'zatwierdzono' WHERE aplikowanie_id = ?", [$idAplikowania]);
     header('Location: AplikowaniaAdm.php');
     exit();    
 }

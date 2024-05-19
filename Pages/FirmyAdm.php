@@ -16,7 +16,7 @@ $komunikat = "";
 if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
 {
     $idukryte = $_POST['ukryty'];
-    $polaczenie->query("DELETE FROM firmy WHERE firma_id='{$idukryte}';");   
+    $polaczenie->execute_query("DELETE FROM firmy WHERE firma_id = ?", [$idukryte]); 
     header('Location: FirmyAdm.php');
 } 
 
@@ -36,7 +36,7 @@ if (isset($_POST['informacje_firmy'])) {
 
 $wszystkoOk= true;
 
-$result = $polaczenie->query("SELECT firma_id FROM firmy WHERE nazwa_firmy = '$nazwa_firmy'");
+$wynik = $polaczenie->execute_query("SELECT firma_id FROM firmy WHERE nazwa_firmy = ?", [$nazwa_firmy]);
 
 if(isset($_POST['Dodaj_firm']))
 {
@@ -59,7 +59,7 @@ if(isset($_POST['Dodaj_firm']))
             $_SESSION['komunikatNazw'] = "Przekroczono limit znaków!";   
         }
 
-        if($result->num_rows > 0) 
+        if($wynik->num_rows > 0) 
         {
             $wszystkoOk = false;
             $_SESSION['komunikatNazw'] = "Firma o tej nazwie już istnieje!";
@@ -76,7 +76,7 @@ if(isset($_POST['Dodaj_firm']))
     {                       
         unset($_SESSION['nazwa_firmy'], $_SESSION['informacje_firmy']);
 
-        $polaczenie->query("INSERT INTO firmy (firma_id, nazwa_firmy, informacje) VALUES (NULL, '$nazwa_firmy', '$informacje_firmy')");
+        $polaczenie->execute_query("INSERT INTO firmy (firma_id, nazwa_firmy, informacje) VALUES (NULL, ?, ?)", [$nazwa_firmy, $informacje_firmy]);
         $nazwa_firmy = "";
         header('Location: FirmyAdm.php');
         exit();
@@ -90,8 +90,8 @@ $start = ($aktualnaStrona - 1) * $FirmyNaStrone;
 
 $zapytanie = "SELECT COUNT(*) AS ile FROM firmy";
 $wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieFirmy = $r['ile'];
+$wiersz = $wynik->fetch_assoc();
+$wszystkieFirmy = $wiersz['ile'];
 $strony = ceil($wszystkieFirmy / $FirmyNaStrone);
 
 $zapytanie = "SELECT * FROM firmy

@@ -1,6 +1,6 @@
 <?php
 session_start();
- 
+
 require_once "../PHPScripts/connect.php";
 
 $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
@@ -9,30 +9,28 @@ $ogloszeniaNaStrone = 15;
 $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
 $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 
-if(isset($_POST['usuwanieAplikowanie']))
-{
-  $idukryte = $_POST['ukrytyAplikowanie'];
-  $polaczenie->query("DELETE FROM aplikowania WHERE ogloszenie_id= $idukryte");
-  header('Location: Aplikowania.php');
-} 
+if (isset($_POST['usuwanieAplikowanie'])) {
+    $idukryte = $_POST['ukrytyAplikowanie'];
+    $polaczenie->execute_query("DELETE FROM aplikowania WHERE ogloszenie_id = ?", [$idukryte]);
+    header('Location: Aplikowania.php');
+}
 
 $zapytanie = "SELECT COUNT(*) AS ile FROM aplikowania";
-$wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieOgloszenia = $r['ile'];
+$wynik = $polaczenie->execute_query($zapytanie);
+$wiersz = $wynik->fetch_assoc();
+$wszystkieOgloszenia = $wiersz['ile'];
 $strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
 
 $nazwaUzytkownika = $_SESSION['user'];
 
-$result = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
-$rowUzytkownk = $result->fetch_assoc();
+$wynikUzytkownik = $polaczenie->execute_query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = ?", [$nazwaUzytkownika]);
+$wierszUzytkownik = $wynikUzytkownik->fetch_assoc();
 
-$idUzytkownika =$rowUzytkownk['uzytkownik_id'];
+$idUzytkownika = $wierszUzytkownik['uzytkownik_id'];
 
-$zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia JOIN firmy ON ogloszenia.firma_id = firmy.firma_id JOIN aplikowania ON ogloszenia.ogloszenie_id = aplikowania.ogloszenie_id  WHERE aplikowania.uzytkownik_id = $idUzytkownika 
+$wynik = $polaczenie->execute_query("SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia JOIN firmy ON ogloszenia.firma_id = firmy.firma_id JOIN aplikowania ON ogloszenia.ogloszenie_id = aplikowania.ogloszenie_id WHERE aplikowania.uzytkownik_id = ? 
 ORDER BY ogloszenia.data_utworzenia DESC 
-LIMIT $start, $ogloszeniaNaStrone";
-$wynik = $polaczenie->query($zapytanie);
+LIMIT ?, ?", [$idUzytkownika, $start, $ogloszeniaNaStrone]);
 
 ?>
 <!Doctype html>
@@ -129,9 +127,7 @@ $wynik = $polaczenie->query($zapytanie);
               $dataWaznosci = new DateTime($ogloszenie['data_waznosci']); 
               $dataUtworzenia = new DateTime($ogloszenie['data_utworzenia']);            
               $dzis = new DateTime();
-                         
-              $linkStart = '<a href="SzczegolyOglo.php?id='.$ogloszenie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">';
-              $linkEnd = '</a>';              
+                                                 
               if ($dataWaznosci > $dzis) {                                     
                 echo '
                 <div class="col-12 d-flex justify-content-center">

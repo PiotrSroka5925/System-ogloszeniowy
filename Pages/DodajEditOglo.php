@@ -15,46 +15,40 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
 $edytowanie = isset($_GET['id'])?true:false;
 
+$wynikStanowiska = $polaczenie->query("SELECT stanowisko_id, nazwa_stanowiska FROM ogloszenie_stanowiska");
 
-$zapytanieStanowiska = "SELECT stanowisko_id, nazwa_stanowiska FROM ogloszenie_stanowiska";
-$wynikStanowiska = $polaczenie->query($zapytanieStanowiska);
+$wynikEtaty = $polaczenie->query("SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty");
 
-$zapytanieEtaty = "SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty";
-$wynikEtaty = $polaczenie->query($zapytanieEtaty);
+$wynikRodzajePracy = $polaczenie->query("SELECT rodzaj_pracy_id, rodzaj_pracy FROM ogloszenie_rodzaje_pracy");
 
-$wynikRodzajePracy = $polaczenie->execute_query("SELECT rodzaj_pracy_id, rodzaj_pracy FROM ogloszenie_rodzaje_pracy");
+$wynikUmowy = $polaczenie->query("SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy");
 
-$zapytanieUmowy = "SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy";
-$wynikUmowy = $polaczenie->query($zapytanieUmowy);
+$wynikKategorie = $polaczenie->query("SELECT kategoria_id, nazwa_kategorii FROM kategorie");
 
-$zapytanieKategorie = "SELECT kategoria_id, nazwa_kategorii FROM kategorie";
-$wynikKategorie = $polaczenie->query($zapytanieKategorie);
-
-$zapytanieFirmy = "SELECT firma_id, nazwa_firmy FROM firmy";
-$wynikFirmy = $polaczenie->query($zapytanieFirmy);
+$wynikFirmy = $polaczenie->query("SELECT firma_id, nazwa_firmy FROM firmy");
 
 
-$zdjecie = "../Images/Companies/";
+$katalog = "../Images/Companies/";
 
-function ImgUpload($Dir)
+function ImgUpload($katalog)
 {
     if(isset($_FILES['zdjecie']) && $_FILES['zdjecie']['error'] === 0){
-        $UploadFile = $Dir . basename($_FILES['zdjecie']['name']);
+        $SciezkaPliku = $katalog . basename($_FILES['zdjecie']['name']);
 
-        $UploadFile = str_replace(' ','',$UploadFile);
-        $AllowExt = array('jpg', 'png', 'jpeg', 'gif');
+        $SciezkaPliku = str_replace(' ','',$SciezkaPliku);
+        $Rozszerzenia = array('jpg', 'png', 'jpeg', 'gif');
 
-        $ImgEx =pathinfo($_FILES['zdjecie']['name'], PATHINFO_EXTENSION);
-        $ImgEx = strtolower($ImgEx);
+        $RozszerzenieZdjecia =pathinfo($_FILES['zdjecie']['name'], PATHINFO_EXTENSION);
+        $RozszerzenieZdjecia = strtolower($RozszerzenieZdjecia);
 
-        if(in_array($ImgEx, $AllowExt))
+        if(in_array($RozszerzenieZdjecia, $Rozszerzenia))
         {
             if($_FILES['zdjecie']['size'] > 5*1024*1024)
             {
                 return NULL;
             }
-            if(move_uploaded_file($_FILES['zdjecie']['tmp_name'], $UploadFile))
-            return $UploadFile;                
+            if(move_uploaded_file($_FILES['zdjecie']['tmp_name'], $SciezkaPliku))
+            return $SciezkaPliku;                
         }
         else
         {
@@ -64,7 +58,7 @@ function ImgUpload($Dir)
     return NULL;
 }
 
-$zdjecieDodanie = ImgUpload($zdjecie);
+$zdjecieDodanie = ImgUpload($katalog);
 
 $ok = true;
 
@@ -139,45 +133,45 @@ $_POST['godziny_pracy'], $_POST['data_waznosci'], $_POST['poziom_stanowiska']))
 
        if($edytowanie) 
        {
-            $result= $polaczenie->execute_query("UPDATE ogloszenia SET nazwa_ogloszenia = ?, lokalizacja = ?, firma_id = ?, stanowisko_id = ?,umowa_id = ?, 
+            $wynik= $polaczenie->execute_query("UPDATE ogloszenia SET nazwa_ogloszenia = ?, lokalizacja = ?, firma_id = ?, stanowisko_id = ?,umowa_id = ?, 
             etat_id = ? ,rodzaj_pracy_id = ? ,najmn_wynagrodzenie = ?, najw_wynagrodzenie = ?, dni_pracy = ?, godziny_pracy = ?, data_waznosci = ?, zdjecie = ?, poziom_stanowiska = ? WHERE ogloszenie_id = ?"
             , [$_POST['nazwa_ogloszenia'], $_POST['lokalizacja'], $_POST['firma'], $_POST['stanowisko'], $_POST['umowa'], $_POST['etat'], $_POST['rodzajPracy'], 
             $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'], $_POST['godziny_pracy'], $_POST['data_waznosci'], $zdjecieDodanie, $_POST['poziom_stanowiska'], $_GET['id']]);
 
             $zlapId = $_GET['id'];
             
-            $result = $polaczenie->execute_query("DELETE FROM ogloszenie_kategorie WHERE ogloszenie_id= ?", [$_GET['id']]);
+            $wynik = $polaczenie->execute_query("DELETE FROM ogloszenie_kategorie WHERE ogloszenie_id= ?", [$_GET['id']]);
 
             foreach($_POST['kategoria'] as $k)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_kategorie VALUES(NULL, ?, ?)", [$zlapId, $k]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_kategorie VALUES(NULL, ?, ?)", [$zlapId, $k]);
             }  
 
-            $result = $polaczenie->execute_query("DELETE FROM ogloszenie_obowiazki WHERE ogloszenie_id= ?", [$_GET['id']]);
+            $wynik = $polaczenie->execute_query("DELETE FROM ogloszenie_obowiazki WHERE ogloszenie_id= ?", [$_GET['id']]);
 
             foreach($_POST['obowiazki'] as $ob)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_obowiazki VALUES(NULL, ?, ?)", [$ob, $zlapId]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_obowiazki VALUES(NULL, ?, ?)", [$ob, $zlapId]);
             }
 
-            $result = $polaczenie->execute_query("DELETE FROM ogloszenie_wymagania WHERE ogloszenie_id= ?", [$_GET['id']]);
+            $wynik = $polaczenie->execute_query("DELETE FROM ogloszenie_wymagania WHERE ogloszenie_id= ?", [$_GET['id']]);
 
             foreach($_POST['wymagania'] as $wym)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_wymagania VALUES(NULL, ?, ?)", [$wym, $zlapId]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_wymagania VALUES(NULL, ?, ?)", [$wym, $zlapId]);
             }
 
-            $result = $polaczenie->execute_query("DELETE FROM ogloszenie_benefity WHERE ogloszenie_id= ?", [$_GET['id']]);
+            $wynik = $polaczenie->execute_query("DELETE FROM ogloszenie_benefity WHERE ogloszenie_id= ?", [$_GET['id']]);
 
             foreach($_POST['benefity'] as $benef)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_benefity VALUES(NULL, ?, ?)", [$benef, $zlapId]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_benefity VALUES(NULL, ?, ?)", [$benef, $zlapId]);
             }
             
        }
        else
        {
-            $result= $polaczenie->execute_query("INSERT INTO ogloszenia (ogloszenie_id, nazwa_ogloszenia, lokalizacja, firma_id, stanowisko_id ,umowa_id, 
+            $wynik= $polaczenie->execute_query("INSERT INTO ogloszenia (ogloszenie_id, nazwa_ogloszenia, lokalizacja, firma_id, stanowisko_id ,umowa_id, 
             etat_id ,rodzaj_pracy_id ,najmn_wynagrodzenie, najw_wynagrodzenie, dni_pracy, godziny_pracy, data_waznosci, data_utworzenia, zdjecie, poziom_stanowiska) VALUES (NULL, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?)"
             , [$_POST['nazwa_ogloszenia'], $_POST['lokalizacja'], $_POST['firma'], $_POST['stanowisko'], $_POST['umowa'], $_POST['etat'], $_POST['rodzajPracy'], 
             $_POST['najmn_wynagrodzenie'], $_POST['najw_wynagrodzenie'], $_POST['dni_pracy'], $_POST['godziny_pracy'], $_POST['data_waznosci'], date("Y-m-d"), $zdjecieDodanie, $_POST['poziom_stanowiska']]);
@@ -186,22 +180,22 @@ $_POST['godziny_pracy'], $_POST['data_waznosci'], $_POST['poziom_stanowiska']))
                 
             foreach($_POST['kategoria'] as $k)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_kategorie VALUES(NULL, ?, ?)", [$zlapId, $k]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_kategorie VALUES(NULL, ?, ?)", [$zlapId, $k]);
             }  
             
             foreach($_POST['obowiazki'] as $ob)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_obowiazki VALUES(NULL, ?, ?)", [$ob, $zlapId]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_obowiazki VALUES(NULL, ?, ?)", [$ob, $zlapId]);
             }
 
             foreach($_POST['wymagania'] as $wym)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_wymagania VALUES(NULL, ?, ?)", [$wym, $zlapId]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_wymagania VALUES(NULL, ?, ?)", [$wym, $zlapId]);
             }
 
             foreach($_POST['benefity'] as $benef)
             {        
-                $result = $polaczenie->execute_query("INSERT INTO ogloszenie_benefity VALUES(NULL, ?, ?)", [$benef, $zlapId]);
+                $wynik = $polaczenie->execute_query("INSERT INTO ogloszenie_benefity VALUES(NULL, ?, ?)", [$benef, $zlapId]);
             }
        }       
     }    
@@ -324,8 +318,8 @@ else
               <?php
               if($edytowanie)
               {
-                $result = $polaczenie-> execute_query("SELECT * FROM ogloszenia WHERE ogloszenie_id = ?", [$_GET['id']]);
-                $ogloEdit = $result->fetch_assoc();
+                $wynik = $polaczenie-> execute_query("SELECT * FROM ogloszenia WHERE ogloszenie_id = ?", [$_GET['id']]);
+                $ogloEdit = $wynik->fetch_assoc();
               }
               ?>
             <form class="m-1 p-2 UlubionyKolor rounded-5 text-light col-12" method="post" enctype="multipart/form-data">
@@ -384,17 +378,17 @@ else
                         }
                         elseif($edytowanie)
                         {
-                            $resultKat = $polaczenie-> execute_query("SELECT * FROM ogloszenie_kategorie WHERE ogloszenie_id = ?", [$_GET['id']]);                            
-                            while($katEdit = $resultKat->fetch_assoc())
+                            $wynikKat = $polaczenie-> execute_query("SELECT * FROM ogloszenie_kategorie WHERE ogloszenie_id = ?", [$_GET['id']]);                            
+                            while($katEdit = $wynikKat->fetch_assoc())
                             {
                                 array_push( $id_kategoriiTab,$katEdit['kategoria_id']);
                             }  
                         }
                     ?>
                     <select name="kategoria[]" class="col-12 col-md-10 w-100 LogowanieInput border-0 rounded-3" multiple size="3" id="kategoria" required>                    
-                        <?php while($rowKategoria = $wynikKategorie->fetch_assoc())
+                        <?php while($wierszKategoria = $wynikKategorie->fetch_assoc())
                         {
-                            echo '<option value="'.$rowKategoria["kategoria_id"].'" '.(in_array($rowKategoria["kategoria_id"],$id_kategoriiTab)?" selected":"").'>'.$rowKategoria["nazwa_kategorii"].'</option>';
+                            echo '<option value="'.$wierszKategoria["kategoria_id"].'" '.(in_array($wierszKategoria["kategoria_id"],$id_kategoriiTab)?" selected":"").'>'.$wierszKategoria["nazwa_kategorii"].'</option>';
                         } 
                         if(isset($_SESSION['kategoria']))                           
                         unset($_SESSION['kategoria']);
@@ -406,9 +400,9 @@ else
                     <label for="firma">Firma:</label>
                     <select name="firma" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="firma" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
-                        <?php while($rowFirma = $wynikFirmy->fetch_assoc())
+                        <?php while($wierszFirma = $wynikFirmy->fetch_assoc())
                         {
-                            echo '<option value="'.$rowFirma["firma_id"].'" '.($_SESSION['firma']==$rowFirma["firma_id"]?" selected":($edytowanie && $ogloEdit["firma_id"] == $rowFirma['firma_id']?" selected":"")).'>'.$rowFirma["nazwa_firmy"].'</option>';
+                            echo '<option value="'.$wierszFirma["firma_id"].'" '.($_SESSION['firma']==$wierszFirma["firma_id"]?" selected":($edytowanie && $ogloEdit["firma_id"] == $wierszFirma['firma_id']?" selected":"")).'>'.$wierszFirma["nazwa_firmy"].'</option>';
                         }                            
                         if(isset($_SESSION['firma']))                           
                         unset($_SESSION['firma']);
@@ -420,9 +414,9 @@ else
                     <label for="stanowisko" >Stanowisko:</label>
                     <select name="stanowisko" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="stanowisko" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
-                        <?php while($rowStanowisko = $wynikStanowiska->fetch_assoc())
+                        <?php while($wierszStanowisko = $wynikStanowiska->fetch_assoc())
                         {
-                            echo '<option value="'.$rowStanowisko["stanowisko_id"].'" '.($_SESSION['stanowisko']==$rowStanowisko["stanowisko_id"]?" selected":($edytowanie && $ogloEdit["stanowisko_id"] == $rowStanowisko['stanowisko_id']?" selected":"")).'>'.$rowStanowisko["nazwa_stanowiska"].'</option>';
+                            echo '<option value="'.$wierszStanowisko["stanowisko_id"].'" '.($_SESSION['stanowisko']==$wierszStanowisko["stanowisko_id"]?" selected":($edytowanie && $ogloEdit["stanowisko_id"] == $wierszStanowisko['stanowisko_id']?" selected":"")).'>'.$wierszStanowisko["nazwa_stanowiska"].'</option>';
                         }     
                         if(isset($_SESSION['stanowisko']))                           
                         unset($_SESSION['stanowisko']);                       
@@ -434,9 +428,9 @@ else
                     <label for="etat">Wymiar zatrudnienia:</label>
                     <select name="etat" required class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="etat">
                         <option value="" disabled selected hidden>Wybierz...</option>
-                        <?php while($rowEtat = $wynikEtaty->fetch_assoc())
+                        <?php while($wierszEtat = $wynikEtaty->fetch_assoc())
                         {
-                            echo '<option value="'.$rowEtat["etat_id"].'" '.($_SESSION['etat']==$rowEtat["etat_id"]?" selected":($edytowanie && $ogloEdit["etat_id"] == $rowEtat['etat_id']?" selected":"")).'>'.$rowEtat["wymiar_etatu"].'</option>';
+                            echo '<option value="'.$wierszEtat["etat_id"].'" '.($_SESSION['etat']==$wierszEtat["etat_id"]?" selected":($edytowanie && $ogloEdit["etat_id"] == $wierszEtat['etat_id']?" selected":"")).'>'.$wierszEtat["wymiar_etatu"].'</option>';
                         } 
                         if(isset($_SESSION['etat']))                           
                         unset($_SESSION['etat']);                           
@@ -448,9 +442,9 @@ else
                     <label for="rodzajPracy">Rodzaj pracy:</label>
                     <select name="rodzajPracy" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="rodzajPracy" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
-                        <?php while($rowRodzajPracy = $wynikRodzajePracy->fetch_assoc())
+                        <?php while($wierszRodzajPracy = $wynikRodzajePracy->fetch_assoc())
                         {
-                            echo '<option value="'.$rowRodzajPracy["rodzaj_pracy_id"].'" '.($_SESSION['rodzajPracy']==$rowRodzajPracy["rodzaj_pracy_id"]?" selected":($edytowanie && $ogloEdit["rodzaj_pracy_id"] == $rowRodzajPracy['rodzaj_pracy_id']?" selected":"")).'>'.$rowRodzajPracy["rodzaj_pracy"].'</option>';
+                            echo '<option value="'.$wierszRodzajPracy["rodzaj_pracy_id"].'" '.($_SESSION['rodzajPracy']==$wierszRodzajPracy["rodzaj_pracy_id"]?" selected":($edytowanie && $ogloEdit["rodzaj_pracy_id"] == $wierszRodzajPracy['rodzaj_pracy_id']?" selected":"")).'>'.$wierszRodzajPracy["rodzaj_pracy"].'</option>';
                         }        
                         if(isset($_SESSION['rodzajPracy']))                           
                         unset($_SESSION['rodzajPracy']);                    
@@ -463,9 +457,9 @@ else
                     <select name="umowa" class="col-12 col-md-10 w-100 bg-light LogowanieInput border-0 rounded-3" id="umowa" required>
                         <option value="" disabled selected hidden>Wybierz...</option>
                         <?php
-                            while($rowUmowa = $wynikUmowy->fetch_assoc())
+                            while($wierszUmowa = $wynikUmowy->fetch_assoc())
                             {
-                                echo '<option value="'.$rowUmowa["umowa_id"].'" '.($_SESSION['umowa']==$rowUmowa["umowa_id"]?" selected":($edytowanie && $ogloEdit["umowa_id"] == $rowUmowa['umowa_id']?" selected":"")).'>'.$rowUmowa["rodzaj_umowy"].'</option>';
+                                echo '<option value="'.$wierszUmowa["umowa_id"].'" '.($_SESSION['umowa']==$wierszUmowa["umowa_id"]?" selected":($edytowanie && $ogloEdit["umowa_id"] == $wierszUmowa['umowa_id']?" selected":"")).'>'.$wierszUmowa["rodzaj_umowy"].'</option>';
                             }    
                             if(isset($_SESSION['umowa']))                           
                             unset($_SESSION['umowa']);                        
@@ -756,35 +750,35 @@ else
 
     </script>
     <?php
-        //Geneoranie obowiązków, wymagań, benefitów z baxy danych
+        //Geneoranie obowiązków, wymagań, benefitów z bazy danych
 
 
         if($edytowanie)
         {
-            $result = $polaczenie->execute_query("SELECT obowiazekText FROM ogloszenie_obowiazki WHERE ogloszenie_id = ?", [$_GET['id']]);
+            $wynikObo = $polaczenie->execute_query("SELECT obowiazekText FROM ogloszenie_obowiazki WHERE ogloszenie_id = ?", [$_GET['id']]);
 
             echo "<script>";
-            if($result->num_rows>0)
+            if($wynikObo->num_rows>0)
             {                
-                while($wierszObowiazki = $result->fetch_assoc())
+                while($wierszObowiazki = $wynikObo->fetch_assoc())
                 {
                     echo "DodajObowiazek('".htmlspecialchars($wierszObowiazki['obowiazekText'])."');";
                 }            
             }
 
-            $result = $polaczenie->execute_query("SELECT wymaganieText FROM ogloszenie_wymagania WHERE ogloszenie_id = ?", [$_GET['id']]);
-            if($result->num_rows>0)
+            $wynikWym = $polaczenie->execute_query("SELECT wymaganieText FROM ogloszenie_wymagania WHERE ogloszenie_id = ?", [$_GET['id']]);
+            if($wynikWym->num_rows>0)
             {                
-                while($wierszWymagania = $result->fetch_assoc())
+                while($wierszWymagania = $wynikWym->fetch_assoc())
                 {
                     echo "DodajWymaganie('".htmlspecialchars($wierszWymagania['wymaganieText'])."');";
                 }            
             }
 
-            $result = $polaczenie->execute_query("SELECT benefitText FROM ogloszenie_benefity WHERE ogloszenie_id = ?", [$_GET['id']]);
-            if($result->num_rows>0)
+            $wynikBenef = $polaczenie->execute_query("SELECT benefitText FROM ogloszenie_benefity WHERE ogloszenie_id = ?", [$_GET['id']]);
+            if($wynikBenef->num_rows>0)
             {                
-                while($wierszBenefity = $result->fetch_assoc())
+                while($wierszBenefity = $wynikBenef->fetch_assoc())
                 {
                     echo "DodajBenefit('".htmlspecialchars($wierszBenefity['benefitText'])."');";
                 }                

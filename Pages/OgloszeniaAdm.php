@@ -17,8 +17,8 @@ $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 
 $zapytanie = "SELECT COUNT(*) AS ile FROM ogloszenia";
 $wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieOgloszenia = $r['ile'];
+$wiersz = $wynik->fetch_assoc();
+$wszystkieOgloszenia = $wiersz['ile'];
 $strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
 
 $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
@@ -31,7 +31,7 @@ $wynik = $polaczenie->query($zapytanie);
 if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
 {
     $idukryte = $_POST['ukryty'];
-    $polaczenie->query("DELETE FROM ogloszenia WHERE ogloszenie_id='{$idukryte}';");   
+    $polaczenie->execute_query("DELETE FROM ogloszenia WHERE ogloszenie_id = ?", [$idukryte]);
     header('Location: OgloszeniaAdm.php');
 } 
 

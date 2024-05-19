@@ -9,32 +9,34 @@ $ogloszeniaNaStrone = 15;
 $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
 $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 
-if(isset($_POST['polubione_x']) && isset($_POST['polubione_y']))
-{
-  $idukryte = $_POST['ukrytyPolubione'];
-  $polaczenie->query("DELETE FROM ulubione WHERE ogloszenie_id= $idukryte");
-  header('Location: Ulubione.php');
-} 
+if (isset($_POST['polubione_x']) && isset($_POST['polubione_y'])) {
+    $idukryte = $_POST['ukrytyPolubione'];
+    $polaczenie->execute_query("DELETE FROM ulubione WHERE ogloszenie_id = ?", [$idukryte]);
+    header('Location: Ulubione.php');
+    exit();
+}
 
-$zapytanie = "SELECT COUNT(*) AS ile FROM ulubione";
-$wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieOgloszenia = $r['ile'];
+$wynik = $polaczenie->query("SELECT COUNT(*) AS ile FROM ulubione");
+$wiersz = $wynik->fetch_assoc();
+$wszystkieOgloszenia = $wiersz['ile'];
 $strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
 
 $nazwaUzytkownika = $_SESSION['user'];
 
-$result = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
-$rowUzytkownk = $result->fetch_assoc();
+$wynik = $polaczenie->execute_query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = ?", [$nazwaUzytkownika]);
+$wierszUzytkownk = $wynik->fetch_assoc();
 
-$idUzytkownika =$rowUzytkownk['uzytkownik_id'];
+$idUzytkownika = $wierszUzytkownk['uzytkownik_id'];
 
-$zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia JOIN firmy ON ogloszenia.firma_id = firmy.firma_id JOIN ulubione ON ogloszenia.ogloszenie_id = ulubione.ogloszenie_id  WHERE ulubione.uzytkownik_id = $idUzytkownika 
+$wynik = $polaczenie->execute_query("SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
+JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
+JOIN ulubione ON ogloszenia.ogloszenie_id = ulubione.ogloszenie_id 
+WHERE ulubione.uzytkownik_id = ? 
 ORDER BY ogloszenia.data_utworzenia DESC 
-LIMIT $start, $ogloszeniaNaStrone";
-$wynik = $polaczenie->query($zapytanie);
+LIMIT ?, ?", [$idUzytkownika, $start, $ogloszeniaNaStrone]);
 
 ?>
+
 <!Doctype html>
 <html lang="pl">
   <head>
@@ -129,9 +131,7 @@ $wynik = $polaczenie->query($zapytanie);
               $dataWaznosci = new DateTime($ogloszenie['data_waznosci']); 
               $dataUtworzenia = new DateTime($ogloszenie['data_utworzenia']);            
               $dzis = new DateTime();
-                         
-              $linkStart = '<a href="SzczegolyOglo.php?id='.$ogloszenie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">';
-              $linkEnd = '</a>';              
+                                                 
               if ($dataWaznosci > $dzis) {                                     
                 echo '
                 <div class="col-12 d-flex justify-content-center">

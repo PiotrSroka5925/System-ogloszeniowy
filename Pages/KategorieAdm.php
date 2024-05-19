@@ -16,7 +16,7 @@ $komunikat = "";
 if(isset($_POST['usuwanie_x']) && isset($_POST['usuwanie_y']))
 {
     $idukryte = $_POST['ukryty'];
-    $polaczenie->query("DELETE FROM kategorie WHERE kategoria_id='{$idukryte}';");   
+    $polaczenie->execute_query("DELETE FROM kategorie WHERE kategoria_id = ?", [$idukryte]);
     header('Location: KategorieAdm.php');
 } 
 
@@ -26,7 +26,7 @@ if (isset($_POST['nazwa_kategorii'])) {
     $nazwa_kategorii = $_POST['nazwa_kategorii'];  
 }
 
-$result = $polaczenie->query("SELECT kategoria_id FROM kategorie WHERE nazwa_kategorii = '$nazwa_kategorii'");
+$wynik = $polaczenie->execute_query("SELECT kategoria_id FROM kategorie WHERE nazwa_kategorii = ?", [$nazwa_kategorii]);
 
 if(isset($_POST['Dodaj_kat']))
 {
@@ -38,13 +38,13 @@ if(isset($_POST['Dodaj_kat']))
     {
         $komunikat = "Przekroczono limit znaków!";    
     }    
-    elseif ($result->num_rows > 0) 
+    elseif ($wynik->num_rows > 0) 
     {
         $komunikat = "Kategoria o tej nazwie już istnieje!";
     }            
     else
     {                       
-        $polaczenie->query("INSERT INTO kategorie (kategoria_id, nazwa_kategorii) VALUES (NULL, '$nazwa_kategorii')");
+        $polaczenie->execute_query("INSERT INTO kategorie (kategoria_id, nazwa_kategorii) VALUES (NULL, ?)", [$nazwa_kategorii]);
         $nazwa_kategorii = "";
         header('Location: KategorieAdm.php');
         exit();
@@ -59,8 +59,8 @@ $start = ($aktualnaStrona - 1) * $KategorieNaStrone;
 
 $zapytanie = "SELECT COUNT(*) AS ile FROM kategorie";
 $wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieKategorie = $r['ile'];
+$wiersz = $wynik->fetch_assoc();
+$wszystkieKategorie = $wiersz['ile'];
 $strony = ceil($wszystkieKategorie / $KategorieNaStrone);
 
 $zapytanie = "SELECT * FROM kategorie

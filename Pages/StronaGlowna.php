@@ -1,77 +1,67 @@
 <?php
- session_start();
- 
- require_once "../PHPScripts/connect.php";
+session_start();
 
- $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
+require_once "../PHPScripts/connect.php";
 
-  $ogloszeniaNaStrone = 15;
-  $aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
-  $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
+$polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
-  $dzis = new DateTime();
-  $dzisFormt = $dzis->format('Y-m-d'); 
-  
+$ogloszeniaNaStrone = 15;
+$aktualnaStrona = isset($_GET['strona']) ? $_GET['strona'] : 1;
+$start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 
-  $zapytanie = "SELECT COUNT(*) AS ile FROM ogloszenia WHERE data_waznosci > '" . $dzisFormt . "'";
-  $wynik = $polaczenie->query($zapytanie);
-  $r = $wynik->fetch_assoc();
-  $wszystkieOgloszenia = $r['ile'];
-  $strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
-  
-  $zapytanie = "SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
-  JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
-  WHERE data_waznosci > '" . $dzisFormt . "'
-  ORDER BY ogloszenia.data_utworzenia DESC 
-  LIMIT $start, $ogloszeniaNaStrone";
-  $wynik = $polaczenie->query($zapytanie);
+$dzis = new DateTime();
+$dzisFormat = $dzis->format('Y-m-d'); 
 
-  $wynikPoziomStanowiska = $polaczenie->query("SELECT DISTINCT poziom_stanowiska FROM ogloszenia");
- 
+$wynik = $polaczenie->execute_query("SELECT COUNT(*) AS ile FROM ogloszenia WHERE data_waznosci > ?", [$dzisFormat]);
+$wiersz = $wynik->fetch_assoc();
+$wszystkieOgloszenia = $wiersz['ile'];
+$strony = ceil($wszystkieOgloszenia / $ogloszeniaNaStrone);
 
-if(isset($_SESSION['zalogowany']))
-{              
+$wynik = $polaczenie->execute_query("SELECT ogloszenia.*, firmy.nazwa_firmy FROM ogloszenia 
+JOIN firmy ON ogloszenia.firma_id = firmy.firma_id 
+WHERE data_waznosci > ?
+ORDER BY ogloszenia.data_utworzenia DESC 
+LIMIT ?, ?", [$dzisFormat, $start, $ogloszeniaNaStrone]);
 
-  $nazwaUzytkownika = $_SESSION['user'];
-  $wynikUlubione = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
-  $wierszUzytkownk = $wynikUlubione->fetch_assoc();
+$wynikPoziomStanowiska = $polaczenie->query("SELECT DISTINCT poziom_stanowiska FROM ogloszenia");
 
-  $idUzytkownika = $wierszUzytkownk['uzytkownik_id'];
+if(isset($_SESSION['zalogowany'])) {              
+    $nazwaUzytkownika = $_SESSION['user'];
+    $wynikUlubione = $polaczenie->execute_query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = ?", [$nazwaUzytkownika]);
+    $wierszUzytkownk = $wynikUlubione->fetch_assoc();
 
-  if(isset($_POST['nie_polubione_x']) && isset($_POST['nie_polubione_y']))
-  {
-    $ogloszenieUlubione = $_POST['ukrytyNiePolubione'];
-    $wynikUlubione = $polaczenie->query("INSERT INTO ulubione (ulubione_id, uzytkownik_id, ogloszenie_id) VALUES(NULL, $idUzytkownika, $ogloszenieUlubione)");  
-   
-  }  
+    $idUzytkownika = $wierszUzytkownk['uzytkownik_id'];
 
-  if(isset($_POST['polubione_x']) && isset($_POST['polubione_y']))
-  {
-    $ogloszenieUlubione = $_POST['ukrytyPolubione'];
-    $wynikUlubione = $polaczenie->query("DELETE FROM ulubione WHERE ogloszenie_id = $ogloszenieUlubione");  
-    
-  } 
+    if(isset($_POST['nie_polubione_x']) && isset($_POST['nie_polubione_y'])) {
+        $ogloszenieUlubione = $_POST['ukrytyNiePolubione'];
+        $polaczenie->execute_query("INSERT INTO ulubione (ulubione_id, uzytkownik_id, ogloszenie_id) VALUES(NULL, ?, ?)", [$idUzytkownika, $ogloszenieUlubione]);
+    }  
 
+    if(isset($_POST['polubione_x']) && isset($_POST['polubione_y'])) {
+        $ogloszenieUlubione = $_POST['ukrytyPolubione'];
+        $polaczenie->execute_query("DELETE FROM ulubione WHERE ogloszenie_id = ?", [$ogloszenieUlubione]);
+    } 
 }
 
-  $zapytanieEtaty = "SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty";
-  $wynikEtaty = $polaczenie->query($zapytanieEtaty);
+$zapytanieEtaty = "SELECT etat_id, wymiar_etatu FROM ogloszenie_etaty";
+$wynikEtaty = $polaczenie->query($zapytanieEtaty);
 
-  $wynikRodzajePracy = $polaczenie->execute_query("SELECT rodzaj_pracy_id, rodzaj_pracy FROM ogloszenie_rodzaje_pracy");
+$wynikRodzajePracy = $polaczenie->query("SELECT rodzaj_pracy_id, rodzaj_pracy FROM ogloszenie_rodzaje_pracy");
 
-  $zapytanieUmowy = "SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy";
-  $wynikUmowy = $polaczenie->query($zapytanieUmowy);
+$zapytanieUmowy = "SELECT umowa_id, rodzaj_umowy FROM ogloszenie_umowy";
+$wynikUmowy = $polaczenie->query($zapytanieUmowy);
 
-  $zapytanieKategorie = "SELECT kategoria_id, nazwa_kategorii FROM kategorie";
-  $wynikKategorie = $polaczenie->query($zapytanieKategorie);
+$zapytanieKategorie = "SELECT kategoria_id, nazwa_kategorii FROM kategorie";
+$wynikKategorie = $polaczenie->query($zapytanieKategorie);
 
-  $zapytanieFirmy = "SELECT firma_id, nazwa_firmy FROM firmy";
-  $wynikFirmy = $polaczenie->query($zapytanieFirmy);
+$zapytanieFirmy = "SELECT firma_id, nazwa_firmy FROM firmy";
+$wynikFirmy = $polaczenie->query($zapytanieFirmy);
 
-  $zapytanieStanowiska = "SELECT * FROM ogloszenie_stanowiska";
-  $wynikStanowiska = $polaczenie->query($zapytanieStanowiska);
+$zapytanieStanowiska = "SELECT * FROM ogloszenie_stanowiska";
+$wynikStanowiska = $polaczenie->query($zapytanieStanowiska);
 
 ?>
+
 <!Doctype html>
 <html lang="pl">
   <head>
@@ -187,9 +177,9 @@ if(isset($_SESSION['zalogowany']))
                   </button>
                                   
                   <select name="kategoria[]" class="dropdown-menu rounded-3" multiple>                    
-                    <?php while($rowKategoria = $wynikKategorie->fetch_assoc())
+                    <?php while($wierszKategoria = $wynikKategorie->fetch_assoc())
                     {
-                        echo '<option class="rounded-2" value="'.$rowKategoria["nazwa_kategorii"].'">'.$rowKategoria["nazwa_kategorii"].'</option>';
+                        echo '<option class="rounded-2" value="'.$wierszKategoria["nazwa_kategorii"].'">'.$wierszKategoria["nazwa_kategorii"].'</option>';
                     }                      
                     ?>
                   </select>
@@ -206,9 +196,9 @@ if(isset($_SESSION['zalogowany']))
                   </button>                             
                   <select name="firma[]" class="dropdown-menu rounded-3"  multiple >
                     <option value="" disabled selected hidden>Wybierz...</option>
-                    <?php while($rowFirma = $wynikFirmy->fetch_assoc())
+                    <?php while($wierszFirma = $wynikFirmy->fetch_assoc())
                     {
-                        echo '<option class="rounded-2" value="'.$rowFirma["nazwa_firmy"].'" >'.$rowFirma["nazwa_firmy"].'</option>';
+                        echo '<option class="rounded-2" value="'.$wierszFirma["nazwa_firmy"].'" >'.$wierszFirma["nazwa_firmy"].'</option>';
                     }                                                 
                     ?>
                   </select>             
@@ -295,9 +285,7 @@ if(isset($_SESSION['zalogowany']))
               $dataWaznosci = new DateTime($ogloszenie['data_waznosci']); 
               $dataUtworzenia = new DateTime($ogloszenie['data_utworzenia']);            
               $dzis = new DateTime();
-                         
-              $linkStart = '<a href="SzczegolyOglo.php?id='.$ogloszenie['ogloszenie_id'].'" class="ogloszenieMain my-3 border-0 rounded-4 shadow-lg px-3 text-decoration-none">';
-              $linkEnd = '</a>';              
+                                                 
               if ($dataWaznosci > $dzis) {                                     
                 echo '
                 <div class="col-12 col-xl-4 d-flex justify-content-center">

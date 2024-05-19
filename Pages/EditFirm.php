@@ -28,8 +28,8 @@ else
 }
 
 if ($idukryte != null) {
-    $resultFirmaEdit = $polaczenie->execute_query("SELECT * FROM firmy WHERE firma_id = ?", [$idukryte]);
-    $firma = $resultFirmaEdit->fetch_assoc();
+    $wynikFirmaEdit = $polaczenie->execute_query("SELECT * FROM firmy WHERE firma_id = ?", [$idukryte]);
+    $firma = $wynikFirmaEdit->fetch_assoc();
 } else {
     $_SESSION['komunikatId'] = "Brak identyfikatora kategorii.";
 }
@@ -53,7 +53,7 @@ if (isset($_POST['Edytuj_firm']) && $idukryte!= null)
         $_SESSION['informacje_firmy'] = $_POST['informacje_firmy'];
     }
 
-    $result = $polaczenie->execute_query("SELECT firma_id FROM firmy WHERE nazwa_firmy = ? AND firma_id != ?",[$nazwa_firmy, $idukryte]);
+    $wynik = $polaczenie->execute_query("SELECT firma_id FROM firmy WHERE nazwa_firmy = ? AND firma_id != ?",[$nazwa_firmy, $idukryte]);
 
     if(strlen($nazwa_firmy) == 0) 
     {
@@ -74,7 +74,7 @@ if (isset($_POST['Edytuj_firm']) && $idukryte!= null)
             $_SESSION['komunikatNazw'] = "Przekroczono limit znaków!";   
         }
 
-        if($result->num_rows > 0) 
+        if($wynik->num_rows > 0) 
         {
             $wszystkoOk = false;
             $_SESSION['komunikatNazw'] = "Firma o tej nazwie już istnieje!";
@@ -91,7 +91,7 @@ if (isset($_POST['Edytuj_firm']) && $idukryte!= null)
     {                       
         unset($_SESSION['nazwa_firmy'], $_SESSION['informacje_firmy']);
 
-        $polaczenie->query("UPDATE firmy SET nazwa_firmy = '{$nazwa_firmy}', informacje = '{$informacje_firmy}' WHERE firma_id = '{$idukryte}'");        
+        $polaczenie->execute_query("UPDATE firmy SET nazwa_firmy = ?, informacje = ? WHERE firma_id = ?", [$nazwa_firmy, $informacje_firmy, $idukryte]);    
         header("Location: EditFirm.php?id={$idukryte}");
         exit();
     }
@@ -105,8 +105,8 @@ $start = ($aktualnaStrona - 1) * $FirmyNaStrone;
 
 $zapytanie = "SELECT COUNT(*) AS ile FROM firmy";
 $wynik = $polaczenie->query($zapytanie);
-$r = $wynik->fetch_assoc();
-$wszystkieFirmy = $r['ile'];
+$wiersz = $wynik->fetch_assoc();
+$wszystkieFirmy = $wiersz['ile'];
 $strony = ceil($wszystkieFirmy / $FirmyNaStrone);
 
 $zapytanie = "SELECT * FROM firmy

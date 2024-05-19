@@ -26,8 +26,8 @@ if (isset($_POST['ukrytyeditKat']))
 }
 
 if ($idukryte != null) {
-    $resultKategoriaEdit = $polaczenie->execute_query("SELECT * FROM kategorie WHERE kategoria_id = ?", [$idukryte]);
-    $kategoria = $resultKategoriaEdit->fetch_assoc();
+    $wynikKategoriaEdit = $polaczenie->execute_query("SELECT * FROM kategorie WHERE kategoria_id = ?", [$idukryte]);
+    $kategoria = $wynikKategoriaEdit->fetch_assoc();
 } else {
     $komunikat = "Brak identyfikatora kategorii.";
 }
@@ -37,7 +37,7 @@ if ($idukryte != null) {
 if (isset($_POST['Edytuj_kat']) && $idukryte!= null) { 
     if(isset($_POST['nazwa_kategorii']))
     $nazwa_kategorii = $_POST['nazwa_kategorii'];   
-    $result = $polaczenie->execute_query("SELECT kategoria_id FROM kategorie WHERE nazwa_kategorii = ? AND kategoria_id != ?",[$nazwa_kategorii, $idukryte]);
+    $wynik = $polaczenie->execute_query("SELECT kategoria_id FROM kategorie WHERE nazwa_kategorii = ? AND kategoria_id != ?",[$nazwa_kategorii, $idukryte]);
     
     if(strlen($nazwa_kategorii) == 0) 
     {
@@ -47,13 +47,13 @@ if (isset($_POST['Edytuj_kat']) && $idukryte!= null) {
     {
         $komunikat = "Przekroczono limit znaków!";
     }
-    elseif ($result->num_rows > 0) 
+    elseif ($wynik->num_rows > 0) 
     {
         $komunikat = "Kategoria o tej nazwie już istnieje!";
     }  
     else
     {                       
-        $polaczenie->query("UPDATE kategorie SET nazwa_kategorii = '{$nazwa_kategorii}' WHERE kategoria_id = '{$idukryte}'");
+        $polaczenie->execute_query("UPDATE kategorie SET nazwa_kategorii = ? WHERE kategoria_id = ?", [$nazwa_kategorii, $idukryte]);
         header("Location: EditKat.php?id={$idukryte}");
         exit();
     }

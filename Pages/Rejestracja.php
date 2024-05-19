@@ -1,144 +1,87 @@
 
 <?php
+session_start();
 
-	session_start();
-	
-	if (isset($_POST['email']))
-	{
+require_once "../PHPScripts/connect.php";
+$polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
-		$wszystko_OK=true;
-		
+if (isset($_POST['email'])) {
 
-		$nick = $_POST['nick'];
-		
+    $wszystko_OK = true;
 
-		if ((strlen($nick)<3) || (strlen($nick)>20))
-		{
-			$wszystko_OK=false;
-			$_SESSION['e_nick']="Nick musi posiadać od 3 do 20 znaków!";
-		}
-		
-		if (ctype_alnum($nick)==false)
-		{
-			$wszystko_OK=false;
-			$_SESSION['e_nick']="Nick może składać się tylko z liter i cyfr (bez polskich znaków)";
-		}
-		
+    $nick = $_POST['nick'];
 
-		$email = $_POST['email'];
+    if ((strlen($nick) < 3) || (strlen($nick) > 20)) {
+        $wszystko_OK = false;
+        $_SESSION['e_nick'] = "Nick musi posiadać od 3 do 20 znaków!";
+    }
 
+    if (ctype_alnum($nick) == false) {
+        $wszystko_OK = false;
+        $_SESSION['e_nick'] = "Nick może składać się tylko z liter i cyfr (bez polskich znaków)";
+    }
 
-		$_SESSION['email_cart'] = $email;
+    $email = $_POST['email'];
 
-		$emailB = filter_var($email, FILTER_SANITIZE_EMAIL);
-		
-		if ((filter_var($emailB, FILTER_VALIDATE_EMAIL)==false) || ($emailB!=$email))
-		{
-			$wszystko_OK=false;
-			$_SESSION['e_email']="Podaj poprawny adres e-mail!";
-		}
-		
+    $_SESSION['email_cart'] = $email;
 
-		$haslo1 = $_POST['haslo1'];
-		$haslo2 = $_POST['haslo2'];
-		
-		if ((strlen($haslo1)<8) || (strlen($haslo1)>20))
-		{
-			$wszystko_OK=false;
-			$_SESSION['e_haslo']="Hasło musi posiadać od 8 do 20 znaków!";
-		}
-		
-		if ($haslo1!=$haslo2)
-		{
-			$wszystko_OK=false;
-			$_SESSION['e_haslo2']="Podane hasła nie są identyczne!";
-		}	
+    $emailB = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-		$haslo_hash = password_hash($haslo1, PASSWORD_DEFAULT);
+    if ((filter_var($emailB, FILTER_VALIDATE_EMAIL) == false) || ($emailB != $email)) {
+        $wszystko_OK = false;
+        $_SESSION['e_email'] = "Podaj poprawny adres e-mail!";
+    }
 
+    $haslo1 = $_POST['haslo1'];
+    $haslo2 = $_POST['haslo2'];
 
-		
-	
-		if (!isset($_POST['regulamin']))
-		{
-			$wszystko_OK=false;
-			$_SESSION['e_regulamin']="Potwierdź akceptację regulaminu!";
-		}				
-		
-	
-		
+    if ((strlen($haslo1) < 8) || (strlen($haslo1) > 20)) {
+        $wszystko_OK = false;
+        $_SESSION['e_haslo'] = "Hasło musi posiadać od 8 do 20 znaków!";
+    }
 
-		$_SESSION['fr_nick'] = $nick;
-		$_SESSION['fr_email'] = $email;
-		$_SESSION['fr_haslo1'] = $haslo1;
-		$_SESSION['fr_haslo2'] = $haslo2;
-		if (isset($_POST['regulamin'])) $_SESSION['fr_regulamin'] = true;
-		
-		require_once "../PHPScripts/connect.php";
-		mysqli_report(MYSQLI_REPORT_STRICT);
-		
-		try 
-		{
-			$polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
-			if ($polaczenie->connect_errno!=0)
-			{
-				throw new Exception(mysqli_connect_errno());
-			}
-			else
-			{
-				
-				$rezultat = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE email='$email'");
-				
-				if (!$rezultat) throw new Exception($polaczenie->error);
-				
-				$ile_takich_maili = $rezultat->num_rows;
-				if($ile_takich_maili>0)
-				{
-					$wszystko_OK=false;
-					$_SESSION['e_email']="Istnieje już konto przypisane do tego adresu e-mail!";
-				}		
+    if ($haslo1 != $haslo2) {
+        $wszystko_OK = false;
+        $_SESSION['e_haslo2'] = "Podane hasła nie są identyczne!";
+    }
 
-			
-				$rezultat = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick='$nick'");
-				
-				if (!$rezultat) throw new Exception($polaczenie->error);
-				
-				$ile_takich_nickow = $rezultat->num_rows;
-				if($ile_takich_nickow>0)
-				{
-					$wszystko_OK=false;
-					$_SESSION['e_nick']="Istnieje już użytkownik o takim loginie! Wybierz inny.";
-				}
+    $haslo_hash = password_hash($haslo1, PASSWORD_DEFAULT);
 
-								
-				if ($wszystko_OK==true)     
-				{
-					
-					
-					if ($polaczenie->query("INSERT INTO uzytkownicy VALUES (NULL, '$nick', '$haslo_hash', '$email', '' )"))
-					{
-						$_SESSION['udanarejestracja']=true;
-						header('Location: Logowanie.php');
-					}
-					else
-					{
-						throw new Exception($polaczenie->error);
-					}
-					
-				}								
-			}
-			
-		}
-		catch(Exception $e)
-		{		
-			echo '<span style="color:red;">Błąd serwera! Przepraszamy za niedogodności i prosimy o rejestrację w innym terminie!</span>';
-			echo '<br />Informacja developerska: '.$e;
-		}
-		$polaczenie->close();
-		
+    if (!isset($_POST['regulamin'])) {
+        $wszystko_OK = false;
+        $_SESSION['e_regulamin'] = "Potwierdź akceptację regulaminu!";
+    }
+
+    $_SESSION['fr_nick'] = $nick;
+    $_SESSION['fr_email'] = $email;
+    $_SESSION['fr_haslo1'] = $haslo1;
+    $_SESSION['fr_haslo2'] = $haslo2;
+    if (isset($_POST['regulamin'])) $_SESSION['fr_regulamin'] = true;
+   
+
+    $wynik = $polaczenie->execute_query("SELECT uzytkownik_id FROM uzytkownicy WHERE email = ?", [$email]);
+
+    $ile_takich_maili = $wynik->num_rows;
+    if ($ile_takich_maili > 0) {
+        $wszystko_OK = false;
+        $_SESSION['e_email'] = "Istnieje już konto przypisane do tego adresu e-mail!";
+    }
+
+    $wynik = $polaczenie->execute_query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = ?", [$nick]);
+
+    $ile_takich_nickow = $wynik->num_rows;
+    if ($ile_takich_nickow > 0) {
+        $wszystko_OK = false;
+        $_SESSION['e_nick'] = "Istnieje już użytkownik o takim loginie! Wybierz inny.";
+    }
+
+    if ($wszystko_OK == true) {
+        if ($polaczenie->execute_query("INSERT INTO uzytkownicy (uzytkownik_id, nick, haslo, email, administrator) VALUES (NULL, ?, ?, ?, ?)", [$nick, $haslo_hash, $email, 0])) {
+            $_SESSION['udanarejestracja'] = true;
+            header('Location: Logowanie.php');
+    	}
 	}
-	
-	
+}
 ?>
 
 
@@ -261,4 +204,7 @@
         </div>
     
 </body>
+<?php
+	$polaczenie->close();
+?>
 </html>
