@@ -124,6 +124,9 @@ $_POST['godziny_pracy'], $_POST['data_waznosci'], $_POST['poziom_stanowiska']))
     $_SESSION['godziny_pracy'] = $_POST['godziny_pracy'];
     $_SESSION['data_waznosci'] = $_POST['data_waznosci'];
     $_SESSION['poziom_stanowiska'] = $_POST['poziom_stanowiska'];
+    $_SESSION['obowiazki'] = $_POST['obowiazki'];
+    $_SESSION['wymagania'] = $_POST['wymagania'];
+    $_SESSION['benefity'] = $_POST['benefity'];
 
 
     if($ok)
@@ -750,7 +753,7 @@ else
 
     </script>
     <?php
-        //Geneoranie obowiązków, wymagań, benefitów z bazy danych
+        //Generowanie obowiązków, wymagań, benefitów z bazy danych
 
 
         if($edytowanie)

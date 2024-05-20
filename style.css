@@ -132,6 +132,11 @@
     
 }
 
+.podsumowanie-zawodowe {
+    word-wrap: break-word;
+    white-space: normal;
+}
+
 .ogloszenie
 {
     border:  solid 2px;

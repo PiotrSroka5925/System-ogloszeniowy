@@ -1,8 +1,7 @@
 <?php
 
 session_start();
-if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany']!=true))
-{
+if((!isset($_SESSION['zalogowany'])) && ($_SESSION['zalogowany'] != true)) {
     header('Location: Logowanie.php'); 
     exit();
 }
@@ -13,16 +12,55 @@ $polaczenie = new mysqli($host, $db_user, $db_password, $db_name);
 
 $nazwaUzytkownika = $_SESSION['user'];
 
-$wynikUzytkownik = $polaczenie->query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = '$nazwaUzytkownika'");
+$wynikUzytkownik = $polaczenie->execute_query("SELECT uzytkownik_id FROM uzytkownicy WHERE nick = ?", [$nazwaUzytkownika]);
 $wierszUzytkownk = $wynikUzytkownik->fetch_assoc();
 
-$idUzytkownika =$wierszUzytkownk['uzytkownik_id'];
+$idUzytkownika = $wierszUzytkownk['uzytkownik_id'];
 
-$wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id = $idUzytkownika");
+$wynikUzytkownikProfilID = $polaczenie->execute_query("SELECT profil_id FROM profile WHERE uzytkownik_id = ?", [$idUzytkownika]);
+$wierszProfilID = $wynikUzytkownikProfilID->fetch_assoc();
 
+if (!$wierszProfilID) 
+{
+    $polaczenie->execute_query("INSERT INTO profile (uzytkownik_id) VALUES (?)", [$idUzytkownika]);
+    
+    $wynikNowyProfilID = $polaczenie->execute_query("SELECT profil_id FROM profile WHERE uzytkownik_id = ?", [$idUzytkownika]);
+    $wierszNowyProfilID = $wynikNowyProfilID->fetch_assoc();
+    $IdProfilu = $wierszNowyProfilID['profil_id'];
+} 
+else 
+{
+    
+    $IdProfilu = $wierszProfilID['profil_id'];
+}
 
+$wynikProfil = $polaczenie->execute_query("SELECT profile.*, profil_miejsce_zamieszkania.miasto, profil_stanowisko_pracy.*, uzytkownicy.email 
+FROM profile 
+JOIN profil_miejsce_zamieszkania USING(profil_id)
+JOIN profil_stanowisko_pracy USING(stanowisko_pracy_id) 
+JOIN uzytkownicy USING(uzytkownik_id) 
+WHERE uzytkownik_id = ?", [$idUzytkownika]);
+
+$wynikDoswiadczenieZawodowe = $polaczenie->execute_query("SELECT * FROM profil_doswiadczenie_zawodowe WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikWyksztalcenie = $polaczenie->execute_query("SELECT * FROM profil_wyksztalcenie WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikJezyki = $polaczenie->execute_query("SELECT * FROM profil_znajomosc_jezykow WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikUmiejetnosci = $polaczenie->execute_query("SELECT * FROM umiejetnosci WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikSzkolenia = $polaczenie->execute_query("SELECT * FROM profil_dodatkowe_szkolenia WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikSzkolenia = $polaczenie->execute_query("SELECT * FROM profil_dodatkowe_szkolenia WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikAktywnosci = $polaczenie->execute_query("SELECT * FROM profil_aktywnosci WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikHobby = $polaczenie->execute_query("SELECT * FROM profil_hobby WHERE profil_id = ?", [$IdProfilu]);
+
+$wynikLinki= $polaczenie->execute_query("SELECT * FROM profil_linki WHERE profil_id = ?", [$IdProfilu]);
 
 ?>
+
 <!Doctype html>
 <html lang="pl">
   <head>
@@ -61,9 +99,9 @@ $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id =
                       '.$_SESSION['user'].'
                       </a>
                       <form class="dropdown-menu UlubionyKolor p-4 row">      
-                      <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowane</a>    
+                        <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowane</a>    
                         <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>             
-                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12" role="button">Wyloguj</a>           
+                        <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
                   </ul>';
@@ -81,7 +119,9 @@ $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id =
                       <a class="nav-link dropdown-toggle text-light fs-5 marginChange" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       '.$_SESSION['user'].'
                       </a>
-                      <form class="dropdown-menu UlubionyKolor p-4 row">                        
+                      <form class="dropdown-menu UlubionyKolor p-4 row">      
+                        <a href="Aplikowane.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Aplikowane</a>    
+                        <a href="Ulubione.php" active class="btn UlubionyKolor border-1 border-white rounded-4 col-12 mt-3 text-light" role="button">Ulubione</a>                    
                         <a href="../PHPScripts/logout.php" active class="btn UlubionyKolor border-1 border-white rounded-4 mt-3 col-12" role="button">Wyloguj</a>           
                       </form>
                     </li>
@@ -93,112 +133,120 @@ $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id =
         </div>
     </nav>
 
-    <section class="container my-2">
-                
-        <section class="ogloszenie mt-2 rounded-3">
-            <div class="p-3">                          
-                <div class="d-flex">                     
-                    <img src="../Images/Profile/mineTheWorld.png" class="Profilowe ms-1 mt-1" alt="">                    
-                    <p class="text-light ms-1 mt-4 fs-2 w-100">Piotr Sroka</p>                                                                                                                                                                                                                                                                                       
-                </div>
-                <div class="mt-3">
-                    <p class="text-light">Programista - Web developer</p>
-                    <div class="d-flex">
-                        <img src="../Images/Icons/localization.png" class="ObowiazekIcon" alt="">
-                        <p class="text-light">Słopnice</p>
-                    </div>
-                </div>                
-            </div>   
-            <button class="btn-dark border-light rounded-3 bg-dark border-1 mt-1 ms-3 mb-3 EditBtnProf">
-                <a href="" class="text-decoration-none text-light">Edytuj</a>
-            </button>                         
-        </section>
+    <section class="container my-2">        
+        <?php
+            while($wierszProfil = $wynikProfil->fetch_assoc())
+            {
+                $dataUrodzenia = new DateTime($wierszProfil['data_urodzenia']);
 
-        <section class="ogloszenie mt-2 rounded-3 ">
+                echo '
+                    <section class="ogloszenie mt-2 rounded-3">
+                        <div class="p-3">                          
+                            <div class="d-flex">                     
+                                <img src="'.$wierszProfil['zdjecie_profilowe'].'" class="Profilowe ms-1 mt-1" alt="">                    
+                                <p class="text-light ms-1 mt-4 fs-2 w-100">'.$wierszProfil['imie'].' '.$wierszProfil['nazwisko'].'</p>                                                                                                                                                                                                                                                                                                                       
+                            </div>
+                            <div class="mt-3">
+                                <p class="text-light">'.$wierszProfil['nazwa_stanowiska'].' - '.$wierszProfil['opis_stanowiska'].'</p>
+                                <div class="d-flex">
+                                    <img src="../Images/Icons/localization.png" class="ObowiazekIcon" alt="">
+                                    <p class="text-light">'.$wierszProfil['miasto'].'</p>                                                                      
+                                </div>
+                                <p class="text-light">Data urodzenia: '.$dataUrodzenia->format('d.m.Y').'</p>  
+                            </div>                
+                        </div>   
+                        <button class="btn-dark border-light rounded-3 bg-dark border-1 mt-1 ms-3 mb-3 EditBtnProf">
+                            <a href="" class="text-decoration-none text-light">Edytuj</a>
+                        </button>                         
+                    </section>
             
-            <h3 class="text-light mx-3 my-4">Dane kontaktowe</h3>                                                                                
-            <div>
-                <p class="text-light ms-3">Email: piotr09sroka@interia.pl</p> 
-                <p class="text-light ms-3">Telefon : 442 253 424</p>
-            </div>                                                          
-        </section>
-
-        <section class="ogloszenie mt-2 rounded-3">
-            <h3 class="text-light mx-3 my-4">Podsumowanie zawadowe</h3>    
-            <p class="text-light m-4 text-wrap w-50">orem ipsum dolor sit amet, consectetur adipiscing elit. Aenean fermentum imperdiet metus ac elementum. Suspendisse at posuere ligula. Ut sed purus ut tortor finibus ultrices. Curabitur placerat, velit et vestibulum vestibulum, felis ligula porta mauris, in varius lectus felis eget ante. Curabitur urna dolor, euismod in tempor eget, iaculis eu lorem. Vivamus tempus pretium sem, non facilisis quam fringilla non. Sed porttitor lorem a dolor porttitor aliquam. Etiam tristique tellus sed velit sagittis congue. Nam pharetra felis sit amet sem tincidunt, quis placerat nisi cursus. Fusce tincidunt porta gravida.</p>                  
-        </section>
-
-        
+                    <section class="ogloszenie mt-2 rounded-3 ">
+                        
+                        <h3 class="text-light mx-3 my-4">Dane kontaktowe</h3>                                                                                
+                        <div>
+                            <p class="text-light ms-3">Email: '.$wierszProfil['email'].'</p> 
+                            <p class="text-light ms-3">Telefon : '.$wierszProfil['telefon'].'</p>
+                        </div>                                                          
+                    </section>
+            
+                    <section class="ogloszenie mt-2 rounded-3">
+                        <h3 class="text-light mx-3 my-4">Podsumowanie zawodowe</h3>    
+                        <p class="text-light m-4 podsumowanie-zawodowe">'.$wierszProfil['podsumowanie_zawodowe'].'</p>
+                    </section>';
+            }
+        ?>        
+                            
         <section class="ogloszenie mt-2 rounded-3 ">
-
             <div class="d-flex flex-wrap">
                 <h3 class="text-light mx-3 my-4">Doświadczenie zawodowe</h3>                
-            </div>                           
-                                                
-            <div class="d-flex flex-wrap mt-2">
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 mt-3">
-                        <p class="mt-1">Kasjer / styczeń 2008 - luty 2021</p>
-                        <p>Stokota (Kraków)</p>
-                        <p>obłsuga klienta</p>
-                    </div>                    
-                </div>                               
-            </div>                                  
-
-            <div class="d-flex flex-wrap mt-2">
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 mt-3">
-                        <p class="mt-1">Kasjer / styczeń 2008 - luty 2021</p>
-                        <p>Stokota (Kraków)</p>
-                        <p>obłsuga klienta</p>
-                    </div>                
-                </div>                               
-            </div>                                  
-        </section>
+            </div> 
+            <?php
+                while($wierszDoswiadczenieZawodowe = $wynikDoswiadczenieZawodowe->fetch_assoc())
+                {                                                                          
+                echo'
+                <div class="d-flex flex-wrap mt-2">
+                    <div class="d-flex flex-wrap w-100 border-top border-light border-1">
+                        <div class="text-light ms-3 mt-3">
+                            <p class="mt-1">'.$wierszDoswiadczenieZawodowe['stanowisko'].' / '.$wierszDoswiadczenieZawodowe['okres_zatrudnienia_od'].' - '.$wierszDoswiadczenieZawodowe['okres_zatrudnienia_do'].'</p>
+                            <p>'.$wierszDoswiadczenieZawodowe['nazwa_firmy'].' ('.$wierszDoswiadczenieZawodowe['lokalizacja'].')</p>
+                            <p>'.$wierszDoswiadczenieZawodowe['obowiazki'].'</p>
+                        </div>                    
+                    </div>                               
+                </div>';
+                }
+            ?>                                                                               
+        </section>                    
 
         <section class="ogloszenie mt-2 rounded-3 ">
-
             <div class="d-flex flex-wrap">
                 <h3 class="text-light mx-3 my-4">Wykształcenie</h3>                
             </div>                           
-                                                
-            <div class="d-flex flex-wrap mt-2">
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 mt-3">
-                        <p class="mt-1">Zespół Szkół Technicznych i Ogólnokształcacych im. Jana Pawła II / wrzesień 2020 - obecnie</p>
-                        <p>Programowanie</p>
-                        <p>średnie</p>
-                    </div>                   
-                </div>                               
-            </div>                                              
+                                         
+            <?php
+             while($wierszWyksztalcenie = $wynikWyksztalcenie->fetch_assoc())
+             {                                                                          
+                echo'
+                <div class="d-flex flex-wrap mt-2">
+                    <div class="d-flex flex-wrap w-100 border-top border-light border-1">
+                        <div class="text-light ms-3 mt-3">
+                            <p class="mt-1">'.$wierszWyksztalcenie['placowka'].' / '.$wierszWyksztalcenie['okres_wyksztalcenia_od'].' - '.$wierszWyksztalcenie['okres_wyksztalcenia_do'].'</p>
+                            <p>Kierunek: '.$wierszWyksztalcenie['kierunek'].'</p>
+                            <p>Wyksztalcenie: '.$wierszWyksztalcenie['poziom_wyksztalcenia'].'</p>
+                        </div>                   
+                    </div>                               
+                </div>';
+             }
+            ?>                                              
         </section>
 
         <section class="ogloszenie mt-2 rounded-3 ">
-
             <div class="d-flex flex-wrap">
                 <h3 class="text-light mx-3 my-4">Języki</h3>               
             </div>                           
                                                 
             <div class="d-flex flex-wrap mt-2">
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 d-flex mt-3">
-                        <p class="mt-1">Angielski</p>
-                        <p class="mt-1"> - średnio zaawansowany</p>
-                    </div>                    
-                </div>
-                
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 d-flex mt-3">
-                        <p class="mt-2">Polski</p>
-                        <p class="mt-2"> - ojczysty</p>
-                    </div>                  
-                </div>                               
+            <?php
+                while($wierszJezyki = $wynikJezyki->fetch_assoc())
+                {                                                                          
+                    echo'
+                    <div class="d-flex flex-wrap w-100 border-top border-light border-1">
+                        <div class="text-light ms-3 d-flex mt-3">
+                            <p class="mt-1">'.$wierszJezyki['jezyk'].' - '.$wierszJezyki['poziom_jezyka'].' </p>                           
+                        </div>                    
+                    </div>';
+                }
+            ?>                                                   
             </div>                                              
         </section>
 
         <section class="ogloszenie mt-2 rounded-3">
             <h3 class="text-light mx-3 my-4">Umiejętności</h3>    
-            <p class="text-light m-4 text-wrap w-50">orem ipsum dolor sit amet, consectetur adipiscing elit. Aenean fermentum imperdiet metus ac elementum. Suspendisse at posuere ligula. Ut sed purus ut tortor finibus ultrices. Curabitur placerat, velit et vestibulum vestibulum, felis ligula porta mauris, in varius lectus felis eget ante. Curabitur urna dolor, euismod in tempor eget, iaculis eu lorem. Vivamus tempus pretium sem, non facilisis quam fringilla non. Sed porttitor lorem a dolor porttitor aliquam. Etiam tristique tellus sed velit sagittis congue. Nam pharetra felis sit amet sem tincidunt, quis placerat nisi cursus. Fusce tincidunt porta gravida.</p>                 
+            <?php
+                while($wierszUmiejetnosci = $wynikUmiejetnosci->fetch_assoc())
+                {                                                                          
+                    echo'<p class="text-light m-4 podsumowanie-zawodowe">'.$wierszUmiejetnosci['umiejetnoscText'].'</p>';
+                }
+            ?>
         </section>
 
         <section class="ogloszenie mt-2 rounded-3 ">
@@ -207,12 +255,18 @@ $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id =
             </div>                           
                                                 
             <div class="d-flex flex-wrap mt-2">
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 mt-3">
-                        <p class="mt-1">Szkolenie C++ / maj 2014</p>                    
-                        <p>Maciej Bąk</p>
-                    </div>                    
-                </div>                               
+                <?php
+                    while($wierszSzkolenia = $wynikSzkolenia->fetch_assoc())
+                    {                                                                          
+                        echo'
+                        <div class="d-flex flex-wrap w-100 border-top border-light border-1">
+                            <div class="text-light ms-3 mt-3">
+                                <p class="mt-1">'.$wierszSzkolenia['nazwa_szkolenia'].' / '.$wierszSzkolenia['data_szkolenia_od'].' - '.$wierszSzkolenia['data_szkolenia_do'].'</p>                    
+                                <p>'.$wierszSzkolenia['organizator'].'</p>
+                            </div>                    
+                        </div>';
+                    }
+                ?>                               
             </div>                                                               
         </section>
 
@@ -223,19 +277,30 @@ $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id =
             </div>                           
                                                 
             <div class="d-flex flex-wrap mt-2">
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 mt-3">
-                        <p class="mt-1">Jakas organizacja / kwiecień 2017 - kwiecień 2023</p>   
-                        <p>Warszawa</p>                                         
-                        <p>fsffsfsfddsadsa</p>
-                    </div>                   
-                </div>                               
+                <?php
+                    while($wierszkAktywnosci = $wynikAktywnosci->fetch_assoc())
+                    {                                                                          
+                        echo'
+                        <div class="d-flex flex-wrap w-100 border-top border-light border-1">
+                            <div class="text-light ms-3 mt-3">
+                                <p class="mt-1">'.$wierszkAktywnosci['organizacja'].' / '.$wierszkAktywnosci['czas_trwania_od'].' - '.$wierszkAktywnosci['czas_trwania_do'].'</p>   
+                                <p>'.$wierszkAktywnosci['miejsce'].'</p>                                         
+                                <p>'.$wierszkAktywnosci['czynnosci'].'</p>
+                            </div>                   
+                        </div>';
+                    }
+                ?>                               
             </div>                                                               
         </section>
 
         <section class="ogloszenie mt-2 rounded-3">
-            <h3 class="text-light mx-3 my-4">Hobby</h3>    
-            <p class="text-light m-4 text-wrap w-50">gra w życie</p>                  
+            <h3 class="text-light mx-3 my-4">Hobby</h3>  
+            <?php
+                while($wierszkHobby = $wynikHobby->fetch_assoc())
+                {                                                                          
+                    echo'<p class="text-light m-4 text-wrap w-50">'.$wierszkHobby['hobbyText'].'</p>';
+                }
+            ?>                                
         </section>
 
         <section class="ogloszenie mt-2 rounded-3 ">
@@ -245,11 +310,17 @@ $wynikProfil = $polaczenie -> query("SELECT * FROM profile WHERE uzytkownik_id =
             </div>                           
                                                 
             <div class="d-flex flex-wrap mt-2">
-                <div class="d-flex flex-wrap w-100 border-top border-light border-1">
-                    <div class="text-light ms-3 my-2">
-                        <a href="https://github.com/PiotrSroka2005" class="text-decoration-none text-light">Github</a>
-                    </div>                   
-                </div>                               
+                <?php
+                    while($wierszLinki = $wynikLinki->fetch_assoc())
+                    {
+                        echo'
+                        <div class="d-flex flex-wrap w-100 border-top border-light border-1">
+                            <div class="text-light ms-3 my-2">                                                      
+                                <a href="'.$wierszLinki['link'].'" class="text-decoration-none text-light my-2" target="_blank">'.$wierszLinki['tytul_linku'].'</a>                                                   
+                            </div>                   
+                        </div>';
+                    }
+                ?>                               
             </div>                                                               
         </section>
                  

@@ -12,7 +12,7 @@ $start = ($aktualnaStrona - 1) * $ogloszeniaNaStrone;
 if (isset($_POST['usuwanieAplikowanie'])) {
     $idukryte = $_POST['ukrytyAplikowanie'];
     $polaczenie->execute_query("DELETE FROM aplikowania WHERE ogloszenie_id = ?", [$idukryte]);
-    header('Location: Aplikowania.php');
+    header('Location: Aplikowane.php');
 }
 
 $zapytanie = "SELECT COUNT(*) AS ile FROM aplikowania";

@@ -74,7 +74,7 @@ if(isset($_POST['Dodaj_firm']))
     
     if($wszystkoOk == true)
     {                       
-        unset($_SESSION['nazwa_firmy'], $_SESSION['informacje_firmy']);
+        unset($_SESSION['nazwa_firmy'], $_SESSION['informacje_firmyZarzadzanie']);
 
         $polaczenie->execute_query("INSERT INTO firmy (firma_id, nazwa_firmy, informacje) VALUES (NULL, ?, ?)", [$nazwa_firmy, $informacje_firmy]);
         $nazwa_firmy = "";

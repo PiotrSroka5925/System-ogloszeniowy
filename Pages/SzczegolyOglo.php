@@ -47,6 +47,7 @@ $wierszUzytkownk = $wynik->fetch_assoc();
 
 $idUzytkownika = $wierszUzytkownk['uzytkownik_id'];
 
+$wynikProfil = $polaczenie->execute_query("SELECT profile.*, uzytkownicy.email FROM profile JOIN uzytkownicy USING(uzytkownik_id) WHERE uzytkownik_id = ?", [$idUzytkownika]);
 
 $ogloszenieId = $_GET['id'];
 
@@ -166,19 +167,43 @@ $wynikUlubione = $polaczenie->execute_query("SELECT ulubione_id FROM ulubione WH
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Dane aplikacji</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
-            ...
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <form method="post" class="m-auto d-flex text-centre align-items-center">
-              <input type="submit" name="aplikuj" class="btn UlubionyKolor text-center btn-secondary text-light border-3 m-auto rounded-5 px-5 my-2" value="Aplikuj">
-              <input type="number" value="'.$wierszOglo['ogloszenie_id'].'" name="ukrytyOglo" hidden>
-            </form>
-          </div>
+          <?php      
+                while($wierszProfil = $wynikProfil->fetch_assoc())
+                {
+                  if(strlen($wierszProfil['imie']) != null && strlen($wierszProfil['nazwisko']))
+                  {
+                    echo'
+                    <div class="modal-body">
+                      <p>Przesyłasz dane:</p>
+                              
+                      <p>'.$wierszProfil['imie'].' '.$wierszProfil['nazwisko'].'</p>    
+                      <p>Telefon: '.$wierszProfil['telefon'].'</p>          
+                      <p>E-mail: '.$wierszProfil['email'].'</p>
+                  
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>            
+                      <form method="post" class="m-auto d-flex text-centre align-items-center">
+                        <input type="submit" name="aplikuj" class="btn UlubionyKolor text-center btn-secondary text-light border-3 m-auto rounded-5 px-5 my-2" value="Aplikuj">                        
+                      </form>
+                    </div>';
+                  }
+                  else
+                  {
+                    echo'
+                    <div class="modal-body">
+                      <p>Nie uzupełnionio podstawowych danych w profilu, jak: imię, nazwisko, telefon</p>                                                                  
+                    </div>
+                    <div class="modal-footer d-flex">                            
+                      <a href="Profil.php" active class="btn UlubionyKolor border-1 border-white w-100 rounded-4 text-light" role="button">Profil</a>
+                      <button type="button" class="btn btn-secondary w-100 rounded-4" data-bs-dismiss="modal">Anuluj</button>      
+                    </div>';
+                  }                  
+                }
+          ?>
         </div>
       </div>
   </div>
